@@ -1,0 +1,71 @@
+﻿.err-page {
+  height: 100%;
+  text-align: center;
+}
+
+.err-page-wrp {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.img-wrp {
+  height: 435px;
+  max-width: 575px;
+  width: 100%;
+  background-size: contain;
+}
+
+.img-wrp-404 {
+  background: url("/images/errors/error-404.svg") center no-repeat;
+}
+
+.err-text-wrp .err-title {
+  margin-bottom: 30px;
+  font-size: 30px;
+  color: #2f4351;
+}
+
+.line {
+  margin-top: 17px;
+  border-bottom: 3px solid #1998a8;
+  width: 60px;
+}
+
+.err-text-wrp .err-descr {
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-size: 72px;
+  line-height: normal;
+  color: #2f4351;
+  font-weight: bold;
+}
+
+.err-page-wrp .go-back-btn {
+  width: 200px;
+  padding: 15px 0;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: white;
+  background-color: #ff5252;
+  border-radius: 30px;
+}
+
+@media (max-width: 992px) {
+  .err-text-wrp .err-descr {
+    font-size: 42px;
+  }
+
+  .err-text-wrp .err-title {
+    font-size: 19px;
+  }
+
+  .img-wrp {
+    height: 300px;
+  }
+}

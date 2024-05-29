@@ -1,0 +1,67 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ByteAntU12DAStarterKit.Core.Models.ContactModel>
+@model ByteAntU12DAStarterKit.Core.Models.ContactModel
+<script src="https://www.google.com/recaptcha/api.js"></script>
+@* <script src="http://ajax.aspnetcdn.com/ajax/mvc/3.0/jquery.unobtrusive-ajax.min.js"></script> *@
+<div class="cs-fade-shadow" id="contactUsLoader"></div>
+<form asp-controller="SurfaceContact" asp-action="PostMessage" class="contact-us-form" id="ContactForm" data-ajax="true" data-ajax-method="POST" data-ajax-failure="contactMessageFailure" data-ajax-success="contactMessageSuccess" data-ajax-loading="#contactUsLoader">
+    <div class="row">
+        @Html.AntiForgeryToken()
+        <div class="col-xs-12 col-sm-5">
+            <label>@Umbraco.GetDictionaryValue("contact.placeholder.name")</label>
+            <input asp-for="Name" maxlength="50" />
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Name)
+            </div>
+        </div>
+        <div class="col-xs-hidden col-sm-2"></div>
+        <div class="col-xs-12 col-sm-5">
+            <label>@(Umbraco.GetDictionaryValue("contact.placeholder.email"))</label>
+            @Html.TextBoxFor(m => m.Email, new { @maxlength = "50" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Email)
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-5">
+            <label>@(Umbraco.GetDictionaryValue("contact.placeholder.phone"))</label>
+            @Html.TextBoxFor(m => m.Phone, new { @maxlength = "50" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Phone)
+            </div>
+        </div>
+        <div class="col-xs-hidden col-sm-2"></div>
+        <div class="col-xs-12 col-sm-5">
+            <label>@(Umbraco.GetDictionaryValue("contact.placeholder.company"))</label>
+            @Html.TextBoxFor(m => m.Company, new { @maxlength = "50" })
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <label>@(Umbraco.GetDictionaryValue("contact.placeholder.msg"))</label>
+            @Html.TextAreaFor(m => m.Message, new { rows = "2", @maxlength = "3000" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Message)
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <span class="message contact-message js-message text-success" style="display: none;">Your message has been successfully sent</span>
+            <span class="message contact-message js-message-failure text-danger" style="display: none;">Sorry there was an error sending your message</span>
+            <button type="submit" class="btn btn-red btn-submit pull-right" disabled>
+                <span style="text-transform: uppercase;">@(Umbraco.GetDictionaryValue("hp.btn.send"))</span>
+            </button>
+            <div class="contact-frame_captcha-wrp">
+                <div class="contact-frame_captcha">
+                    <div id="gRecaptcha" class="g-recaptcha" data-callback="onReturnCaptchaCallback" data-expired-callback="onRecaptchaExpired" data-sitekey="@Model.RecapthaKey" data-badge="inline"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

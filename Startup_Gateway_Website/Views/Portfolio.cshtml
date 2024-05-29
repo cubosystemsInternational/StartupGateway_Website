@@ -1,0 +1,153 @@
+﻿@inherits UmbracoViewPage<ContentModels.Portfolio>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Microsoft.AspNetCore.Http.Extensions;
+@using Umbraco.Cms.Core.PublishedCache;
+@inject ITagQuery _tagQuery;
+@{
+    Layout = "Master.cshtml";
+    ViewBag.headerClass = "dark";
+}
+<div class="portfolio-page">
+    <section class="section-1">
+        <div class="title-padding container">
+            <div>
+                <h1 class="title">@Model.MainHeader</h1>
+                <div class="subtitle">@Model.Header</div>
+            </div>
+            @{
+                var yearFounded = Model?.Parent<Home>()?.YearFounded;
+                if (!string.IsNullOrWhiteSpace(yearFounded))
+                {
+                    <div class="since">
+                        <span>since</span>
+                        <br>@yearFounded
+                    </div>
+                }
+            }
+        </div>
+    </section>
+    @{
+        var curCulture = Model?.GetCultureFromDomains(new Uri(Context.Request.GetDisplayUrl()));
+        var projects = Model?.Children(curCulture);
+        IEnumerable<string> tagsInProjects;
+        if (projects?.Count() == 0)
+        {
+            tagsInProjects = Model?.Children()
+            .Where(x => x.ContentType.Alias == "project")
+            .SelectMany(x => x.Value<IEnumerable<string>?>("category") ?? Enumerable.Empty<string>())
+            .Distinct() ?? Enumerable.Empty<string>();
+        }
+        else
+        {
+            tagsInProjects = projects?
+            .Where(x => x.ContentType.Alias == "project")
+            .SelectMany(x => x.Value<IEnumerable<string>>("category", curCulture) ?? Enumerable.Empty<string>())
+            .Distinct() ?? Enumerable.Empty<string>();
+        }
+        var allCategories = _tagQuery.GetAllContentTags("ProjectCategory", curCulture).Select(t => t?.Text);
+        if (allCategories.Count() == 0)
+        {
+            allCategories = _tagQuery.GetAllContentTags("ProjectCategory").Select(t => t?.Text).ToList();
+        }
+    }
+    <div class="container breadcrumb-wrp">
+        <ol class="breadcrumb">
+            <li>
+                @if (curCulture == "en-US")
+                {
+                    <a href="/">Home</a>
+                }
+                else
+                {
+                    <a href="/de/">Startseite</a>
+                }
+            </li>
+            <li class="active">@Model?.Title</li>
+        </ol>
+    </div>
+    <section class="section-2">
+        <div class="portfolio-nav container">
+            <ul class="nav nav-pills portfolio-main-categories-tabs tags-container">
+                <li class="active">
+                    <a href="#" data-target="#portfolio-tab" data-toggle="tab" data-category="all">
+                        <span class="tab-name">@(Umbraco.GetDictionaryValue("tags.all"))</span>
+                    </a>
+                </li>
+                @foreach (var category in allCategories)
+                {
+                    if (tagsInProjects.Contains(category))
+                    {
+                        <li>
+                            <a href="#" data-target="#portfolio-tab" data-toggle="tab" data-category="@category?.Replace(' ', '-')">
+                                <span class="tab-name">@category</span>
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        <div>
+            <div class="tab-content">
+                <div id="portfolio-tab" class="portfolio-item-list active clearfix tic-toe">
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (var project in Model?.Children ?? Enumerable.Empty<IPublishedContent>())
+                    {
+                        var projectContent = project as Project;
+                        var categories = projectContent?.Category;
+                        string categoryClasses = string.Empty;
+                        @if (categories != null)
+                        {
+                            foreach (string category in categories)
+                            {
+                                categoryClasses += category.Replace(' ', '-') + " ";
+                            }
+                        }
+                        <div class="row no-gutters item project-position @categoryClasses @(i % 2 == 0 ? "project-even" : "project-odd") background-@i">
+                            <div class="col-xs-12 col-md-6 project-center back-grd-img">
+                                <div class="background-center">
+                                    <a href="@projectContent?.Url()">
+                                        <div class="project-img lazy" data-original="@projectContent?.PortfolioImage?.Url()"></div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="scroll-center hidden-xs hidden-sm hidden-xs hidden-sm">
+                                <div class="scroll"></div>
+                            </div>
+                            <div class="col-xs-12 col-md-6 project-center project-info">
+                                <div class="project">
+                                    <div class="category">
+                                        @string.Join(", ", projectContent?.Category ?? Enumerable.Empty<string>())
+                                    </div>
+                                    <div class="project-title-wrapper">
+                                        <a href="@projectContent?.Url()">
+                                            <h3 class="project-title">@project.Name</h3>
+                                        </a>
+                                    </div>
+                                    <div class="country">
+                                        <img class="lazy" data-original="@projectContent?.CountryIcon?.Url()" />
+                                        <span class="country-category">@string.Join(", ", projectContent?.Industry ?? Enumerable.Empty<string>())</span>
+                                    </div>
+                                    <div class="project-description">
+                                        <a href="@projectContent?.Url()">
+                                            <p>@projectContent?.Description</p>
+                                        </a>
+                                    </div>
+                                    <div class="button">
+                                        <a href="@projectContent?.Url()" class="btn"><span>@(Umbraco.GetDictionaryValue("hp.btn.viewDetails"))</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        i++;
+                        if (i == 16)
+                        {
+                            i = 2; //rollout from start
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

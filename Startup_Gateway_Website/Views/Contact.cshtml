@@ -1,0 +1,203 @@
+﻿@inherits UmbracoViewPage<Contact>
+@{
+    Layout = "Master.cshtml";
+    var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
+    var mainAddress = Model?.Addresses?.FirstOrDefault() as Address;
+}
+@section AddToHead {
+    <script type="application/ld+json">
+        { "@@context": "https://schema.org",
+        "@@type": "Organization",
+        "name": "@Model?.CompanyName",
+        "description": "@home?.SeoMetaDescription",
+        "url": "@home?.Url(null, UrlMode.Absolute)",
+        "logo": "@(Context.Request.Scheme + "://" + Context.Request.Host + Url.Content("~/images/big-logo.png"))",
+        "foundingDate": "@home?.YearFounded",
+        "address": {
+        "@@type": "PostalAddress",
+        "streetAddress": "@mainAddress?.StreetAddress",
+        "addressLocality": "@mainAddress?.City",
+        "postalCode": "@mainAddress?.Zip",
+        "addressCountry": "@mainAddress?.Country"
+        },
+        "contactPoint": {
+        "@@type": "ContactPoint",
+        "contactType": "customer service",
+        "url": "@Model?.Url(null, UrlMode.Absolute)",
+        "email": "@Model?.Email"
+        },
+        "sameAs": [
+        "@Model?.Linkedin",
+        "@Model?.Twitter",
+        "@Model?.Facebook",
+        "@Model?.Instagram"
+        ]}
+    </script>
+}
+@* <script src="https://maps.googleapis.com/maps/api/js?key=@(Model?.ApiKey)" async defer></script> *@
+<div class="contact-us">
+    <section class="section-1">
+        <div class="img-title" data-toggle="modal" data-target="#exampleModalCenter">
+            <h1 class="title">@Model?.Name</h1>
+            @* <span class="pulse" data-toggle="modal" data-target="#exampleModalCenter"><span class="tooltip-text">@mainAddress?.City?.ToUpper()</span></span> *@
+        </div>
+        <span class="map-holder">
+            <div id="map2" class="decorative-map"></div>
+        </span>
+    </section>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title under-line">@Model?.MapHeader</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span class="close-btn">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="map" data-location="@(Model?.LocationX),@(Model?.LocationY)"></div>
+                        <div id="content">@(mainAddress?.StreetAddress + ", " + mainAddress?.Zip + ", " + mainAddress?.City + ", " + mainAddress?.Country)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="section-2 contact-us">
+        <div>
+            <div class="section-2-left col-md-12">
+                <div>
+                    <div class="title">@Model?.FormHeader</div>
+                    <div class="subtitle">@Model?.FormText</div>
+                    @await Html.PartialAsync("ContactForm", new ByteAntU12DAStarterKit.Core.Models.ContactModel { RecapthaKey = home?.RecaptchaKey })
+                </div>
+            </div>
+            <div class="section-2-right col-md-12">
+                @await Html.PartialAsync("ContactDetails")
+            </div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@(Model?.ApiKey)&callback=initialize&v=weekly" defer></script>
+    <script>
+        @* (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+        key: "@(Model?.ApiKey)",
+        v: "weekly",
+        }); *@
+
+            map = null;
+
+        function initMap() {
+            const coords = { lat: @(Model?.LocationX), lng: @(Model?.LocationY) };
+            const centerMap = { lat: coords.lat - 5, lng: coords.lng }
+
+            const mapStyles = [
+                {
+                    "featureType": "all",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#c0c0c0"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative.country",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#00a2b2"
+                        },
+                        {
+                            "weight": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#00a2b2"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "color": "#005d6b"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+            ];
+
+
+            const map = new google.maps.Map(document.getElementById("map2"), {
+                zoom: 4,
+                styles: mapStyles,
+                disableDefaultUI: true,
+                draggable: false,
+                center: centerMap,
+            });
+
+
+
+            const customMarker = new google.maps.Marker({
+                position: coords,
+                map: map,
+            });
+        }
+
+
+        function initMap2() {
+            const coords = { lat: @(Model?.LocationX), lng: @(Model?.LocationY) };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 4,
+                center: coords,
+            });
+
+            const customMarker = new google.maps.Marker({
+                position: coords,
+                map: map,
+            });
+        }
+
+        function initialize() {
+            initMap();
+            initMap2();
+        }
+
+
+    </script>
+}

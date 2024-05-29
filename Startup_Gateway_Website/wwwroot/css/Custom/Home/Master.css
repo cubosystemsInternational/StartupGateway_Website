@@ -1,0 +1,38 @@
+
+
+footer {
+    background: #224483;
+    min-height: 245px;
+    color: #bdbdbd;
+    padding-bottom: 40px;
+}
+
+
+.portfolio-page .section-1,
+.about-us-page .section-1 {
+background: linear-gradient(180deg, #4a2f50 0%, #224483 100%);
+}
+
+.navbar-default .navbar-nav a:hover {
+  background: none;
+  color: #f1604b !important;
+}
+
+.navbar-default .navbar-nav > .active > a {
+  background: none;
+  color: #0c86e3;
+}
+
+.panel-default.collapse-header.dark {
+  color: white;
+  background: #4a2f50 ;
+}
+
+footer .nav-menu-item .nav-title {
+    color: #fff;
+    
+}
+/* This is for the Contact Us Button */
+.navbar-default .get-in-touch:hover {
+  background-color: #224483;
+}

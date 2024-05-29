@@ -1,0 +1,461 @@
+﻿@inherits UmbracoViewPage<ContentModels.Service>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+@{
+    Layout = "Master.cshtml";
+    var parent = Model.Parent<Services>();
+    var home = parent?.Parent<Home>();
+    var currentUrl = Context.Request.Path.Value;
+    var curCulture = Model.GetCultureFromDomains();
+    var counter = 0;
+}
+@section AddToHead {
+    <!--<link rel="stylesheet" href="~/bundles/index.min.css" asp-append-version="true" />-->
+    <link rel="stylesheet" href="~/css/Home/Index.css" asp-append-version="true" />
+}
+<div class="services web-development-page startups new-services react-page marketplace">
+    <section class="section-header" id="intro-section">
+        <div class="startups-header-block lazy" data-original="@Model?.HeaderImage?.GetCropUrl()">
+            <div class="container startups-header-info">
+                @if (!string.IsNullOrEmpty(Model?.HeaderTitle))
+                {
+                    <h1 class="col-md-12 title-header">
+                        @Model?.HeaderTitle
+                    </h1>
+                }
+                @if (!string.IsNullOrEmpty(@Model?.HeaderDescription))
+                {
+                    <div class="col-md-12 header-description">
+                        <p>@Model?.HeaderDescription</p>
+                    </div>
+                }
+                <div class="button header-button col-md-3">
+                    <a class="btn btn-red" href="#" id="btn-scroll-down">
+                        <div>Learn More</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="@((Model?.OurSolutionMedia?.Any() ?? false) && (Model?.Features1Items?.Any() ?? false) ? "offer-section our-cases-section" : "")">
+        @if (Model?.OurSolutionMedia?.Any() ?? false){
+        <div class="container">
+            @if (!string.IsNullOrEmpty(Model?.OurSolutionTitle))
+            {
+            <h2 class="under-line section-title">@Model?.OurSolutionTitle</h2>
+            }
+            <div class="section-description">
+                @if (!string.IsNullOrEmpty(@Model?.OurSolutionDescription?.ToHtmlString()))
+                {
+                    @Model?.OurSolutionDescription
+                }
+                <p>&nbsp;</p>
+                @if (Model?.OurSolutionMedia?.Count() == 1)
+                {
+                    var media = Model?.OurSolutionMedia.First();
+                    <div class="mceNonEditable embeditem">
+                        <img src="@media?.GetCropUrl(width: 400, height: 300)" alt="..." />
+                    </div>
+                }
+                else
+                {
+                    <div id="top-banner-list" class="owl-carousel">
+                        @foreach (var media in Model?.OurSolutionMedia ?? Enumerable.Empty<IPublishedContent>())
+                        {
+                            <div class="mceNonEditable embeditem">
+                                <img src="@media?.GetCropUrl(width: 400, height: 300)" alt="..." />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        }
+        @if (Model?.Features1Items?.Any() ?? false){
+        <div class="container">
+            @if (!string.IsNullOrEmpty(Model?.Features1Title))
+            {
+                <h2 class="under-line section-title">@Model?.Features1Title</h2>
+            }
+            @if (!string.IsNullOrEmpty(@Model?.Features1Description))
+            {
+                <p>@Model?.Features1Description</p>
+            }
+        </div>
+        <div class="container">
+            @foreach (var feature in Model?.Features1Items?.Select(x => x.Content).OfType<FeatureItem>() ?? Enumerable.Empty<FeatureItem>())
+            {
+                <div class="section-item our-story-section our-story-section-1 row">
+                    <div class="col-md-7">
+                        @if (feature?.Icon != null)
+                        {
+                            <img class="lazy" data-original="@feature?.Icon?.GetCropUrl(imageCropMode: ImageCropMode.Max, width: 400, height: 300)" src="#" />
+                        }
+                    </div>
+                    <div class="col-md-5">
+                        @if (!string.IsNullOrEmpty(feature?.Title))
+                        {
+                            <h3 class="title">@feature?.Title</h3>
+                        }
+                        @if (!string.IsNullOrEmpty(@feature?.Description?.ToHtmlString()))
+                        {
+                            <div class="summary">
+                                <p>
+                                    @feature?.Description
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                counter++;
+            }
+        </div>
+        }
+    </section>
+    @if (Model?.Features2Items?.Any() ?? false){
+    <section class="offer-section offer-section-2">
+        <div class="container">
+            @if (!string.IsNullOrEmpty(Model?.Features2Title))
+            {
+                <h2 class="under-line section-title">@Model?.Features2Title</h2>
+            }
+            @if (!string.IsNullOrEmpty(@Model?.Features2Description))
+            {
+                <div class="section-description" style="margin-bottom: 30px;">
+                    <p>@Model?.Features2Description</p>
+                </div>
+            }
+        </div>
+        <div class="container">
+            @foreach (var feature in Model?.Features2Items?.Select(x => x.Content).OfType<FeatureItem1>() ?? Enumerable.Empty<FeatureItem1>())
+            {
+                <div class="section-item our-story-section">
+                    <div class="item-description">
+                        @if (!string.IsNullOrEmpty(feature?.Title))
+                        {
+                            <h3 class="title">@feature?.Title</h3>
+                        }
+                        <div class="summary">
+                            <div class="item-description">
+                                <div class="summary">
+                                    @if (!string.IsNullOrWhiteSpace(@feature?.Description))
+                                    {
+                                        @feature?.Description
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (feature?.Icon != null)
+                    {
+                        <div class="item-img our-story-img">
+                            <img class="lazy" data-original="@feature?.Icon?.GetCropUrl(imageCropMode: ImageCropMode.Max, width: 400, height: 300)" src="#" />
+                        </div>
+                    }
+                    <div class="connecting-line "></div>
+                </div>
+            }
+        </div>
+    </section>
+    }
+    @if (Model?.Features3Items?.Any() ?? false){
+    <section class="offer-section">
+        <div class="container">
+            @if (!string.IsNullOrEmpty(Model?.Features3Title))
+            {
+                <h2 class="under-line section-title">@Model?.Features3Title</h2>
+            }
+            @if (!string.IsNullOrEmpty(@Model?.Features3Description))
+            {
+                <div class="section-description">
+                    <p>@Model?.Features3Description</p>
+                </div>
+            }
+        </div>
+        <div class="container">
+            @{
+                counter = 0;
+            }
+            @foreach (var feature in Model?.Features3Items?.Select(x => x.Content).OfType<FeatureItem>() ?? Enumerable.Empty<FeatureItem>())
+            {
+                <div class="section-item our-story-section our-story-section-2 row">
+                    <div class="col-md-5">
+                        @if (!string.IsNullOrEmpty(feature?.Title))
+                        {
+                            <h3 class="title">@feature?.Title</h3>
+                        }
+                        @if (!string.IsNullOrEmpty(@feature?.Description?.ToHtmlString()))
+                        {
+                            <div class="summary">
+                                <div class="summary">
+                                    @feature?.Description
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-7">
+                        @if (feature?.Icon != null)
+                        {
+                            <img class="lazy" data-original="@feature?.Icon?.GetCropUrl(imageCropMode: ImageCropMode.Max, width: 400, height: 300)" src="#">
+                        }
+                    </div>
+                </div>
+                counter++;
+            }
+        </div>
+    </section>
+    }
+    @if (Model?.Cases1Items?.Any() ?? false){
+    <section class="development-section" id="">
+        <div class="container">
+            @if (!string.IsNullOrEmpty(Model?.Cases1Title))
+            {
+                <h2 class="under-line section-title">@Model?.Cases1Title</h2>
+            }
+            @if (!string.IsNullOrEmpty(@Model?.Cases1Description))
+            {
+                <p style="color:white;">@Model?.Cases1Description</p>
+            }
+        </div>
+        <div class="container">
+            <div class="row">
+                @foreach (var c in Model?.Cases1Items?.Select(x => x.Content).OfType<CaseItem>() ?? Enumerable.Empty<CaseItem>())
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="solution-item">
+                            @if (c?.Icon != null)
+                            {
+                                <div class="item-img lazy" data-original="@c?.Icon?.GetCropUrl(imageCropMode: ImageCropMode.Max, width: 400, height: 300)"></div>
+                            }
+                            @if (!string.IsNullOrEmpty(c?.Title))
+                            {
+                                <div class="item-title">@c?.Title</div>
+                            }
+                            @if (!string.IsNullOrEmpty(@c?.Description?.ToHtmlString()))
+                            {
+                                <div class="item-description"> @c?.Description </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    }
+    @if ((Model?.Cases2Items?.Any() ?? false))
+    {
+        <section class="proficient-section">
+            <div class="container">
+                @if (!string.IsNullOrEmpty(Model?.Cases2Title))
+                {
+                    <h2 class="under-line section-title small-section-title">@Model?.Cases2Title</h2>
+                }
+                @if (!string.IsNullOrEmpty(Model?.Cases2Description))
+                {
+                    <p>@Model?.Cases2Description</p>
+                }
+            </div>
+            <div class="container proficient-container">
+                @foreach (var c in Model?.Cases2Items?.Select(x => x.Content).OfType<Case2Item>() ?? Enumerable.Empty<Case2Item>())
+                {
+                    <div class="proficient-item">
+                        @if (c?.Icon != null)
+                        {
+                            <div class="item-img lazy" data-original="@c?.Icon?.GetCropUrl(imageCropMode: ImageCropMode.Max, width: 400, height: 300)"></div>
+                        }
+                        @if (!string.IsNullOrEmpty(c?.Title))
+                        {
+                            <div class="item-title">@c?.Title</div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    }
+    @if (Model?.FeedbackListsItems?.Any() ?? false)
+    {
+        <section class="feedback-section relative">
+            <div class="container">
+                @if (!string.IsNullOrEmpty(Model?.FeedbackListTitle))
+                {
+                    <h2 class="under-line section-title">@Model?.FeedbackListTitle</h2>
+                }
+                @if (!string.IsNullOrEmpty(@Model?.FeedbackListDescription))
+                {
+                    <p>@Model?.FeedbackListDescription</p>
+                }
+                <div class="slide-btns quote-header">
+                </div>
+                <div class="clien-list-wrap">
+                    <img src="~/images/testemonial/“.svg" />
+                    <div id="quotes-list" class="client-block-list quotes-list owl-carousel container position-left">
+                        @foreach (var item in Model?.FeedbackListsItems?.Select(x => x.Content).OfType<FeedbackListItem>() ?? Enumerable.Empty<FeedbackListItem>())
+                        {
+                            <div class="say-list">
+                                <div class="item">
+                                    <div class="clients-content quote-content">
+                                        @if (!string.IsNullOrEmpty(item?.TestimonialText))
+                                        {
+                                            <p>@item?.TestimonialText</p>
+                                        }
+                                    </div>
+                                    <div class="quote-author-wrp">
+                                        @if (!string.IsNullOrEmpty(item?.PersonName))
+                                        {
+                                            <p class="client-name">@item?.PersonName</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(@item?.CompanyName))
+                                        {
+                                            <p class="client-company">@item?.CompanyName</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="slide-btns quote-header col-md-12">
+                        <button class="slide-btn slide-quote-btn-prev"></button>
+                        <button class="slide-btn btn-next slide-quote-btn-next"></button>
+                    </div>
+                </div>
+                <img class="image-feedback" src="~/images/testemonial/background-testemonial.png" />
+            </div>
+        </section>
+    }
+
+    @if (Model?.ReferencesMedia?.Any() ?? false){
+    <section class="home-page-section featured-clients-section">
+            <div class="container">
+                @if (!string.IsNullOrEmpty(Model?.ReferencesTitle))
+                {
+                    <h3 class="under-line section-title">@Model?.ReferencesTitle</h3>
+                }
+            </div>
+            <div class="container clients-container">
+                <div id="featured-clients" class="owl-carousel">
+                    @foreach (var media in Model?.ReferencesMedia ?? Enumerable.Empty<IPublishedContent>())
+                    {
+                        <div class="client-logo-item">
+                            <img class="owl-lazy" data-src="@media?.GetCropUrl(imageCropMode: ImageCropMode.BoxPad, width: 200, height: 47, furtherOptions: "&bgcolor=white")" alt="...">
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+    @if (Model?.PricesBillingOptionsItems != null && Model.PricesBillingOptionsItems.Any())
+    {
+        <section class="development-startups-section">
+            <div class="container">
+                @if (!string.IsNullOrEmpty(Model?.PricesBillingOptionsTitle))
+                {
+                    <h2 class="under-line section-title small-section-title">@Model?.PricesBillingOptionsTitle</h2>
+                }
+                @if (!string.IsNullOrEmpty(@Model?.PricesBillingOptionsDescription))
+                {
+                    <p>@Model?.PricesBillingOptionsDescription</p>
+                }
+            </div>
+            <div class="container">
+                <div class="row">
+                    @foreach (var item in Model?.PricesBillingOptionsItems?.Select(x => x.Content).OfType<PricesBillingOptionsItem>() ?? Enumerable.Empty<PricesBillingOptionsItem>())
+                    {
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="why-us-item">
+                                @if (item?.Icon != null)
+                                {
+                                    <div class="item-img lazy" data-original="@item?.Icon?.GetCropUrl(imageCropMode: ImageCropMode.BoxPad, width: 56, height: 56, furtherOptions: "&bgcolor=white")"></div>
+                                }
+                                @if (!string.IsNullOrEmpty(item?.Title))
+                                {
+                                    <div class="item-title">@item?.Title</div>
+                                }
+                                @if (!string.IsNullOrEmpty(@item?.Description?.ToHtmlString()))
+                                {
+                                    <div class="item-description">
+                                        @item?.Description
+                                    </div>
+                                }
+                                <a class="hr-contact-btn apply-btn" style="display: inline-flex;padding-left: 30px;padding-right: 30px;" href="/contact-us/">Buy Now</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+    <section class="our-works-section">
+        <div class="container-fluid">
+            <div class="row d-flex align-items-stretch">
+                @foreach (var item in Model?.CaseStudy?.Select(x => x.Content).OfType<CaseStudyItem>() ?? Enumerable.Empty<CaseStudyItem>())
+                {
+                    <div class="col-md-6 col-xs-12 our-work-col">
+                        <div class="our-work-item">
+                            @if (item?.WorkImage != null)
+                            {
+                                <div class="item-img lazy" data-original="@item?.WorkImage?.GetCropUrl(width: 400, height: 300)"></div>
+                            }
+                            @if (!string.IsNullOrEmpty(item?.WorkTitle))
+                            {
+                                <h3 class="item-title">@item?.WorkTitle</h3>
+                            }
+                            @if (!string.IsNullOrEmpty(@item?.WorkText?.ToHtmlString()))
+                            {
+                                <div class="item-description">
+                                    <div class="item-description">
+                                        @item?.WorkText
+                                    </div>
+                                </div>
+                            }
+                            @if (item?.ButtonLink?.Any() ?? false)
+                            {
+                                var link = item?.ButtonLink?.FirstOrDefault();
+                                <a class="btn btn-case view-details-btn" href="@link?.Url" target="@link?.Target">
+                                    <span>
+                                        @link?.Name
+                                    </span>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    <section class="contact-us-section">
+        <div>
+            <div class="contact-us-left col-md-12">
+                <div>
+                    <div class="title">@home?.ContactHeader</div>
+                    <div class="content">@home?.ContactText</div>
+                    @await Html.PartialAsync("ContactForm", new ByteAntU12DAStarterKit.Core.Models.ContactModel { RecapthaKey = home?.RecaptchaKey })
+                </div>
+            </div>
+            <div class="contact-us-right js-contact-home col-md-12">
+                @await Html.PartialAsync("ContactDetails")
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    function scrollDown() {
+        const btn = document.querySelector('#btn-scroll-down');
+        const introSection = document.querySelector('#intro-section');
+
+        if (btn) {
+            btn.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const sectionTop = introSection.getBoundingClientRect().height;
+
+                window.scrollTo({
+                    top: sectionTop,
+                    behavior: "smooth"
+                });
+            })
+        }
+    }
+
+
+    scrollDown();
+</script>

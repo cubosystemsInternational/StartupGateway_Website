@@ -1,0 +1,440 @@
+﻿body {
+}
+
+.how-we-work .center-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.how-we-work .m-t-lg {
+  margin-top: 0;
+}
+
+.how-we-work .background-default {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.how-we-work .background-medium-size {
+  background-size: 50%;
+}
+
+.how-we-work .background-default.flex-pull-rigth {
+  -webkit-box-ordinal-group: 2;
+  -moz-box-ordinal-group: 2;
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+}
+
+.how-we-work .background-default.flex-pull-left {
+  order: -1;
+}
+
+.how-we-work .section-1 {
+  background-image: url(/images/how-we-work/starting-background.png);
+  background-size: cover;
+}
+
+.how-we-work .section-1 .since {
+  float: right;
+  color: #00d0d8;
+  margin-top: -67px;
+  padding-right: 10px;
+  font-size: 36px;
+  line-height: 32px;
+}
+
+.how-we-work .section-1 .since span {
+  float: right;
+  font-size: 18px;
+}
+
+.how-we-work .title {
+  background-image: linear-gradient(to top, #cfdaed, #fff);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  margin-top: 60px;
+  font-size: 48px;
+}
+
+.how-we-work .section-1 .subtitle {
+  color: #fff;
+  margin-top: 21px;
+  text-transform: uppercase;
+  font-size: 18px;
+  max-width: 32em;
+  margin-bottom: 60px;
+}
+
+.how-we-work .project-life-style {
+  padding: 70px 0;
+}
+
+.how-we-work .project-life-style .item {
+  margin-top: 50px;
+}
+
+.how-we-work .project-life-style .text-bubble {
+  position: relative;
+  background: linear-gradient(to left, #189ccf, #11b4c0);
+  overflow: hidden;
+}
+
+.how-we-work .project-life-style .triangle:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 1.644em solid transparent;
+  border-left-color: #189ccf;
+  border-right: 0;
+  margin-top: -1.644em;
+  margin-right: -0.644em;
+}
+
+.how-we-work .project-life-style .lable {
+  color: #fff;
+  font-size: 18pt;
+  letter-spacing: 0.3pt;
+  z-index: 1;
+  text-align: center;
+}
+
+.how-we-work .project-life-style .number {
+  color: #48c1d0;
+  position: absolute;
+  top: -39px;
+  left: -12px;
+  font-family: baskerville_normalitalic;
+  font-size: 74pt;
+  z-index: 1;
+}
+
+.how-we-work .project-life-style .icon {
+  width: 70px;
+  height: 62px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.how-we-work .project-life-style .left-align {
+  justify-content: unset;
+  height: unset;
+}
+
+.how-we-work .project-life-style .text {
+  font-size: 13.4pt;
+  margin: 15px;
+}
+
+.how-we-work .project-life-style .dots {
+  border-left: 3px dotted #dfebf6;
+  height: 89%;
+  position: absolute;
+  left: 14%;
+  top: 84px;
+  background: inherit;
+}
+
+.how-we-work .client-control .methodologies-wrap {
+  padding: 80px 50px 50px 80px;
+}
+
+.how-we-work .client-control .container {
+  width: 100%;
+  color: #ffffff;
+}
+
+.how-we-work .client-control .row {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+.how-we-work .client-control .container:before,
+.how-we-work .client-control .container:after,
+.how-we-work .client-control .row:before,
+.how-we-work .client-control .row:after {
+  content: normal;
+}
+
+.how-we-work .client-control .row > div {
+  min-height: 610px;
+}
+
+.how-we-work .client-control .under-line {
+  color: #fff;
+}
+
+.how-we-work .client-control .under-line::after {
+  margin-top: 20px;
+}
+
+.how-we-work .client-control h4 {
+  font-size: 18pt;
+  text-transform: UPPERCASE;
+  letter-spacing: -0.6pt;
+  margin: 0;
+}
+
+.how-we-work .client-control ul li:first-child {
+  margin-top: 5px;
+}
+
+.how-we-work .client-control .row .bs-block-width {
+  max-width: 555px;
+  height: inherit;
+  padding-right: 20px;
+}
+
+.how-we-work .client-control .row .flex-right-align {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.how-we-work .client-control .background-dark-blue {
+  background-image: linear-gradient(211deg, #17b9e5, #0a3466);
+}
+
+.how-we-work .client-control .cover-right-align {
+  background-position: right 25% bottom 45%;
+  background-size: 500px;
+}
+
+.how-we-work .client-control .background-light-blue {
+  background-image: linear-gradient(to right, #00bac3, #006b8c);
+}
+
+.how-we-work .client-control .background-default {
+  background-color: #f2f5f8;
+}
+
+.how-we-work .client-control .methodolody-header {
+  font-size: 36pt;
+  margin: 30px 0;
+}
+
+.how-we-work .client-control .methodologies-theme .owl-dots {
+  margin: 0 50px;
+}
+
+.how-we-work .client-control .methodologies-theme .owl-dots .owl-dot {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.how-we-work .client-control .methodologies-theme .owl-dots .owl-dot span {
+  width: 6px;
+  height: 6px;
+  background: #92b1cc;
+}
+
+.how-we-work .client-control .methodologies-theme .owl-nav.disabled + .owl-dots {
+  display: inline-flex;
+}
+
+.how-we-work .client-control .methodologies-theme .owl-dots .owl-dot.active span,
+.how-we-work .client-control .methodologies-theme .owl-dots .owl-dot:hover span {
+  width: 14px;
+  height: 14px;
+  border: 3px solid #3e7ba2;
+  background: #fff;
+}
+
+.how-we-work .client-control .methodologies-slider .methodolody-arrows {
+  position: relative;
+  z-index: 1;
+}
+
+.how-we-work .client-control .methodologies-slider .slide-methodolody-btn,
+.how-we-work .client-control .methodologies-slider .slide-methodolody-btn:active,
+.how-we-work .client-control .methodologies-slider .slide-methodolody-btn:visited {
+  position: absolute;
+  bottom: 5px;
+  width: 30px;
+  height: 21px;
+  margin: auto;
+  background: url("/images/how-we-work/arrow.png");
+  background-repeat: no-repeat;
+  border: none;
+  outline: none;
+}
+
+.how-we-work .client-control .methodologies-slider .slide-methodolody-btn + .slide-methodolody-btn {
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  margin-left: 20px;
+}
+
+.how-we-work .client-control .methodologies-slider .methodolody-arrows .slide-methodolody-btn:hover {
+  background: url("/images/how-we-work/arrow-hover.png");
+}
+
+.how-we-work .cooporation-model {
+  margin: 100px 0;
+}
+
+.how-we-work .cooporation-model .background-default {
+  background-size: 90%;
+}
+
+.how-we-work .cooporation-model .left-line-title {
+  font-size: 36pt;
+  border-left: 3px solid #0097a7;
+  padding-top: 17px;
+  padding-right: 47px;
+  padding-left: 47px;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+  margin-top: 57px;
+}
+
+.how-we-work .cooporation-model ul {
+  margin-top: 60px;
+  margin-bottom: 22px;
+}
+
+.how-we-work .cooporation-model ul:last-child {
+  margin-bottom: 0;
+}
+
+.how-we-work .cooporation-model li {
+  font-weight: 700;
+}
+
+.how-we-work .cooporation-model p {
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+
+.how-we-work .cooporation-model p > span {
+  font-weight: 700;
+}
+
+.how-we-work .cooporation-model .row {
+  display: flex;
+}
+
+@media (max-width: 1200px) {
+  .how-we-work .client-control .row .bs-block-width {
+    max-width: 455px;
+    height: inherit;
+  }
+}
+
+@media (max-width: 992px) {
+  .flex-pull-left {
+    justify-content: left !important;
+  }
+
+  .how-we-work .project-life-style {
+    padding: 40px 0;
+  }
+
+  .how-we-work .project-life-style .col-md-7 {
+    margin-top: 20px;
+  }
+
+  .how-we-work .project-life-style .triangle:after {
+    border: 1.644em solid transparent;
+    border-top-color: #14a8c7;
+    border-bottom: 0;
+    margin-top: 3.156em;
+    margin-right: calc(50% - 0.822em);
+  }
+
+  .how-we-work .client-control .row > div {
+    width: 100%;
+  }
+
+  .how-we-work .client-control .cover-right-align {
+    background-position: center;
+    background-size: 50%;
+  }
+
+  .how-we-work .client-control .background-default.flex-pull-rigth {
+    order: unset;
+  }
+
+  .how-we-work .client-control .background-default.flex-pull-left {
+    order: unset;
+  }
+
+  .how-we-work .client-control .row .bs-block-width {
+    max-width: none;
+    height: inherit;
+    width: 720px;
+  }
+
+  .how-we-work .client-control .row .flex-right-align {
+    display: flex;
+    justify-content: center;
+  }
+
+  .how-we-work .cooporation-model .row {
+    display: block;
+  }
+
+  .how-we-work .cooporation-model .background-default {
+    background-size: contain;
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .how-we-work .m-t-lg {
+    margin-top: 30px;
+  }
+
+  .how-we-work .project-life-style .lable {
+    font-size: 16pt;
+  }
+
+  .how-we-work .client-control .methodolody-header {
+    font-size: 30pt;
+    margin: 20px 0;
+  }
+
+  .how-we-work .client-control h4 {
+    font-size: 14pt;
+  }
+
+  .how-we-work .client-control .row > div {
+    min-height: 400px;
+  }
+
+  .how-we-work .client-control .methodologies-wrap {
+    padding: 10px;
+  }
+
+  .how-we-work .client-control .row .background-light-blue.center-item {
+    align-items: unset;
+    justify-content: unset;
+  }
+
+  .how-we-work .client-control .row .background-dark-blue .bs-block-width {
+    max-width: none;
+    height: inherit;
+    width: unset;
+  }
+
+  .how-we-work .cooporation-model .left-line-title {
+    font-size: 29pt;
+  }
+}

@@ -1,0 +1,46 @@
+﻿@model ByteAntU12DAStarterKit.Core.Models.BlogpostFullVersionModel
+@using (Html.BeginForm("FullVersion", "SurfaceBlogpost", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.FileUrl)
+    @Html.HiddenFor(x => x.FileName)
+    <div id="case-study" class="mail-wrap col-md-12">
+        <div class="input-section" style="margin-bottom: 30px;">
+            <label>Full Name</label>
+            @Html.TextBoxFor(m => m.FullName, new { @maxlength = "50" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.FullName)
+            </div>
+        </div>
+        <div class="input-section" style="margin-bottom: 30px;">
+            <label>Email Address</label>
+            @Html.TextBoxFor(m => m.Email, new { @maxlength = "50" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Email)
+            </div>
+        </div>
+        <div class="input-section" style="margin-bottom: 30px;">
+            <label>Company</label>
+            @Html.TextBoxFor(m => m.Company, new { @maxlength = "50" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Company)
+            </div>
+        </div>
+        <div class="input-section" style="margin-bottom: 30px;">
+            <label>Job Title </label>
+            @Html.TextBoxFor(m => m.JobTitle, new { @maxlength = "50" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.JobTitle)
+            </div>
+        </div>
+        <div class="submit-section">
+            <button type="submit" class="btn btn-blue btn-submit" id="case-study-submit">
+                <span>@(!string.IsNullOrEmpty(Model.ButtonText) ? Model.ButtonText : "DOWNLOAD FULL VERSION")</span>
+            </button>
+        </div>
+    </div>
+}

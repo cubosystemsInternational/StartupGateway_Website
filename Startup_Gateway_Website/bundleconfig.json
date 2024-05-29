@@ -1,0 +1,94 @@
+// Configure bundling and minification for the project.
+// More info at https://go.microsoft.com/fwlink/?LinkId=808241
+[
+  {
+    "outputFileName": "wwwroot/bundles/scripts.js",
+    "inputFiles": [
+      "wwwroot/lib/javascript/jquery-3.2.1.min.js",
+      "wwwroot/lib/javascript/bootstrap-3.3.7.min.js",
+      "wwwroot/lib/javascript/anime.min.js",
+      "wwwroot/lib/javascript/owl.carousel.min.js",
+      "wwwroot/lib/javascript/jquery.form.js",
+      "wwwroot/lib/javascript/js.cookie.min.js",
+      "wwwroot/lib/javascript/clamp.min.js",
+      "wwwroot/lib/jquery.unobtrusive-ajax.min.js",
+      "wwwroot/lib/jquery.validate.min.js",
+      "wwwroot/lib/jquery.validate.unobtrusive.min.js",
+      "wwwroot/lib/medium-zoom.min.js",
+      "wwwroot/lib/cookie-plagin/jquery.cookieMessage.min.js",
+      "wwwroot/lib/social-share.min.js",
+      "wwwroot/js/get-email.js",
+      "wwwroot/lib/lazy-load.min.js",
+      "wwwroot/js/script.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/hurricane.js",
+    "inputFiles": [
+      "wwwroot/lib/hurricane/three.min.js",
+      "wwwroot/lib/hurricane/TweenMax.min.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/home.js",
+    "inputFiles": [
+      "wwwroot/lib/hurricane/demo.js",
+      "wwwroot/lib/hurricane/demo1.js",
+      "wwwroot/lib/glider.min.js",
+      "wwwroot/js/home-popup.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/home1-waves.js",
+    "inputFiles": [
+      "wwwroot/lib/particles-waves/js/WebGL.js",
+      "wwwroot/lib/particles-waves/js/wawes.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/styles.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/lib/css/bootstrap-3.3.7.min.css",
+      "wwwroot/lib/css/social-share.min.css",
+      "wwwroot/content/font-awesome.min.css",
+      "wwwroot/lib/css/owl/owl.carousel.min.css",
+      "wwwroot/lib/css/owl/owl.theme.default.min.css",
+      "wwwroot/lib/css/glider.min.css",
+      "wwwroot/css/site.css",
+      "wwwroot/css/styles.css",
+      "wwwroot/css/Home/about-us.css",
+      "wwwroot/css/Home/portfolio.css",
+      "wwwroot/css/Home/how-we-work.css",
+      "wwwroot/css/Home/services.css",
+      "wwwroot/css/Home/careers.css",
+      "wwwroot/css/Home/contact-us.css",
+      "wwwroot/css/Home/blog.css",
+      "wwwroot/css/Home/subscribe-form.css",
+      "wwwroot/css/Home/inner-portfolio.css",
+      "wwwroot/css/Home/about-author-post.css",
+      "wwwroot/css/Home/technology.css",
+      "wwwroot/css/Home/inner-portfolio.css",
+      "wwwroot/css/Home/startups.css",
+      "wwwroot/css/Home/marketplace.css",
+      "wwwroot/css/Home/custom-development.css",
+      "wwwroot/css/Home/new-services.css",
+      "wwwroot/css/Home/company.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/index.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/css/Home/Index.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/error-pages.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/css/fonts.css",
+      "wwwroot/css/Home/error-pages.css"
+    ]
+  }
+]

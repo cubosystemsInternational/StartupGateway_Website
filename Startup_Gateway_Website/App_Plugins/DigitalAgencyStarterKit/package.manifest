@@ -1,0 +1,19 @@
+{
+  "id": "ByteAnt.DigitalAgencyStarterKit",
+  "name": "Digital Agency Starter Kit by ByteAnt",
+  "allowPackageTelemetry": true,
+  "dashboards": [
+    {
+      "alias": "byteAntDashboard",
+      "view": "/App_Plugins/DigitalAgencyStarterKit/ByteAntDashboard.html",
+      "sections": [ "content" ],
+      "weight": -10
+    }
+  ],
+  "javascript": [
+    "~/App_Plugins/DigitalAgencyStarterKit/byteantdashboard.controller.js"
+  ],
+  "css": [
+    "~/App_Plugins/DigitalAgencyStarterKit/byteantdashboard.css"
+  ]
+}

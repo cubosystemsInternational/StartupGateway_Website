@@ -1,0 +1,62 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    var home = Umbraco.ContentAtRoot().First() as ContentModels.Home;
+    var contactContent = home?.Descendant<Contact>();
+    var a = contactContent?.Value<IEnumerable<Address>>("addresses");
+}
+<div>
+    @foreach (var address in contactContent?.Addresses ?? Enumerable.Empty<Address>())
+    {
+        <div class="title">@address?.Header</div>
+        @if (!string.IsNullOrEmpty(address?.StreetAddress) ||
+             !string.IsNullOrEmpty(address?.Zip) ||
+             !string.IsNullOrEmpty(address?.City) || 
+             !string.IsNullOrEmpty(address?.Country) || 
+             !string.IsNullOrEmpty(address?.TimeZone))
+        {
+            <div class="content icon icon-location">
+                @if (!string.IsNullOrEmpty(address?.StreetAddress))
+                {
+                    @address.StreetAddress
+                    <text>,</text>
+                    <br />
+                }
+                @if (!string.IsNullOrEmpty(address?.Zip))
+                {
+                    @address.Zip
+                }
+                @if (!string.IsNullOrEmpty(address?.City) || !string.IsNullOrEmpty(address?.Country))
+                {
+                    @if (!string.IsNullOrEmpty(address?.City))
+                    {
+                        @address.City
+                        <text>,</text>
+                    }
+                    @if (!string.IsNullOrEmpty(address?.Country))
+                    {
+                        @address.Country
+                        <text>,</text>
+                    }
+                    <br />
+                }
+                @address?.TimeZone
+            </div>
+        }
+    }
+    @if (!string.IsNullOrEmpty(contactContent?.Phones?.ToString()))
+    {
+        <div class="content icon icon-phone">
+            @contactContent?.Phones
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(contactContent?.Email))
+    {
+        <div class="content icon icon-mail">
+            <a href="mailto:@contactContent.Email" class="email-link"><span>@contactContent.Email</span></a>
+        </div>
+    }
+    <div class="social">
+        @Html.Raw(contactContent?.SocialIcons)
+    </div>
+</div>

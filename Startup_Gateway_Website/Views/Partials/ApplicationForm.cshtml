@@ -1,0 +1,105 @@
+﻿@model ByteAntU12DAStarterKit.Core.Models.ApplicationModel
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<div class="cs-fade-shadow" id="applyLoader"></div>
+<form action="/umbraco/Surface/SurfaceCareers/PostApplication"
+      data-ajax="true"
+      data-ajax-loading="#applyLoader"
+      id="ApplyForm"
+      class="apply-form"
+      target="upload_target"
+      novalidate="novalidate"
+      enctype="multipart/form-data">
+
+    @* this is a workaround to not allow posts to hubspot from this form https://community.hubspot.com/t5/Lead-Capture-Tools/Ignore-a-specific-non-Hubspot-form-from-being-collected/td-p/246957 *@
+    <label for="cc-num" class="hidden">credit card HubspotCollectedFormsWorkaround</label>
+    <input name="cc-num" class="hidden" required="" value="HubspotCollectedFormsWorkaround" id="cc-num">
+
+    <div class="row">
+        <div class="col-xs-12 header-form-field">
+            <h3 id="position-header"></h3>
+        </div>
+        <div class="col-xs-12 header-form-field">
+            <h4>Please fill out the details to apply</h4>
+        </div>
+
+        @Html.AntiForgeryToken()
+
+        <div class="col-xs-12 col-sm-5">
+            <label>Full Name</label>
+            @Html.TextBoxFor(m => m.FullName)
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.FullName)
+            </div>
+        </div>
+        <div class="col-xs-hidden col-sm-2"></div>
+        <div class="col-xs-12 col-sm-5">
+            <label>Email</label>
+            @Html.TextBoxFor(m => m.Email)
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Email)
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-5">
+            <label>Phone</label>
+            @Html.TextBoxFor(m => m.Phone)
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Phone)
+            </div>
+        </div>
+        <div class="col-xs-hidden col-sm-2"></div>
+        <div class="col-xs-12 col-sm-5">
+            <label>Linkedin profile (optional)</label>
+            @Html.TextBoxFor(m => m.LinkedinProfile)
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.LinkedinProfile)
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <span class="attach-nav-icn attach-file"></span>
+            <span class="attach-nav-icn delete-file" style="display: none"></span>
+            <span id="CV-error"></span>
+            <label>CV (optional)</label>
+            <input id="file-trigger" class="" />
+            <hr />
+            @Html.TextBoxFor(m => m.CV, "", new { type = "file", @class = "input-file" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <label>Message (optional)</label>
+            @Html.TextAreaFor(m => m.Message, new { rows = "2" })
+            <hr />
+            <div class="wrap-validation-error">
+                @Html.ValidationMessageFor(m => m.Message)
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <span class="message contact-message js-message text-success" style="display: none;">Your message has been successfully sent</span>
+            <span class="message contact-message js-message-failure text-danger" style="display: none;">Sorry there was an error sending your message</span>
+            <button type="submit" class="btn btn-red btn-submit pull-right" disabled>
+                <span>SEND</span>
+            </button>
+
+            <div class="contact-frame_captcha-wrp">
+                <div class="contact-frame_captcha">
+                    <div id="gRecaptcha" class="g-recaptcha"
+                         data-callback="onReturnCaptchaCallback"
+                         data-expired-callback="onRecaptchaExpired"
+                         data-sitekey="@Model.RecapthaKey"
+                         data-badge="inline"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>

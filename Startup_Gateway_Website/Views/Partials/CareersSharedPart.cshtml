@@ -1,0 +1,75 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Careers>
+@{
+    var navigation = Umbraco.ContentAtRoot().First().Descendant<Contact>();
+}
+<section id="social-network">
+    <div class="container">
+        <div class="row no-gutters">
+            <div class="col-xs-12 col-lg-6 pictures" style="position: relative ">
+                <img class="main-picture lazy" data-original="@Model?.SocialMediaLargeImage?.Url()" />
+                <img class="bottom-right lazy" data-original="@Model?.SocialMediaBottomRightImage?.Url()" />
+                <img class="bottom-left lazy" data-original="@Model?.SocialMediaBottomLeftImage?.Url()" />
+                <img class="left lazy" data-original="@Model?.SocialMediaLeftImage?.Url()" />
+            </div>
+
+            <div class="col-xs-12 col-lg-6 description">
+                <h3 class="under-line under-line-white">@Model?.SocialMediaUnderlinedText</h3>
+                <h2>@Model?.SocialMediaHeader</h2>
+                <p>
+                    @Model?.SocialMediaDescription
+                </p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="@navigation?.Facebook" class="btn" target="_blank">
+                            <span class="icon-facebook">Facebook</span>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@navigation?.Instagram" class="btn" target="_blank">
+                            <span class="icon-instagram">Instagram</span>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@navigation?.Linkedin" class="btn" target="_blank">
+                            <span class="icon-linkedin">Linkedin</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@{
+    int k = 1;
+}
+@foreach (var benefit in Model?.Benefit ?? Enumerable.Empty<Benefit>())
+{
+    <section class=" @(k % 2 == 1 ? "section-odd" : "section-even") section-odd background">
+        <div class="container">
+            <div class="row zero-margin-hr align-stretch">
+                @if (k % 2 == 0)
+                {
+                    <div class="hidden-xs col-sm-6 zero-padding center-position big-icon lazy" data-original="@(benefit?.LargeImage?.Url())">
+                    </div>
+                }
+                <div class="col-xs-12 col-sm-6 zero-padding">
+                    <div class="header">@benefit?.BenefitHeader</div>
+                    @foreach (var smallBenefit in benefit?.SmallBenefit ?? Enumerable.Empty<SmallBenefit>())
+                    {
+                        <div class="s-item item-icon icon-proj small-icon lazy" data-original="@(smallBenefit?.Icon?.Url())">
+                            <div class="item-title">@smallBenefit?.Header</div>
+                            <div class="item-subtitle">@smallBenefit?.Subheader</div>
+                        </div>
+                    }
+                </div>
+                @if (k % 2 == 1)
+                {
+                    <div class="hidden-xs col-sm-6 zero-padding center-position big-icon lazy" data-original="@(benefit?.LargeImage?.Url())">
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    k++;
+}

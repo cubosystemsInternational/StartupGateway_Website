@@ -1,0 +1,232 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LandingPage>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+<section class="logotype">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 logo-image lazy" data-original="@Model.HeaderImage.Url">
+                <div class="logo-flex">
+                    <h2 class="logo-text">@Model.Name</h2>
+                </div>
+            </div>
+            <div class="col">
+                <div class="real-data">
+                    <h4>@Model.PageIntroTitle</h4>
+                    <hr class="hr-line">
+                    <div class="cotent-centr">
+                        <p>@Model.PageIntroContent</p>
+                    </div>
+                    <div>
+                        @foreach (var item in Model.Features)
+                        {
+                            var features = item as LandingFeature;
+                            <div class="col real-icon">
+                                <div class="ico">
+                                    <img class="lazy" data-original="@features.Icon.Url" alt="startups" />
+                                </div>
+                                <span>@features.Title</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="solution-section" id="landing-services">
+    <div class="container margin-top">
+        <div class="row">
+            <div class="col-6 margin-l">
+                <h2 class="title-block">@Model.SolutionTitle</h2>
+                <div class="under-line-landing"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row margin-top">
+            <div class="col-xs-12 col-sm-4">
+                <ul class="solution-list">
+                    @{int j = 1;}
+                    @foreach (var service in Model.SolutionServiceList)
+                    {
+                        <li @(j == 1 ? "class=active" : "")>
+                            <a href="#" data-target="#tab@(j)" data-toggle="pill">
+                                <span class="solution-text">@((service as SolutionService).SolutionName)</span>
+                            </a>
+                        </li>
+                        j++;
+                    }
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-8">
+                <div class="tab-content">
+                    @{int i = 1;}
+                    @foreach (var service in Model.SolutionServiceList)
+                    {
+                        var serviceData = service as SolutionService;
+                        <div id="tab@(i)" class="tab-pane fade @(i == 1 ? "active in" : "")">
+                            <h2 class="solution-title">@serviceData.SolutionName</h2>
+                            <p>
+                                @serviceData.SolutionDescription
+                            </p>
+                        </div>
+                        i++;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="solution-section" id="section-mobile">
+    <div class="container margin-top">
+        <div class="row">
+            <div class="col-6 margin-l">
+                <h2 class="title-block">@Model.SolutionTitle</h2>
+                <div class="under-line-landing"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row margin-top">
+            <div class="col-xs-12 col-sm-4">
+                <div class="solution-list panel-group" id="accordion">
+                    @{int k = 1;}
+                    @foreach (var service in Model.SolutionServiceList)
+                    {
+                        var serviceData = service as SolutionService;
+                        <div class="panel panel-default">
+                            <div class="panel-heading active-heading">
+                                <a class="js-collapse" data-toggle="collapse" data-parent="#accordion" href="#mob@(k)">
+                                    <span class="solution-text">@((service as SolutionService).SolutionName)</span>
+                                </a>
+                            </div>
+                            <div id="mob@(k)" class="col-xs-12 col-sm-8 panel-collapse collapse">
+                                    <div>
+                                        <p>
+                                            @serviceData.SolutionDescription
+                                        </p>
+                                    </div>
+                            </div>
+                        </div>
+                        k++;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="download-case">
+    <div class="title-case text-center">
+        <span>Check Our Latest Case Study</span>
+    </div>
+    <div class="row no-gutters d-flex">
+        <div class="col-lg-6 w-100">
+            <div class="download-left row">
+                @foreach (var downloadcase in Model.DownloadCase)
+                {
+                    var downloadContent = downloadcase as LandingDownload;
+                    <div class="case-blocks">
+                        <img class="lazy" data-original="@downloadContent.DownloadImage.Url" />
+                    </div>
+                    <div class="case-blocks">
+                        <span>@downloadContent.DownloadTitle</span>
+                        <div>
+                            @foreach (var item in downloadContent.DownloadLink)
+                            {
+                                <a href="@item.Url" target="_blank" class="btn btn-case">
+                                    <span>@item.Name</span>
+                                </a>
+                            }
+                        </div>
+                    </div>}
+            </div>
+        </div>
+        @foreach (var caseright in Model.DownloadCaseRight)
+        {
+            var downloadRightContent = caseright as LandingDownload;
+            <div class="col-lg-6 w-100">
+                <div class="download-right">
+                    <div class="case-blocks">
+                        <span>@downloadRightContent.DownloadTitle</span>
+                        <div>
+                            @foreach (var itemRight in downloadRightContent.DownloadLink)
+                            {
+                                <a href="@itemRight.Url" target="_blank" class="btn btn-case">
+                                    <span>@itemRight.Name</span>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="case-blocks">
+                        <img class="lazy" data-original="@downloadRightContent.DownloadImage.Url" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="clients-say">
+    <div class="container margin-top">
+        <h2 class="title-block">What our clients say</h2>
+        <div class="under-line-landing"></div>
+        <div class="clients-slider qoute-slider">
+            <div class="say-icon">
+                <img src="~/images/landing-img/icon“2x.png" />
+            </div>
+            <div class="slide-btns quote-header">
+                <button class="slide-btn slide-quote-btn-prev"></button>
+                <button class="slide-btn btn-next slide-quote-btn-next"></button>
+            </div>
+            <div id="quotes-list" class="client-block-list quotes-list owl-carousel container position-left">
+                @foreach (var testimonial in Model.Testimonials)
+                {
+                    var testimonialContent = testimonial as Testimonial;
+                    <div class="say-list">
+                        <div class="item">
+                            <div class="clients-content quote-content">
+                                <p>
+                                    @testimonialContent.TestimonialText
+                                </p>
+                            </div>
+                            <div class="quote-author-wrp">
+                                <p class="client-name">@testimonialContent.PersonName</p>
+                                <p class="client-company">@testimonialContent.CompanyName</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="successful-project">
+    <div>
+        <div class="row no-gutters">
+            <div></div>
+            <div>
+                <div class="success-title text-center">
+                    <span>@Model.TextTitleButton</span>
+                </div>
+                <div class="success-summary text-center">
+                    <span>@Model.TextContentButton</span>
+                </div>
+                <div class="text-center">
+                    @foreach (var calltoaction in Model.CallToAction)
+                    {
+                        <a href="@calltoaction.Url" target="_blank" class="btn btn-red width-btn">
+                            <span>@calltoaction.Name</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

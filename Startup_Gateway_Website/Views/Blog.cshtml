@@ -1,0 +1,190 @@
+﻿@inherits UmbracoViewPage<ByteAntU12DAStarterKit.Core.Models.BlogModel>
+@using Microsoft.Extensions.DependencyInjection;
+@using Microsoft.AspNetCore.Http.Extensions;
+@using Newtonsoft.Json;
+@using Umbraco.Cms.Core.Cache;
+@using Umbraco.Cms.Core.Models;
+@using Umbraco.Cms.Core.Strings;
+@using Umbraco.Cms.Core.Services;
+@{
+    Layout = "Master";
+    ViewBag.headerClass = "dark";
+    var curCul = Model.Content.GetCultureFromDomains();
+    string culPref = "";
+    if (curCul != "en-US")
+    {
+        culPref = "/" + curCul;
+    }
+    var shortStringHelper = Model.ShortStringHelper ?? Context.RequestServices.GetRequiredService<IShortStringHelper>();
+    var blog = Model.Content as Blog;
+}
+<div class="blog" data-culture="@curCul">
+    <section class="header">
+        <div class="container">
+            <h1 class="title">@blog?.Header </h1>
+            <div class="subtitle">@blog?.Subheader</div>
+        </div>
+    </section>
+    <div class="container breadcrumb-wrp">
+        <ol id="blog-not-filter" class="breadcrumb">
+            <li>
+                @if (curCul == "en-US")
+                {
+                    <a href="/">Home</a>
+                }
+                else
+                {
+                    <a href="/de/">Startseite</a>
+                }
+            </li>
+            <li>Blog</li>
+        </ol>
+        <ol id="blog-with-filter" class="breadcrumb">
+            <li>
+                @if (curCul == "en-US")
+                {
+                    <a href="/">Home</a>
+                }
+                else
+                {
+                    <a href="/de/">Startseite</a>
+                }
+            </li>
+            <li>
+                @if (curCul == "en-US")
+                {
+                    <a href="/blog/">Blog</a>
+                }
+                else
+                {
+                    <a href="/de/blog/">Blog</a>
+                }
+            </li>
+            <li id="breadcrumb-name" class="active">@Model.Tag</li>
+        </ol>
+    </div>
+    <section class="tags ba-tags">
+        <div class="container no-gutters">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ul class="nav-pills blog-tags m-b-none tags-container">
+                        <li class="@(string.IsNullOrEmpty(Model.Tag) ? "active" : "" ) m-b-md all-tag">
+                            <a href="/blog/">
+                                <span class="tag-name">All</span>
+                            </a>
+                        </li>
+                        @foreach (var tag in Model?.TagsWithPosts?.Where(x => x.Key != "ALL") ?? new Dictionary<string, int>())
+                        {
+                            if (tag.Value > 0)
+                            {
+                                <li class="m-b-md @(Model?.Tag == tag.Key ? "ba-active" : "")">
+                                    <a href="@(culPref)/blog/tags/@(tag.Key.ToUrlSegment(shortStringHelper))">
+                                        <span class="tag-name">@tag.Key</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="blogposts">
+        <div class="container ba-container">
+            <div class="ba-main-body col-md-8" id="blogpostsListBlock">
+                <h3 id="tagHeaderSelected" class="under-line m-l-xs">@(string.IsNullOrEmpty(Model?.BlogList.Tag) ? Umbraco.GetDictionaryValue("blog.titleAll") : Model.BlogList.Tag) @(Umbraco.GetDictionaryValue("blog.titlePosts")) (@Model?.BlogList.BlogpostsCount)</h3>
+                <div class="row m-t-xxl">
+                    <div id="blogpostsList">
+                        @{
+                            await Html.RenderPartialAsync("BlogList", Model?.BlogList);
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="blogLoader" class="hide-loader">
+                        <span class="first-bar"></span>
+                        <span class="second-bar"></span>
+                        <span class="third-bar"></span>
+                        <span class="fourth-bar"></span>
+                        <span class="fifth-bar"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="ba-sidebar col-md-4 static">
+                <div class="ba-sidebar-title">@(Umbraco.GetDictionaryValue("blog.categories"))</div>
+                <div id="js-breadcrumb-get-value" class="ba-category-list">
+                    @if ((Model?.TagsWithPosts?["ALL"] ?? 0) > 0)
+                    {
+                        <a class="ba-category @(string.IsNullOrEmpty(Model?.Tag) ? "ba-active" : "")" name="@(Umbraco.GetDictionaryValue("tags.all"))" href="@(culPref)/blog/" data-blogpost-count="@Model?.TagsWithPosts?["ALL"]">
+                            <span>@(Umbraco.GetDictionaryValue("tags.all"))</span>
+                        </a>
+                    }
+                    @foreach (var tag in Model?.TagsWithPosts?.Where(x => x.Key != "ALL") ?? new Dictionary<string, int>())
+                    {
+                        if (tag.Value > 0)
+                        {
+                            <a class="ba-category @(Model?.Tag == tag.Key ? "ba-active" : "")" name="@tag.Key" href="@(culPref)/blog/tags/@(tag.Key.ToUrlSegment(shortStringHelper))" data-blogpost-count="@tag.Value">
+                                <span>@tag.Key</span>
+                            </a>
+                        }
+                    }
+                </div>
+                @if (Model?.TagsContent != null)
+                {
+                    bool showDefault = !Model.TagsContent.Any(c => (c.Content.Value<IEnumerable<string>>("tagName") ?? Enumerable.Empty<string>()).Contains(Model.Tag));
+
+                    foreach (var tagContent in Model.TagsContent)
+                    {
+                        var tagNames = tagContent.Content.Value<IEnumerable<string>>("tagName") ?? Enumerable.Empty<string>();
+                        var firstTagName = tagNames.FirstOrDefault();
+                        var displayStyle = (tagNames.Contains(Model.Tag) || (tagNames.Contains("ALL") && (string.IsNullOrEmpty(Model.Tag) || showDefault))) ? "block" : "none";
+
+                        var description = tagContent.Content.Value<string>("description");
+                        var callToAction = tagContent.Content.Value<string>("callToAction") ?? string.Empty;
+                        var callToActionUrl = tagContent.Content.Value<IEnumerable<Link>>("callToActionUrl")?.FirstOrDefault();
+
+                        <div class="ba-message" style="display:@displayStyle" data-ba-tag="@firstTagName">
+                            <span>@description</span>
+                            <div class="ba-call-to-action">
+                                <a class="@(callToAction.Contains("<br/>") ? "multiline" : string.Empty) btn btn-red" href="@callToActionUrl?.Url" target="@callToActionUrl?.Target">@Html.Raw(callToAction)</a>
+                            </div>
+                        </div>
+                    }
+                }
+                <div class=" ba-small-subscription">
+                    @await Html.PartialAsync("SubscribeForm", new ByteAntU12DAStarterKit.Core.Models.SubscribeModel())
+                </div>
+                @await Html.PartialAsync("SocialMediaFeed")
+            </div>
+        </div>
+    </section>
+    <div class="modal fade js-blog-modal" id="blogPost" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span class="close-btn">&times;</span>
+                    </button>
+                    <h3 class="title">@(Umbraco.GetDictionaryValue("blog.share"))</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="share-link flex-display-center" title="Click to copy">
+                        <span class="share-blog-link"></span>
+                    </div>
+                    <div class="m-t-xl m-b-xl">
+                        <span class="social-lbl">Share with social media</span>
+                        <div class=" m-t-md flex-display-center">
+                            <div class="ss-box" data-ss-content="false" data-ss-social="facebook, pinterest, linkedIn, pinterest, telegram,  whatsapp, email"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("SubscribeForm", new ByteAntU12DAStarterKit.Core.Models.SubscribeModel())
+</div>
+@section AddToHead
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+}

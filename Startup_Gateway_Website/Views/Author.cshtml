@@ -1,0 +1,145 @@
+﻿@inherits UmbracoViewPage<ByteAntU12DAStarterKit.Core.Models.AuthorModel>
+@inject IImageUrlGenerator imageUrlGenerator
+@inject IShortStringHelper shortStringHelper
+@using Microsoft.AspNetCore.Http.Extensions;
+@using Microsoft.Extensions.DependencyInjection;
+@using Umbraco.Cms.Core.Media;
+@using Umbraco.Cms.Core.Models;
+@using Umbraco.Cms.Core.Strings;
+
+@{
+    Layout = "Master.cshtml";
+    var rootBlog = Umbraco.ContentAtRoot().First().Descendant<Blog>();
+    var defaultCover = rootBlog?.DefaultCover?.Url();
+    var imageUrl = defaultCover;
+    var curCul = rootBlog?.GetCultureFromDomains(new Uri(Context.Request.GetDisplayUrl()));
+    var siteUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var culPref = "";
+    if (curCul != "en-US")
+    {
+        culPref = "/" + curCul;
+    }
+    var authorContent = Model.Content as Author;
+}
+
+<div class="author-page">
+    <section>
+        <div class="container">
+            <div class="col-md-8">
+                <div class="about-author-post">
+                    <h1 class="title under-line">About the Author</h1>
+                    <div class="author-general-info">
+                        @if (authorContent?.Avatar != null)
+                        {
+                            <div class="author-avatar lazy" data-original="@authorContent.Avatar.Url()">
+
+                            </div>
+                        }
+                        <div>
+                            <div class="author-name">@authorContent?.AuthorName</div>
+                            <div class="author-position">@authorContent?.Position</div>
+                            <div class="author-social-media">
+                                @if (!string.IsNullOrEmpty(authorContent?.Email))
+                                {
+                                    <a href="mailto:@authorContent?.Email" class="ba-author-mail">
+                                        <img class="margin-height" src="~/images/author/icon-email.svg" />
+                                    </a>
+                                }
+                                @if (!string.IsNullOrEmpty(authorContent?.Facebook))
+                                {
+                                    <a href="@authorContent?.Facebook" target="_blank">
+                                        <img src="~/images/author/facebook-01.svg" />
+                                    </a>
+                                }
+                                @if (!string.IsNullOrEmpty(authorContent?.LinkedIn))
+                                {
+                                    <a href="@authorContent?.LinkedIn" target="_blank">
+                                        <img src="~/images/author/linkedin-01.svg" />
+                                    </a>
+                                }
+                                @if (!string.IsNullOrEmpty(authorContent?.Twitter))
+                                {
+                                    <a href="@authorContent?.Twitter" target="_blank">
+                                        <img class="margin-height" src="~/images/author/twitter-01.svg" />
+                                    </a>
+                                }
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="description-author">@authorContent?.Description</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ba-sidebar-title under-line">@(Umbraco.GetDictionaryValue("blog.categories"))</div>
+                <div class="ba-category-list">
+                    <a class="ba-category active" href="@(culPref)/blog/">
+                        <span>@Umbraco.GetDictionaryValue("tags.all")</span>
+                    </a>
+                    @foreach (var tag in authorContent?.Tags?.Where(x => x != "ALL") ?? Enumerable.Empty<string>())
+                    {
+                        <a class="ba-category" href="@(culPref)/blog/tags/@(tag.ToUrlSegment(shortStringHelper))">
+                            <span>@tag</span>
+                        </a>
+                    }
+                </div>
+
+                <div class="ba-message">
+                    <span>@authorContent?.DescriptionToContactUs</span>
+                    <div class="ba-call-to-action">
+                        @foreach (var contactUs in authorContent?.GoToContactUs ?? Enumerable.Empty<Link>())
+                        {
+                            <a class=" btn btn-red" href="@contactUs.Url" target="_blank">@contactUs.Name</a>
+                        }
+                    </div>
+                </div>
+                <div class=" ba-small-subscription">
+                    @await Html.PartialAsync("SubscribeForm", new ByteAntU12DAStarterKit.Core.Models.SubscribeModel())
+                </div>
+            </div>
+        </div>
+
+        <div class="container author-post-section">
+            <h1 class="title under-line">Latest Posts from @authorContent?.AuthorName</h1>
+        </div>
+    </section>
+
+    @if (Model.AuthorBlogpost?.Count > 0)
+    {
+        <section class="related-blogposts">
+            <div class="container">
+                <div id="blogposts" class="owl-carousel">
+                    @foreach (var item in Model.AuthorBlogpost)
+                    {
+                        var blogpost = item as Blogpost;
+                        <div class="item">
+                            <a href="@item?.Url()">
+                                <div class="cover lazy" data-original="@(blogpost?.Cover != null ? blogpost.Cover.GetCropUrl("small", imageUrlGenerator) : defaultCover)" alt="@blogpost?.Name"></div>
+                            </a>
+                            <div class="description m">
+                                <ul class="card-tags">
+                                    @foreach (var tag in blogpost?.Tags?.OrderBy(t => t) ?? Enumerable.Empty<string>())
+                                    {
+                                        <li>
+                                            <a href="@(culPref)/blog/tags/@(tag.ToUrlSegment(shortStringHelper))" class="card-tag">
+                                                <span>
+                                                    @tag
+                                                </span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                                <a href="@item?.Url()">
+                                    <h3 class="title m-t-xs">@blogpost?.Name</h3>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
+    @await Html.PartialAsync("SubscribeForm", new ByteAntU12DAStarterKit.Core.Models.SubscribeModel())
+</div>

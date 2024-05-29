@@ -1,0 +1,25 @@
+﻿.me-20px {
+    margin-right: 20px;
+}
+
+#starterkitguide uui-input,
+#contactoursupport uui-input {
+    display: flex;
+}
+
+.welcome-dashboard .headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome-dashboard uui-loader {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1;
+}

@@ -1,0 +1,69 @@
+﻿@inherits UmbracoViewPage
+@{
+    Layout = null;
+    var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
+}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page Not Found | @home?.WebsiteName</title>
+    <link rel="stylesheet" href="~/bundles/styles.min.css" asp-append-version="true" />
+    <!--<link rel="stylesheet" href="~/lib/css/bootstrap-3.3.7.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/social-share.min.css" />-->
+    <!--<link rel="stylesheet" href="~/content/font-awesome.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/owl/owl.carousel.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/owl/owl.theme.default.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/glider.min.css" />-->
+    <!--<link rel="stylesheet" href="~/css/site.css" />-->
+    <!--<link rel="stylesheet" href="~/css/styles.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/about-us.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/portfolio.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/how-we-work.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/services.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/careers.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/contact-us.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/blog.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/subscribe-form.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/inner-portfolio.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/about-author-post.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/technology.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/startups.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/marketplace.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/custom-development.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/new-services.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/company.css" />-->
+    
+    <link rel="stylesheet" href="~/bundles/error-pages.css" asp-append-version="true" />
+    <!--<link rel="stylesheet" href="~/css/fonts.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/error-pages.css" />-->
+    @if (home != null)
+    {
+        @await Html.CachedPartialAsync("Favicons", home, TimeSpan.FromHours(1), true, false)
+        ;
+    }
+</head>
+
+<body>
+    <div class="err-page">
+        <div class="err-page-wrp">
+            <div class="err-text-wrp">
+                <div class="img-wrp img-wrp-404">
+                </div>
+                <div class="err-descr">
+                    Page not found
+                </div>
+                <div class="err-title">
+                    Oops! Something went wrong
+                </div>
+                <a href="/" class="btn btn-red">
+                    <div class="btn-text">Go Back</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

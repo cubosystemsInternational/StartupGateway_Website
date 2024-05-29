@@ -1,0 +1,154 @@
+﻿.ba-subscription {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  padding: 85px 0 65px;
+  position: relative;
+  background-color: #f1604b;
+  background-image: url("../../images/about-us/lines.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.ba-subscription .subscribe-message {
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 10px;
+}
+.ba-subscription h3 {
+  color: #fff;
+  font-size: 36px;
+  line-height: 50px;
+}
+
+.ba-subscription p {
+  font-size: 18px;
+  line-height: 50px;
+}
+
+.ba-subscription form {
+  width: 500px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.ba-subscription form .submit-section {
+  text-align: center;
+  margin-top: 50px;
+}
+.ba-subscription form label {
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+  top: 35px;
+  opacity: 0.8;
+  font-weight: normal;
+  font-size: 14px;
+  transition: 0.3s;
+  cursor: text;
+}
+.ba-subscription form input {
+  width: 100%;
+  border: none;
+  padding: 10px 0;
+  font-weight: 700;
+  line-height: 1em;
+  outline: none;
+  resize: vertical;
+  background: none;
+}
+
+.ba-small-subscription {
+  margin: 75px 0;
+}
+
+.ba-small-subscription .ba-subscription form {
+  width: auto;
+  padding: 0 20px;
+}
+
+.ba-small-subscription .ba-subscription {
+  background-image: url("../../images/bg-01.jpg");
+  padding: 20px 0 40px;
+}
+.ba-small-subscription .ba-subscription .btn {
+  border-radius: 25px;
+}
+.ba-subscription--blog-post {
+  background-image: url("../../images/Blog/bg_blog.png");
+  text-align: left;
+  padding: 60px 50px;
+}
+
+.ba-subscription.ba-subscription--blog-post {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.ba-subscription.ba-subscription--blog-post .inner-holder {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.ba-subscription.ba-subscription--blog-post .inner-holder .submit-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.ba-subscription--blog-post form {
+  width: 100%;
+}
+.ba-subscription--blog-post form .submit-section {
+  text-align: inherit;
+}
+
+.ba-small-subscription .ba-subscription h3 {
+  font-size: 18px;
+}
+
+.ba-small-subscription .ba-subscription p {
+  font-size: 14px;
+}
+
+@media screen and (max-width: 558px) {
+  .ba-subscription h3 {
+    font-size: 28px;
+    line-height: 45px;
+    padding-bottom: 10px;
+  }
+
+  .ba-subscription p {
+    font-size: 17px;
+    line-height: 35px;
+  }
+
+  .ba-subscription form {
+    width: 300px;
+  }
+
+  .ba-subscription--blog-post form {
+    width: 220px;
+  }
+
+  .ba-subscription.ba-subscription--blog-post .inner-holder form {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+@media screen and (max-width: 320px) {
+  .ba-subscription {
+    padding: 65px 0 50px;
+  }
+  .ba-subscription form {
+    width: 250px;
+  }
+
+  .ba-subscription--blog-post form {
+    width: 180px;
+  }
+}

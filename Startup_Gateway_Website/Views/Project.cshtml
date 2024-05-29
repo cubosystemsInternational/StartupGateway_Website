@@ -1,0 +1,246 @@
+﻿@inherits UmbracoViewPage<ContentModels.Project>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+    var curCulture = Model.GetCultureFromDomains();
+}
+@{
+    var index = Model?.Parent?.Children.IndexOf(Model);
+    var prevIndex = index == 0 ? Model?.Parent?.Children.Count() - 1 : index - 1;
+    var previousProject = Model?.Parent?.Children.ElementAt(prevIndex.HasValue ? prevIndex.Value : default(System.Index)) as Project;
+    var nextIndex = index == Model?.Parent?.Children.Count() - 1 ? 0 : index + 1;
+    var nextProject = Model?.Parent?.Children.ElementAt(nextIndex.HasValue ? nextIndex.Value : default(System.Index)) as Project;
+    var video = string.Empty;
+    if (!string.IsNullOrEmpty(Model?.VideoUrl))
+    {
+        video = Model.VideoUrl + (Model.VideoUrl.Contains("?") ? "&" : "?") + "enablejsapi=1&version=3&playerapiid=ytplayer";
+    }
+}
+<div class="inner-portfolio">
+    <section class="header">
+        <div class="container">
+            <div>
+                <a href="@previousProject?.Url()" class="arrow-left arrow-left-wrap"></a>
+                <a href="@nextProject?.Url()" class="arrow-right arrow-right-wrap"></a>
+            </div>
+            <div class="project">
+                <div class="category">
+                    @string.Join(", ", Model?.Category ?? Enumerable.Empty<string>())
+                </div>
+                <div class="project-title-container">
+                    <h1 class="project-title"> @Model?.Name</h1>
+                </div>
+                <div class="country">
+                    <img class="lazy" data-original="@(Model?.CountryIcon == null ? "" : Model.CountryIcon?.Url())" />
+                    <span class="country-category">@string.Join(", ", Model?.Industry ?? Enumerable.Empty<string>())</span>
+                </div>
+                <hr class="white-line" />
+                @if (Model?.Link != null)
+                {
+                    foreach (var link in Model.Link)
+                    {
+                        <a class="URL" @(link.Target) href="@link.Url">@link.Name</a>
+                        <br />
+                    }
+                }
+                @if (Model?.HeaderImage != null)
+                {
+                    <div class="header-img lazy" data-original="@Model?.HeaderImage.Url()"></div>
+                }
+            </div>
+        </div>
+    </section>
+    <section class="description">
+        <div class="container">
+            <div class="text">
+                @Model?.DetailedDescription
+            </div>
+        </div>
+    </section>
+    <div class="container breadcrumb-wrp">
+        <ol class="breadcrumb">
+            <li>
+                @if (curCulture == "en-US")
+                {
+                    <a href="/">Home</a>
+                }
+                else
+                {
+                    <a href="/de/">Startseite</a>
+                }
+            </li>
+            <li>
+                @if (curCulture == "en-US")
+                {
+                    <a href="/portfolio">Success stories</a>
+                }
+                else
+                {
+                    <a href="/de/erfolgsgeschichten">Erfolgsgeschichten</a>
+                }
+            </li>
+            <li class="active">@Model?.Name</li>
+        </ol>
+    </div>
+    @if (Model?.ProjectDetailsImage != null)
+    {
+        <section class="device-background size" style="background-image: url(@Model?.ProjectDetailsImage.Url());"></section>
+    }
+    @if (!string.IsNullOrEmpty(Model?.Solution?.ToString()?.Trim()))
+    {
+        <section>
+            <div class="container">
+                <h3 class="under-line">
+                    @(Umbraco.GetDictionaryValue("projectPage.solutionHeader"))
+                </h3>
+                <div class="text">
+                    @Model.Solution
+                </div>
+            </div>
+        </section>
+    }
+    @if (!string.IsNullOrEmpty(Model?.OurResults?.ToString()?.Trim()))
+    {
+        <section class="solution margin">
+            <div class="container">
+                <h3 class="under-line">
+                    @(Umbraco.GetDictionaryValue("projectPage.resultHeader"))
+                </h3>
+                <div class="text">
+                    @Model.OurResults
+                </div>
+            </div>
+        </section>
+    }
+    @if (!string.IsNullOrEmpty(Model?.VideoUrl))
+    {
+        <section class="wide-img-video">
+            <div class="container">
+                <img data-original="@Model?.VideoBackgroundImage?.Url()" class="images-responsive image full-width lazy" alt="" />
+                <div class="video-play-btn-wrp">
+                    <h2 class="video-header">
+                        @Model?.VideoHeaderText
+                    </h2>
+                    <button data-toggle="modal" data-target="#wide-work-video" class="btn">
+                        <span></span>
+                    </button>
+                    <div>@(Umbraco.GetDictionaryValue("projectPage.video"))</div>
+                </div>
+            </div>
+        </section>
+    }
+    @if (Model?.Technologies?.Count() > 0)
+    {
+        <section class="technologies-list">
+            <div class="container">
+                <h3 class="under-line">
+                    @(Umbraco.GetDictionaryValue("projectPage.techHeader"))
+                </h3>
+                <div class="row">
+                    @{
+                        int countPerColumn;
+                        if (Model.Technologies.Count() % 3 == 0)
+                        {
+                            countPerColumn = Model.Technologies.Count() / 3;
+                        }
+                        else
+                        {
+                            countPerColumn = Model.Technologies.Count() / 3 + 1;
+                        }
+                    }
+                    @for (int i = 0; i <= 2; i++)
+                    {
+                        <div class="col-sm-4 no-gutters">
+                            <ul class="list">
+                                @for (int j = i * countPerColumn; j <= (i + 1) * countPerColumn - 1; j++)
+                                {
+                                    if (j < Model.Technologies.Count())
+                                    {
+                                        <li>@Model.Technologies.ElementAt(j)</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+    @if (Model?.FooterImage != null)
+    {
+        <section class="iphone-advisor">
+            <div class="p-n">
+                <img data-original="@Model?.FooterImage?.Url()" class="images-responsive image full-width lazy" alt="" />
+            </div>
+        </section>
+    }
+    <section class="other-projects">
+        <div>
+            <h3 class="title">@(Umbraco.GetDictionaryValue("projectPage.otherProjHeader"))</h3>
+        </div>
+        <div class="scroll-down scroll-projects"></div>
+        <div class="row no-gutters">
+            <div class="col-lg-6">
+                <div class="left-project">
+                    <div class="row no-gutters">
+                        <div class="col-sm-6">
+                            <div class="image lazy" data-original="@previousProject?.PortfolioImage?.Url()"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="description">
+                                <div class="category">
+                                    @string.Join(", ", previousProject?.Category ?? Enumerable.Empty<string>())
+                                </div>
+                                <h2 class="name">
+                                    @previousProject?.Name
+                                </h2>
+                                <div class="button">
+                                    <a href="@previousProject?.Url()" class="btn"><span>@(Umbraco.GetDictionaryValue("projectPage.viewDetails"))</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="right-project">
+                    <div class="row no-gutters">
+                        <div class="col-sm-6">
+                            <div class="description">
+                                <div class="category">
+                                    @string.Join(", ", nextProject?.Category ?? Enumerable.Empty<string>())
+                                </div>
+                                <h2 class="name">
+                                    @nextProject?.Name
+                                </h2>
+                                <div class="button">
+                                    <a href="@nextProject?.Url()" class="btn"><span>@(Umbraco.GetDictionaryValue("projectPage.viewDetails"))</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="image lazy" data-original="@nextProject?.PortfolioImage?.Url()"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @if (!string.IsNullOrEmpty(video))
+    {
+        <div class="modal fade" tabindex="-1" role="dialog" id="wide-work-video">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body" id="video">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="@video" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

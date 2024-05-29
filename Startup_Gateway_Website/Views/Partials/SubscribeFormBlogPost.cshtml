@@ -1,0 +1,25 @@
+﻿@inherits UmbracoViewPage<ByteAntU12DAStarterKit.Core.Models.SubscribeModel>
+<section class="ba-subscription ba-subscription--blog-post">
+    <div class="inner-holder">
+        <h3>@(Umbraco.GetDictionaryValue("subscr.bp.Title"))</h3>
+        <p>@(Umbraco.GetDictionaryValue("subscr.bp.subTitle"))</p>
+        <form asp-controller="SurfaceSubscribe" asp-action="Subscribe" data-ajax="true" data-ajax-method="POST" data-ajax-failure="subscribeMessageFailure" data-ajax-success="subscribeMessageSuccess">
+            @Html.AntiForgeryToken()
+            <div>
+                <label for="SubscriberEmail">@(Umbraco.GetDictionaryValue("subscr.email"))</label>
+                @Html.TextBoxFor(m => Model.Email, new { @maxlength = "50", @id = "SubscriberEmail" })
+                <hr class="js-no-animation" />
+                <div class="wrap-validation-error">
+                    @Html.ValidationMessageFor(m => Model.Email)
+                </div>
+            </div>
+            <div class="submit-section">
+                <span class="subscribe-message js-subscribe-message text-success" style="display: none;">@(Umbraco.GetDictionaryValue("subscr.success"))</span>
+                <span class="subscribe-message js-subscribe-message-failure text-danger" style="display: none;">@(Umbraco.GetDictionaryValue("subscr.fail"))</span>
+                <button type="submit" class="btn btn-red btn-submit">
+                    <span>@(Umbraco.GetDictionaryValue("subscr.btn"))</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>

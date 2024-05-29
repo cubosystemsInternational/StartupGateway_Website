@@ -1,0 +1,283 @@
+﻿.author-page a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.author-page .ba-call-to-action a {
+  color: #fff;
+}
+
+.author-page {
+  margin-top: 100px;
+}
+
+.author-page .about-author-post {
+  background: #f2f5f8;
+  min-height: 300px;
+}
+
+.author-page .about-author-post .title {
+  font-size: 2em;
+  color: #006b71;
+  margin: 0 30px 50px;
+  padding-top: 30px;
+}
+
+.author-page .under-line::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #f1604b;
+  margin-top: 15px;
+}
+
+.author-page .author-general-info {
+  display: flex;
+  color: #2f4351;
+  font-size: 18px;
+  line-height: 22px;
+  margin-left: 30px;
+  margin-bottom: 50px;
+}
+
+.author-page .author-avatar {
+  height: 65px;
+  width: 65px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  margin: 1px 30px 0 0;
+}
+
+.author-page .author-general-info .author-name {
+  color: #2f4351;
+  font-weight: 700;
+}
+
+.author-page .author-general-info .author-position {
+  font-size: 15px;
+}
+
+.author-page .author-general-info .author-social-media a:hover {
+  text-decoration: none;
+}
+
+.author-page .author-general-info .author-social-media a img {
+  height: 16px;
+}
+
+.author-page .author-general-info .author-social-media a {
+  margin-right: 16px;
+}
+
+.author-page .description-author {
+  margin: 0 30px;
+  padding-bottom: 30px;
+}
+
+.author-page .ba-category:first-child {
+  box-shadow: inset 0px 0px 1px 0px #dfebf6;
+  background: linear-gradient(180deg, #003231 0%, #006b71 100%);
+  color: #fff;
+}
+
+.author-page .related-blogposts .section-title {
+  margin-bottom: 48px;
+}
+
+.author-page .ba-message {
+  border: 1px solid #ff5252;
+  background-color: #ffffff;
+  padding: 40px 20px 0 20px;
+  margin-top: 70px;
+  text-align: center;
+  position: relative;
+  color: #323f4e;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.author-page .ba-message .ba-call-to-action {
+  margin-top: 20px;
+  margin-bottom: -30px;
+}
+
+.author-page .ba-message .ba-call-to-action .btn {
+  margin-bottom: 10px;
+}
+
+.author-page .author-post-section {
+  margin-top: 90px;
+}
+
+.author-page .author-post-section .title {
+  margin-left: 45px;
+}
+
+.author-page .related-blogposts {
+  background-color: #f2f5f8;
+  padding: 90px 0;
+  overflow: hidden;
+}
+
+.author-page .related-blogposts #blogposts .owl-item {
+  opacity: 0;
+  transition: opacity 400ms;
+}
+
+.author-page .related-blogposts #blogposts .owl-stage-outer {
+  overflow: visible;
+}
+
+.author-page .related-blogposts #blogposts .owl-item.active {
+  opacity: 1;
+}
+
+.author-page #blogposts .item {
+  border-radius: 10px;
+  height: 345px;
+  transition: 0.5s ease box-shadow;
+  position: relative;
+}
+
+.author-page #blogposts .item .description {
+  position: absolute;
+  top: 170px;
+}
+
+.author-page #blogposts .cover {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-position: center;
+  height: 170px;
+}
+
+.author-page .related-blogposts #blogposts .card-tags {
+  margin-top: 0;
+  box-shadow: none;
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+.author-page .related-blogposts #blogposts .card-tags > li {
+  border: 1px solid #c6e6f0;
+  border-radius: 100px;
+  display: inline-flex;
+  margin: 0 5px 5px 0;
+}
+
+.author-page .related-blogposts #blogposts .card-tags > li > a {
+  text-align: center;
+  position: relative;
+  display: block;
+  padding: 0px 8px;
+  text-transform: uppercase;
+  color: #2d4458;
+  border-radius: unset;
+  line-height: 17px;
+}
+
+.author-page .related-blogposts #blogposts .card-tags > li > a > span {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.author-page .related-blogposts #blogposts h3.title {
+  font-size: 24px;
+  line-height: 32px;
+  color: #2d4458;
+}
+
+.author-page .related-blogposts #blogposts .title,
+.author-page .related-blogposts #blogposts .meta {
+  text-align: unset;
+}
+
+.author-page .meta {
+  color: #748a96;
+  font-weight: 700;
+  font-size: 10pt;
+  padding-bottom: 40px;
+}
+
+.author-page .meta div {
+  margin-left: 18px;
+  display: inline-block;
+}
+
+.author-page .meta div:first-child {
+  margin-left: 0;
+}
+
+.author-page .meta .clock-icon {
+  width: 13px;
+  height: 13px;
+  background-position: 0 0;
+}
+
+.author-page .meta .icons {
+  background: url("/images/Blog/Sprite.svg") no-repeat;
+  background-size: 45px 30px;
+  position: relative;
+  top: 1px;
+}
+
+.author-page .meta div.share {
+  cursor: pointer;
+}
+
+.author-page .meta .share-icon {
+  width: 14px;
+  height: 14px;
+  background-position: -13px 0;
+  top: 4px;
+}
+
+.author-page .meta .icons {
+  background: url(/images/Blog/Sprite.svg) no-repeat;
+  background-size: 45px 30px;
+  position: relative;
+  top: 1px;
+}
+
+.author-page #blogposts .owl-dots {
+  margin: 30px 50px 0 50px;
+  display: flex;
+  display: -ms-flexbox;
+  justify-content: center;
+}
+
+.author-page #blogposts .owl-dots .owl-dot {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.author-page #blogposts .owl-dots .owl-dot.active span,
+.author-page #blogposts .owl-dots .owl-dot:hover span {
+  width: 14px;
+  height: 14px;
+  border: 3px solid #cae6eb;
+  border-radius: 10px;
+  background: #0097a7;
+}
+
+.author-page #blogposts .owl-dots .owl-dot span {
+  width: 6px;
+  height: 6px;
+  background: #92b1cc;
+  border-radius: 10px;
+}
+
+.author-page #blogposts .item:hover {
+  background-color: #fff;
+  box-shadow: 10px 10px 60px 0px rgba(54, 54, 54, 0.13);
+}

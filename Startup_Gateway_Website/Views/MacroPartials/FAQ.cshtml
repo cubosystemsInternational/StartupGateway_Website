@@ -1,0 +1,50 @@
+﻿@using ContentModels = Umbraco.Web.PublishedModels
+@using Umbraco.Web
+@using Umbraco.Web.Models
+@using Umbraco.Core.PropertyEditors
+@using ByteAntU12DAStarterKit.Extensions
+@inherits Umbraco.Web.Macros.PartialViewMacroPage
+@{
+    int[] ids = ((string)Model.MacroParameters["QuestionsAndAnswers"]).Split(',').Select(int.Parse).ToArray();
+    var contentList = Umbraco.Content(ids);
+}
+@Html.Script(
+    @<script type="application/ld+json">
+        {
+        "@@context": "http://schema.org",
+        "@@type": "FAQPage",
+        "mainEntity": [
+        @foreach (var content in contentList)
+            {
+                @Html.Raw(string.Format("{{\"@type\": \"Question\", \"name\": \"{0}\", \"acceptedAnswer\":{{\"@type\": \"Answer\", \"text\": \"{1}\"}}}}",
+                    Json.Encode(content.Name).Trim('"'),
+                    Json.Encode((content as ContentModels.QA).Answer.ToString()).Trim('"')))
+                if (content != contentList.Last())
+                {
+                    @Html.Raw(",")
+                }
+            }
+        ]
+        }
+    </script>
+                        )
+
+<section class="FAQ">
+    <div class="container">
+        <h2 class="under-line section-title">
+            @Model.MacroParameters["Title"]
+        </h2>
+        <div class="row">
+            @foreach (var content in contentList)
+            {
+                var item = content as ContentModels.QA;
+                <div class="col-md-10">
+                        <h3 class="question-text">@item.Name</h3>
+                            <div class="answer">
+                                @item.Answer
+                            </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

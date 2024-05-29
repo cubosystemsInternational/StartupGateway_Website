@@ -1,0 +1,410 @@
+﻿@inherits UmbracoViewPage<Umbraco.Cms.Web.Common.PublishedModels.Home>
+@{
+    Layout = "Master.cshtml";
+}
+@section AddToHead {
+    <link rel="stylesheet" href="~/bundles/index.min.css" asp-append-version="true" />
+}
+<div id="hurricane" class="hurricane-container">
+    <main>
+        <div class="content">
+            <!--<canvas class="scene scene--full" id="scene"></canvas>-->
+            <!--<script id="wrapVertexShader" type="x-shader/x-vertex">-->
+            <!--    #define PI 3.1415926535897932384626433832795-->
+            <!--    attribute float size;-->
+            <!--    void main() {-->
+            <!--    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );-->
+            <!--    gl_PointSize = 3.0;-->
+            <!--    gl_Position = projectionMatrix * mvPosition;-->
+            <!--    }-->
+            <!--</script>-->
+            <!--<script id="wrapFragmentShader" type="x-shader/x-fragment">-->
+            <!--    uniform sampler2D texture;-->
+            <!--    void main(){-->
+            <!--    vec4 textureColor = texture2D( texture, gl_PointCoord );-->
+            <!--    if ( textureColor.a < 0.3 ) discard;-->
+            <!--    vec4 dotColor = vec4(0.0, 0.68, 0.72, 0.4);-->
+            <!--    vec4 color = dotColor * textureColor;-->
+            <!--    gl_FragColor = color;-->
+            <!--    }-->
+            <!--</script>-->
+          
+
+
+            
+            
+            
+            <div class="container content__text ">
+                <h1 class="content__title hurricane-title">@Model.KeyMessage</h1>
+                <h3 class="content__subtitle hurricane-subtitle">@Model.KeyMessageContent</h3>
+                <div class="anime-buttons">
+                    <div class="button btn-anime">
+                        <a href="#" class="btn btn-red" id="learn">
+                            <span>@(Umbraco.GetDictionaryValue("hp.btn.learnMore"))</span>
+                        </a>
+                    </div>
+                    <div class="button btn-anime">
+                        <a href="@Model.ContactUs?.Url()" target="_blank" class="btn btn-red">
+                            <span>@(Umbraco.GetDictionaryValue("hp.btn.contact"))</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<section class="home-page-section our-expertise-section" id="our-expertise">
+    <div class="container">
+        <h3 class="under-line section-title">Our Expertise</h3>
+    </div>
+    <div class="container">
+        <div class="row expertise-row">
+            @if (Model.OurExpertiseGroup != null)
+            {
+                @foreach (var item in Model.OurExpertiseGroup)
+                {
+                    var serviceItem = item as ActionWorks;
+                    <div class="col-md-12 col-lg-4">
+                        <div class="expertise-item">
+                            <div class="item-img lazy" data-original="@serviceItem.WorkImage?.Url()"></div>
+                            <div class="item-title">@serviceItem.WorkTitle</div>
+                            <div class="item-description">
+                                @serviceItem.WorkText
+                            </div>
+                            @if (serviceItem.ButtonLink != null)
+                            {
+                                @foreach (var button in serviceItem.ButtonLink)
+                                {
+                                    <div class="anime-buttons">
+                                        <div class="button btn-anime">
+                                            <a href="@button.Url" class="btn btn-big btn-white">
+                                                <span>@button.Name</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+@*<section class="home-page-section featured-clients-section">
+    <div class="container">
+        <h3 class="under-line section-title">Featured Clients</h3>
+    </div>
+    <div class="container clients-container">
+        <div id="featured-clients" class="owl-carousel">
+            @if (Model.FeaturedClientsGroup != null)
+            {
+                @foreach (var clientLogo in Model.FeaturedClientsGroup)
+                {
+                    <div class="client-logo-item">
+                        <img class="owl-lazy" data-src="@clientLogo.Url()" src="#" alt="..." />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>*@
+<section class="feedbacks-section">
+    <div>
+        <div class="feedbacks-section-left">
+            <span class="icon-quote icon-quote-lg"></span>
+            <div>
+                <div class="title">@Model.TestimonialsHeader</div>
+                <div class="qoute-slider">
+                    <div class="quote-header">
+                        <button class="slide-quote-btn slide-quote-btn-prev"></button>
+                        <button class="slide-quote-btn slide-quote-btn-next"></button>
+                        <hr class="line" />
+                        <span class="icon-quote"></span>
+                    </div>
+                    <div id="quotes-list" class="quotes-list owl-carousel">
+                        @if (Model.Testimonials != null)
+                        {
+                            @foreach (var testimonial in Model.Testimonials)
+                            {
+                                var testimonialContent = testimonial as Testimonial;
+                                <div class="item">
+                                    <div class="quote-content">
+                                        @testimonialContent.TestimonialText
+                                    </div>
+                                    <div class="quote-author-wrp text-right">
+                                        <span class="name">@testimonialContent.PersonName</span>
+                                        <br />
+                                        <span class="company">@testimonialContent.CompanyName</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="feedbacks-section-right visible-lg">
+            <div class=""></div>
+        </div>
+    </div>
+</section>
+<section class="our-cases-section">
+    <div id="our-cases-list" class="owl-carousel">
+        @if (Model.CaseStudyGroup != null)
+        {
+            @foreach (var item in Model.CaseStudyGroup)
+            {
+                var caseItem = item as ActionWorks;
+                <div class="item owl-lazy" data-src="@caseItem.WorkImage?.Url()">
+                    <div class="item-title">@caseItem.WorkTitle</div>
+                    <div class="item-description">
+                        @caseItem.WorkText
+                    </div>
+                    @if (caseItem.ButtonLink != null)
+                    {
+                        @foreach (var button in caseItem.ButtonLink)
+                        {
+                            <div class="anime-buttons">
+                                <div class="button btn-anime">
+                                    <a href="@button.Url" target="_blank" class="btn btn-big btn-red">
+                                        <span>@button.Name</span>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        }
+    </div>
+    @* <div class="slide-btns-group">
+    <button class="slide-case-btn slide-case-btn-prev"></button>
+    <button class="slide-case-btn slide-case-btn-next"></button>
+    </div> *@
+</section>
+@*<section class="home-page-section our-services-section">
+<div class="container">
+<h3 class="under-line section-title">Our Services</h3>
+</div>
+<div class="container services-container">
+@foreach (var item in Model.OurSectionLinkGroup)
+{
+var serviceItem = item as LandingDownload;
+foreach (var link in serviceItem.DownloadLink) {
+<a href="@link.Url()" class="our-service-item">
+<div class="item-img lazy" data-original="@serviceItem.DownloadImage.Url()"></div>
+<div class="item-title">@serviceItem.DownloadTitle</div>
+</a>
+}
+}
+</div>
+</section>*@
+<section class="our-technologies-section">
+    <div class="container">
+        <h3 class="under-line section-title">Our Technologies</h3>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="technologies-item">
+                    <img src="@Model.OurTechnologiesGroup?.Url()" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="home-page-section partners-section">
+    <div class="container">
+        <h3 class="under-line">@Model.PartnersHeader</h3>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="title">@Model.PartnersTitle</div>
+                <div class="content">
+                    @Model.PartnersDescription
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="clients-list" class="owl-carousel owl-theme clients-list">
+                    @if (Model.PartnersIcons != null)
+                    {
+                        foreach (var logo in Model.PartnersIcons)
+                        {
+                            <div class="item">
+                                @if (!string.IsNullOrEmpty((logo as Image)?.ImageLink))
+                                {
+                                    <a href="@((logo as Image)?.ImageLink)" target="_blank">
+                                        <img src="@logo.Url()" alt="..." />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <img src="@logo.Url()" alt="..." />
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="title">@Model.TitleTwoLogo</div>
+                <div class="content">
+                    @Model.DescriptionTwoBlock
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="clients-lists" class="owl-carousel owl-theme clients-list">
+                    @if (Model.IconsTwoBlock != null)
+                    {
+                        @foreach (var logo in Model.IconsTwoBlock)
+                        {
+                            <div class="two-logo-items item">
+                                <img src="@logo.Url()" alt="..." />
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@{
+    IEnumerable<string> allFeaturedCategories = new List<string>();
+    @if (Model.LatestProjects != null)
+    {
+        foreach (var project in Model.LatestProjects)
+        {
+            var projectContent = project as Project;
+            if (projectContent?.Category != null)
+            {
+                allFeaturedCategories = allFeaturedCategories.Union(projectContent.Category);
+            }
+        }
+    }
+}
+@if (Model.LatestProjects != null)
+{
+    <section class="home-page-section portfolio-section" id="portfolio">
+        <div class="row no-gutters">
+            <div class="container">
+                <div class="col-xs-12">
+                    <h3 class="under-line">@(Umbraco.GetDictionaryValue("hp.sections.portfolioHeader"))</h3>
+                    <p class="title">@(Umbraco.GetDictionaryValue("hp.sections.portfolioSubHeaeder"))</p>
+                    <div class="portfolio-nav">
+                        <ul class="nav nav-pills portfolio-categories-tabs tags-container">
+                            <li class="active all-js"><a href="#" data-target="#portfolio-tab" data-toggle="tab" name="all" data-category="all"><span class="tab-name">@(Umbraco.GetDictionaryValue("tags.all"))</span></a></li>
+                            @foreach (var category in allFeaturedCategories)
+                            {
+                                <li><a href="#" data-target="#portfolio-tab" data-toggle="tab" data-category="@category.Replace(' ', '-')"><span class="tab-name">@category</span></a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container portfolio-padding ">
+                <div class="col-xs-12">
+                    <div class="tab-content glider-contain">
+                        <div id="portfolio-tab" class="glider active clearfix">
+                            @foreach (var project in Model.LatestProjects)
+                            {
+                                var projectContent = project as Project;
+                                var categories = projectContent?.Category;
+                                string categoryClasses = string.Empty;
+                                @if (categories != null)
+                                {
+                                    foreach (var category in categories)
+                                    {
+                                        categoryClasses += category.Replace(' ', '-') + " ";
+                                    }
+                                }
+                                <div class="item @categoryClasses">
+                                    @if (projectContent?.FeaturedImage != null)
+                                    {
+                                        <img class="latest-work-img" src="@projectContent.FeaturedImage.Url()" alt="@projectContent.Name" />
+                                    }
+                                    <div class="overlay">
+                                        <div class="title">@projectContent?.Name</div>
+                                        <div class="description"></div>
+                                        <div><a href="@projectContent?.Url()" class="btn"><span>@(Umbraco.GetDictionaryValue("hp.btn.viewDetails"))</span></a></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="slidecontainer intro">
+                            <input type="range" min="0" max="100" value="0" step="0.01" class="slider" id="myRange">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+<section class="contact-us-section">
+    <div>
+        <div class="contact-us-left col-md-12">
+            <div>
+                <div class="title">@Model.ContactHeader</div>
+                <div class="content">@Model.ContactText</div>
+                @await Html.PartialAsync("ContactForm", new ByteAntU12DAStarterKit.Core.Models.ContactModel { RecapthaKey = Model.RecaptchaKey })
+            </div>
+        </div>
+        <div class="contact-us-right js-contact-home col-md-12">
+            @await Html.PartialAsync("ContactDetails")
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/bundles/hurricane.min.js" asp-append-version="true"></script>
+    <script src="~/bundles/home.min.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            $("#learn").click(function () {
+                $('html, body').animate({
+                    scrollTop: $("#our-expertise").offset().top
+                }, 1000);
+            });
+
+        });
+
+        var glider = new Glider(document.querySelector('.glider'), {
+            slidesToScroll: 1,
+            slidesToShow: 1.5,
+            draggable: true,
+            dots: '.dots',
+            responsive: [
+                {
+
+                    breakpoint: 500,
+                    settings: {
+                        slidesToShow: 'auto',
+                        slidesToScroll: 'auto',
+                        itemWidth: 200,
+                        draggable: true,
+                    }
+                }
+            ]
+        });
+
+        var slider = document.getElementById('myRange');
+        var maxScroll = document.querySelector('.portfolio-section .glider').scrollWidth - document.querySelector('.portfolio-section .glider').offsetWidth;
+
+        slider.addEventListener('input', checkScroll);
+
+        function checkScroll(event) {
+            var percentage = event.target.valueAsNumber / 100;
+            glider.scrollTo(percentage * maxScroll);
+        }
+
+        var carousel = document.getElementById('portfolio-tab');
+        carousel.addEventListener('scroll', (e) => {
+            var percentage = (e.target.scrollLeft / maxScroll) * 100;
+            slider.value = percentage;
+        });
+    </script>
+}

@@ -1,0 +1,566 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@inject IShortStringHelper shortStringHelper;
+@using Umbraco.Cms.Core.Strings;
+@using Umbraco.Cms.Core.Models;
+@using ByteAntU12DAStarterKit.Core.Models;
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    Layout = null;
+    Dictionary<string, string> languagesByCultures = new Dictionary<string, string>() { { "en-us", "English" }, { "de", "Deutsch" } };
+    // Get basic design settings from the homepage
+    ContentModels.Home? home = Umbraco.ContentAtRoot().FirstOrDefault() is ContentModels.Home h ? h : null;
+    var services = home?.Descendant<Services>();
+    var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+    var headerClass = ViewBag.headerClass;
+    var curCulture = Model.GetCultureFromDomains();
+    var currentLng = curCulture?.Split('-')[0];
+    var culPref = "";
+    if (curCulture != "en-US")
+    {
+        culPref = curCulture + "/";
+    }
+    LanguageUrlsVM urlsByCultures = new LanguageUrlsVM()
+            {
+                UrlsByCultures = new Dictionary<string, UrlsVM>()
+            };
+    var languages = Model.Cultures.ToList();
+    if (languages.Count > 0)
+    {
+        foreach (var lng in languages)
+        {
+            if (string.IsNullOrEmpty(lng.Key))
+            {
+                urlsByCultures.UrlsByCultures.Add(lng.Key, new UrlsVM() { Url = Model.Url("en-us"), Name = languagesByCultures["en-us"] });
+            }
+            else
+            {
+                urlsByCultures.UrlsByCultures.Add(lng.Key, new UrlsVM() { Url = Model.Url(lng.Key), Name = languagesByCultures[lng.Key] });
+            }
+        }
+    }
+    //var currentLng = "en";
+    //var curLngFullName = "en-us";
+    //foreach (var lng in languages)
+    //{
+    // if (Request.Path.Contains($"/{lng.Key}/") || Request.Path.Contains($"/{lng.Key}"))
+    // {
+    // currentLng = lng.Key.Split('-')[0];
+    // curLngFullName = lng.Key;
+    // }
+    //}
+    string pageTitle = home?.Title ?? "";
+    if (Model.HasProperty("title") && !string.IsNullOrEmpty(Model.Value<string>("title")))
+    {
+        pageTitle = Model.Value<string>("title") ?? "";
+    }
+    else
+    {
+        pageTitle = Model.Name;
+    }
+    string pageDescription = home?.SeoMetaDescription ?? "";
+    if (Model.HasProperty("seoMetaDescription") && !string.IsNullOrEmpty(Model.Value<string>("seoMetaDescription")))
+    {
+        pageDescription = Model.Value<string>("seoMetaDescription") ?? "";
+    }
+    string pageKeywords = string.Join(", ", (home?.HasProperty("Keywords") ?? false) ? (home?.Keywords ?? Enumerable.Empty<string>()) : Enumerable.Empty<string>());
+    if (Model.HasProperty("Keywords") && Model.Value<IEnumerable<string>>("Keywords")?.Count() > 0)
+    {
+        pageKeywords = string.Join(", ", Model.Value<IEnumerable<string>>("Keywords") ?? Enumerable.Empty<string>());
+    }
+    string imgAbsoluteUrl = home == null ? "" : $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}" + Url.Content("~/images/big-logo.png");
+    string canonicalAbsoluteUrl = Context.Request.Scheme + "://" + Context.Request.Host + Model.Url();
+}
+@{
+    void Navbar(IEnumerable<IPublishedContent> navigation, bool listStyle = true)
+    {
+        IPublishedContent currentContent = Umbraco.AssignedContentItem;
+        ContentModels.Home? home = Umbraco.ContentAtRoot().FirstOrDefault() is ContentModels.Home h ? h : null;
+        var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+        var curCulture = Model.GetCultureFromDomains();
+        var homeNodes = home?.Children(curCulture).Select(x => x.Id) ?? Enumerable.Empty<int>();
+        navigation = navigation.Where(x => homeNodes.Contains(x.Id)).ToList();
+        bool isCurrentPage;
+        int i = 1;
+        foreach (var item in navigation)
+        {
+            if (item is ContentModels.Home)
+            {
+                isCurrentPage = item == currentContent;
+            }
+            else
+            {
+                isCurrentPage = currentContent.IsDescendantOrSelf(item);
+            }
+            if (item.Url().Contains("/services/"))
+            {
+                <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
+                    <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
+            }
+            if (listStyle && i != navigation.Count())
+            {
+                <li class="hidden-xs hidden-sm">
+                    <div class="point"></div>
+                </li>
+                i++;
+            }
+        }
+    }
+    void RenderServicesMenu(Services? services)
+    {
+        @foreach (var item in services?.TechnicalAreas?.Where(t => t?.Landings?.Count() > 0) ?? Enumerable.Empty<Competency>())
+        {
+            <div class="nav-menu-item">
+                <div class="nav-title">@item.CompetencyTitle</div>
+                @foreach (var landing in item?.Landings ?? Enumerable.Empty<IPublishedContent>())
+                {
+                    <div class="nav-item">
+                        <a href="@landing.Url()">@landing.Name</a>
+                    </div>
+                }
+            </div>
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="@curCulture" class="js">
+
+<head>
+    @if (home != null && !string.IsNullOrEmpty(home.ScriptSection))
+    {
+        @Html.Raw(home.ScriptSection)
+    }
+    @if (IsSectionDefined("ogTags"))
+    {
+        @RenderSection("ogTags", required: false)
+    }
+    else
+    {
+        <meta property="og:type" content="website" />
+        <meta property='og:image' content="@(imgAbsoluteUrl)" />
+    }
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@pageTitle | @home?.WebsiteName</title>
+    @if (IsSectionDefined("metaDescr"))
+    {
+        @RenderSection("metaDescr", required: false)
+    }
+    else
+    {
+        <meta name="description" content="@pageDescription">
+    }
+    <meta name="keywords" content="@pageKeywords">
+    <link rel="stylesheet" href="~/bundles/styles.min.css" asp-append-version="true" />
+    <!--<link rel="stylesheet" href="~/lib/css/bootstrap-3.3.7.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/social-share.min.css" />-->
+    <!--<link rel="stylesheet" href="~/content/font-awesome.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/owl/owl.carousel.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/owl/owl.theme.default.min.css" />-->
+    <!--<link rel="stylesheet" href="~/lib/css/glider.min.css" />-->
+    <!--<link rel="stylesheet" href="~/css/site.css" />-->
+    <!--<link rel="stylesheet" href="~/css/styles.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/about-us.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/portfolio.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/how-we-work.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/services.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/careers.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/contact-us.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/blog.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/subscribe-form.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/inner-portfolio.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/about-author-post.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/technology.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/startups.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/marketplace.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/custom-development.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/new-services.css" />-->
+    <!--<link rel="stylesheet" href="~/css/Home/company.css" />-->
+    
+    @if (IsSectionDefined("AddToHead"))
+    {
+        @RenderSection("AddToHead", required: false)
+    }
+    @if (home != null)
+    {
+        @await Html.CachedPartialAsync("Favicons", home, TimeSpan.FromHours(1), true, false)
+        ;
+    }
+    <meta name="theme-color" content="#ffffff">
+    @if (!string.IsNullOrEmpty(home?.EndOfHeadSection))
+    {
+        @Html.Raw(home.EndOfHeadSection)
+    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap">
+</head>
+
+<body id="top" class="overflow-hidden up" data-spy="scroll" data-target=".navbar-collapse">
+    @*<noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5RZZJDJ" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    @if (!string.IsNullOrEmpty(home?.ScriptSectionStartBody))
+    {
+        @Html.Raw(home.ScriptSectionStartBody)
+    }
+    *@
+    <div id="loader-wrp">
+        <div id="loader">
+            <div class="loader-item1"></div>
+            <div class="loader-item2"></div>
+            <div class="loader-item3"></div>
+            <div class="loader-item4"></div>
+        </div>
+    </div>
+    <div class="panel-default collapse-header @headerClass">
+        <div class="navbar navbar-default slide-in" role="navigation">
+            <div class="container-fluid header-container">
+                <div class="container top-menu-wrp">
+                    <div class="navbar-header">
+                        <div class="nav-toggle navbar-toggle">
+                            <span class="navbar-toggler-icon"></span>
+                            <span class="navbar-toggler-icon"></span>
+                            <span class="navbar-toggler-icon"></span>
+                        </div>
+                        <div class="mobile-nav-wrp" style="min-height: 90px">
+                            @{
+                                var logoUrl = headerClass == "dark" && home?.LogoForDarkBackground != null
+                                ? home?.LogoForDarkBackground?.GetCropUrl(imageCropMode: ImageCropMode.Pad, imageCropAnchor: ImageCropAnchor.Left, width: 149, height: 59, furtherOptions: "&bgcolor=transparent")
+                                : home?.DefaultLogo?.GetCropUrl(imageCropMode: ImageCropMode.Pad, imageCropAnchor: ImageCropAnchor.Left, width: 149, height: 59, furtherOptions: "&bgcolor=transparent");
+                                if (!string.IsNullOrEmpty(logoUrl))
+                                {
+                                    <a href="~/@culPref" class="navbar-brand smoothScroll">
+                                        <div>
+                                            <img src="@logoUrl" class="logo" alt="@home?.WebsiteName Logo" />
+                                        </div>
+                                    </a>
+                                }
+                            }
+                            @if (languages.Count > 1)
+                            {
+                                <div class="dropdown lng-dropdown-wrp">
+                                    <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu lng-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        @foreach (var cul in languages)
+                                        {
+                                            <a class="dropdown-item lng-item" _target="_self" href="@urlsByCultures.UrlsByCultures[cul.Key].Url">@urlsByCultures.UrlsByCultures[cul.Key].Name</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="pull-right nav-btns-rght">
+                        @if (languages.Count > 1)
+                        {
+                            <div class="dropdown lng-dropdown-wrp">
+                                <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span>@currentLng</span><i class="caret pull-right"></i>
+                                </button>
+                                <div class="dropdown-menu lng-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @foreach (var cul in languages)
+                                    {
+                                        <a class="dropdown-item lng-item" _target="_self" href="@urlsByCultures.UrlsByCultures[cul.Key].Url">@urlsByCultures.UrlsByCultures[cul.Key].Name</a>
+                                        @*if (cul.Key == "en-us")
+                                {
+                                <a class="dropdown-item lng-item" _target="_self" href="@Request.Path.Replace($"/{curLngFullName}/", "/")">@languagesByCultures[cul.Key.Split('-')[0]]</a>
+                                }
+                                else
+                                {
+                                <a class="dropdown-item lng-item" _target="_self" href="@("/" + cul.Key + Request.Path)">@languagesByCultures[cul.Key.Split('-')[0]]</a>
+                                }*@
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <a href="@home?.ContactUs?.Url()" class="get-in-touch smoothScroll visible-lg">
+                            <span>@home?.ContactUs?.Name</span>
+                        </a>
+                    </div>
+                    <div class="collapse navbar-collapse text-center">
+                        <ul class="nav navbar-nav nav-btns-wrp">
+                            @{
+                                Navbar(home?.Navigation ?? Enumerable.Empty<IPublishedContent>());
+                            }
+                            <li class="col-sm-3 visible-xs"><a href="@home?.ContactUs?.Url()"><span>@home?.ContactUs?.Name</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="panel-element-566205" class="panel-collapse collapse collapse-header">
+            <div class="panel-body header-navigation-menu container">
+                @{
+                    RenderServicesMenu(services);
+                }
+            </div>
+        </div>
+    </div>
+    <div class="panel-default collapse-header">
+        <div class="header-small navbar navbar-default" role="navigation">
+            <div class="container header-container top-menu-wrp ">
+                <div class="navbar-header">
+                    <div class="navbar-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="mobile-nav-wrp">
+                        @if (home?.DefaultLogo != null)
+                        {
+                            <a href="~/@culPref" class="navbar-brand smoothScroll">
+                                <div>
+                                    <img src="@(home?.DefaultLogo?.GetCropUrl(imageCropMode: ImageCropMode.Pad, imageCropAnchor: ImageCropAnchor.Left, width: 149, height: 59, furtherOptions: "&bgcolor=transparent"))" class="logo" alt="@home?.WebsiteName Logo" />
+                                </div>
+                            </a>
+                        }
+                        @if (languages.Count > 1)
+                        {
+                            <div class="dropdown lng-dropdown-wrp">
+                                <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                <div class="dropdown-menu lng-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @foreach (var cul in languages)
+                                    {
+                                        <a class="dropdown-item lng-item" _target="_self" href="@urlsByCultures.UrlsByCultures[cul.Key].Url">@urlsByCultures.UrlsByCultures[cul.Key].Name</a>
+                                        @*if (cul.Key == "en-us")
+                                {
+                                <a class="dropdown-item lng-item" _target="_self" href="@Request.Path.Replace($"/{curLngFullName}/", "/")">@languagesByCultures[cul.Key.Split('-')[0]]</a>
+                                }
+                                else
+                                {
+                                <a class="dropdown-item lng-item" _target="_self" href="@("/" + cul.Key + Request.Path)">@languagesByCultures[cul.Key.Split('-')[0]]</a>
+                                }*@
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="pull-right nav-btns-rght">
+                    @if (languages.Count > 1)
+                    {
+                        <div class="dropdown fade-wrp lng-dropdown-wrp">
+                            <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span>@currentLng</span><i class="caret pull-right"></i>
+                            </button>
+                            <div class="dropdown-menu lng-dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                @foreach (var cul in languages)
+                                {
+                                    <a class="dropdown-item lng-item" _target="_self" href="@urlsByCultures.UrlsByCultures[cul.Key].Url">@urlsByCultures.UrlsByCultures[cul.Key].Name</a>
+                                    @*if (cul.Key == "en-us")
+                            {
+                            <a class="dropdown-item lng-item" _target="_self" href="@Request.Path.Replace($"/{curLngFullName}/", "/")">@languagesByCultures[cul.Key.Split('-')[0]]</a>
+                            }
+                            else
+                            {
+                            <a class="dropdown-item lng-item" _target="_self" href="@("/" + cul.Key + Request.Path)">@languagesByCultures[cul.Key.Split('-')[0]]</a>
+                            }*@
+                                }
+                            </div>
+                        </div>
+                    }
+                    <a href="@home?.ContactUs?.Url()" class="get-in-touch smoothScroll visible-lg ">
+                        <span>@home?.ContactUs?.Name</span>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse text-center">
+                    <ul class="nav navbar-nav nav-btns-wrp">
+                        @{
+                            Navbar(home?.Navigation ?? Enumerable.Empty<IPublishedContent>());
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div id="panel-element-566205" class="panel-collapse collapse collapse-header">
+                <div class="panel-body header-navigation-menu container">
+                    @{
+                        RenderServicesMenu(services);
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="popup-menu">
+        <span class="btn-close-menu btn-close-nav">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+            </svg>
+        </span>
+        <div class="text-center m-b-lg">
+            <ul class="nav navbar-nav col-xs-8 panel-group">
+                @if (home?.Navigation != null)
+                {
+                    @foreach (var item in home.Navigation)
+                    {
+                        if (item.Url().Contains("/services/"))
+                        {
+                            <li class="panel-default">
+                                <div class="nav-border-mobile">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" class="collapsed" href="#collapse1">@item.Name <i class="fa fa-angle-up"></i></a>
+                                    </h4>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse">
+                                    <ul class="panel-group nav-menu-mob-wrap">
+                                        @foreach (var area in services?.TechnicalAreas?.Where(t => t?.Landings?.Count() > 0) ?? Enumerable.Empty<Competency>())
+                                        {
+                                            <li class="panel-default nav-menu-mob">
+                                                <div class="nav-border-mobile">
+                                                    <h4 class="panel-collapse-title">
+                                                        <a data-toggle="collapse" class="collapsed" href="#@area?.CompetencyTitle?.ToUrlSegment(shortStringHelper)">@area?.CompetencyTitle <i class="fa fa-angle-up"></i></a>
+                                                    </h4>
+                                                </div>
+                                                <ul id="@area?.CompetencyTitle?.ToUrlSegment(shortStringHelper)" class="panel-collapse collapse">
+                                                    @foreach (var landing in area?.Landings ?? Enumerable.Empty<IPublishedContent>())
+                                                    {
+                                                        <li class="panel-body">
+                                                            <a href="@landing.Url()">@landing.Name</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a href="@item.Url()"><span>@item.Name</span></a></li>
+                        }
+                    }
+                }
+                <li class="panel"><a href="@home?.ContactUs?.Url()"><span>@home?.ContactUs?.Name</span></a></li>
+            </ul>
+        </div>
+    </div>
+    <a href="#" id="return-to-top">
+        <img src="~/images/arrow-to-top.svg" />
+    </a>
+    @RenderBody()
+    <footer class="">
+        <div class="text-center footer-navigation-menu container">
+            @{
+                RenderServicesMenu(services);
+            }
+            <div class="nav-menu-item">
+                <div class="nav-title">Company</div>
+                @if (home?.CompanyLinks != null)
+                {
+                    @foreach (var item in home.CompanyLinks)
+                    {
+                        <div class="nav-item">
+                            <a href="@item.Url">@item.Name</a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="container">
+            <hr />
+        </div>
+        <div class="container clutch-wrap">
+            @* @home?.ClutchReviewed *@
+            <div class="text-center">
+                © @home?.YearFounded @(!string.IsNullOrWhiteSpace(home?.YearFounded) ? Html.Raw("&mdash;") : "") @DateTime.Now.Year.ToString() @(home != null && (home.ContactUs as Contact) != null ? (home.ContactUs as Contact)?.CompanyName : "")<br class="visible-xs" /> All rights reserved.
+            </div>
+            @* <div class="for-clutch"></div> *@
+        </div>
+    </footer>
+    @*<div class="modal fade" tabindex="-1" role="dialog" id="our-work-video">
+    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+    <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item" src="@(video)" allowfullscreen></iframe>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>*@
+    @if (home != null && home.PopupShow)
+    {
+        <div class="modal fade" tabindex="-1" role="dialog" id="popup" data-cookie="@home.PopupCookie">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row no-gutters">
+                            <div class="col-sm-4 cover lazy" data-original="@home.PopupImage?.Url()">
+                            </div>
+                            <div class="col-sm-8 text">
+                                <div class="description">
+                                    <h3>@home.PopupHeader</h3>
+                                    @home.PopupDescription
+                                    <div class="center-item">
+                                        <a href="@home.PopupLink" class="btn">
+                                            <span>learn more</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script src="~/bundles/scripts.min.js" asp-append-version="true"></script>
+    <!--<script src="~/lib/javascript/jquery-3.2.1.min.js"></script>-->
+    <!--<script src="~/lib/javascript/bootstrap-3.3.7.min.js"></script>-->
+    <!--<script src="~/lib/javascript/anime.min.js"></script>-->
+    <!--<script src="~/lib/javascript/owl.carousel.min.js"></script>-->
+    <!--<script src="~/lib/javascript/jquery.form.js"></script>-->
+    <!--<script src="~/lib/javascript/js.cookie.min.js"></script>-->
+    <!--<script src="~/lib/javascript/clamp.min.js"></script>-->
+    <!--<script src="~/lib/jquery.unobtrusive-ajax.min.js"></script>-->
+    <!--<script src="~/lib/jquery.validate.min.js"></script>-->
+    <!--<script src="~/lib/jquery.validate.unobtrusive.min.js"></script>-->
+    <!--<script src="~/lib/medium-zoom.min.js"></script>-->
+    <!--<script src="~/lib/cookie-plagin/jquery.cookieMessage.min.js"></script>-->
+    <!--<script src="~/lib/social-share.min.js"></script>-->
+    <!--<script src="~/js/get-email.js"></script>-->
+    <!--<script src="~/lib/lazy-load.min.js"></script>-->
+    <!--<script src="~/js/script.js"></script>-->
+    
+    <script>
+        $.cookieMessage({
+            'mainMessage': '@home?.CookieText',
+            'acceptButton': '@home?.CookieButton',
+            'backgroundColor': '#f2f5f8',
+            'fontColor': '#324354;',
+            'linkFontColor': '#324354',
+            'btnBackgroundColor': 'inherit',
+            'btnFontColor': '#323f4e',
+        });
+    </script>
+    <script>
+        $(".panel-heading-desctop").mouseenter(function () {
+            $(".panel-collapse").fadeIn();
+        });
+        $(".panel-collapse").mouseleave(function () {
+            $(".panel-collapse").fadeOut();
+        });
+
+    </script>
+    <script type="text/javascript" src="https://widget.clutch.co/static/js/widget.js"></script>
+    <link rel="stylesheet" href="~/css/Custom/Custom_Style.css" />
+    @RenderSection("Scripts", required: false)
+    @if (!string.IsNullOrEmpty(home?.ScriptSectionEndBody))
+    {
+        @Html.Raw(home.ScriptSectionEndBody)
+    }
+</body>
+
+</html>

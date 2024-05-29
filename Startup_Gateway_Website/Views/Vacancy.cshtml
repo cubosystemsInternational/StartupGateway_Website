@@ -1,0 +1,248 @@
+﻿@inherits UmbracoViewPage<Vacancy>
+@using Microsoft.AspNetCore.Http.Extensions;
+@{
+    Layout = "Master.cshtml";
+    ViewBag.headerClass = "dark";
+    var Parent = Model.Ancestor<Careers>();
+    var currentUrl = Context.Request.Path.Value;
+    var RecruiterTeam = Parent?.Members?.Count();
+    string imgAbsoluteUrl = Context.Request.Scheme + "://" + Context.Request.Host + Url.Content("~/images/big-logo.png");
+    var metaDescr = "We are looking for a " + Model.VacancyName;
+}
+@section ogTags {
+    <meta property='og:description' content="@metaDescr" />
+    <meta property='og:url' content="@(Context.Request.Scheme + "://" + Context.Request.Host + Model.Url())" />
+    <meta property="og:type" content="website" />
+    <meta property='og:image' content="@(imgAbsoluteUrl)" />
+}
+@section metaDescr {
+    <meta name="description" content="@metaDescr">
+}
+@section AddToHead {
+    <link rel="preload" as="font" crossorigin="crossorigin" type="font/woff2" href="~/fonts/fontawesome-webfont.woff2?v=4.5.0">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+}
+<div class="carriers">
+    <div class="benefits-btn hidden-benefits hidden-xs">
+        <div class="btn-lbl">See our benefits</div>
+        <div class="btn-icon"></div>
+    </div>
+    <section class="section-1">
+        <div class="title-padding container">
+            <h3 class="title">@Parent?.Name</h3>
+            <div class="subtitle">@Parent?.Header</div>
+            @{
+                var yearFounded = Parent?.Parent<Home>()?.YearFounded;
+                if (!string.IsNullOrWhiteSpace(yearFounded))
+                {
+                    <div class="since">
+                        <span>since</span>
+                        <br>@yearFounded
+                    </div>
+                }
+            }
+        </div>
+    </section>
+    <div class="container breadcrumb-wrp">
+        <ol class="breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li><a href="@Parent?.Url()">@Parent?.Name</a></li>
+            <li id="breadcrumb-name" class="active">@Model.VacancyName</li>
+        </ol>
+    </div>
+    <section class="section-2" id="carriers">
+        <div class="container">
+            <div class="row zero-margin-hr">
+                <div class="col-xs-12 col-sm-5 zero-padding">
+                    <ul class="nav nav-pills carriers-list">
+                        @{
+                            int k = 1;
+                        }
+                        @foreach (var vacancy in Parent?.Children ?? Enumerable.Empty<IPublishedContent>())
+                        {
+                            var vacancyContent = vacancy as Vacancy;
+                            var curMetaDescr = "We are looking for a " + vacancyContent?.VacancyName;
+                            var metaTitle = vacancyContent?.VacancyName + " | ByteAnt";
+                            <li id="js-breadcrumb-get-value" onclick="changeSharingMetatags('@curMetaDescr', '', '@metaTitle', '@imgAbsoluteUrl', '@vacancyContent?.Url()')" class="@(vacancyContent?.Url() == currentUrl ? "active" : "")">
+                                <a href="@(vacancyContent?.Url())" name="@vacancyContent?.VacancyName" data-target="#tab@(k)" data-toggle="pill">
+                                    <div>
+                                        <div class="carrier-text">
+                                            @vacancyContent?.VacancyName
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            k++;
+                        }
+                    </ul>
+                    <div class="hidden-xs contact-person">
+                        <div>
+                            @if (Parent?.Members?.Count() > 1)
+                            {
+                                <div class="contact-nav">
+                                    <a class="arr-icon arr-left slide-member-prev"></a>
+                                    <a class="arr-icon arr-right slide-member-next"></a>
+                                </div>
+                            }
+                        </div>
+                        <div id="recruiter-team" class="owl-carousel">
+                            @{
+                                bool first = true;
+                            }
+                            @foreach (var recruiter in Parent?.Members ?? Enumerable.Empty<Recruiter>())
+                            {
+                                <div class="item">
+                                    <div class="person-info">
+                                        @if (first)
+                                        {
+                                            <img class="person-img" src="@(recruiter.RecruiterImage != null ? recruiter.RecruiterImage.Url() : "")" />
+                                            first = false;
+                                        }
+                                        else
+                                        {
+                                            <img class="person-img lazy" data-original="@(recruiter.RecruiterImage != null ? recruiter.RecruiterImage.Url() : "")" />
+                                        }
+                                        <div class="person-data">
+                                            <div class="person-fullname">@recruiter.RecruiterName</div>
+                                            <div class="person-position">@recruiter.RecruiterPosition</div>
+                                        </div>
+                                    </div>
+                                    <div class="person-email icon icon-email"><span title="Click to copy">@recruiter.RecruiterEmail</span></div>
+                                    <div class="person-skype icon icon-skype"><span title="Click to copy">@recruiter.RecruiterSkype</span></div>
+                                    <div class="person-phone icon icon-phone"><span title="Click to copy">@recruiter.RecruiterPhone</span></div>
+                                </div>
+                            }
+                        </div>
+                        <div class="hr-contact-btn apply-btn" data-toggle="modal" data-target="#hr-apply-modal">Apply</div>
+                        @*<div class="hr-contact-btn apply-with-btn">Apply With Linkedin</div>*@
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-7">
+                    <div class="tab-content">
+                        <div class="tab-pane fade active in ">
+                            <h1 class="title">@Model.VacancyName</h1>
+                            <div class="summary">@Model.Description</div>
+                            <div class="social-block">
+                                <span class="social-lbl">Share this vacancy via:</span>
+                                <div class="share-block m-t-md">
+                            <div class="ss-box" data-ss-content="false" data-ss-social="facebook, pinterest, linkedIn, pinterest, telegram,  whatsapp, email"></div>
+                        </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Parent?.CompanySummary?.ToHtmlString()))
+                    {
+                        <div style="padding-top:40px;">
+                            @Parent.CompanySummary
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-2" id="section-mobile">
+        <div class="container" id="servises-careere">
+            <div class="row zero-margin-hr">
+                <div class="col-xs-12 col-sm-5 zero-padding panel-group" id="accordion">
+                    <div id="go-to-block" class="panel panel-default carriers-list">
+                        @{
+                            int i = 1;
+                        }
+                        @foreach (var vacancy in Parent?.Children ?? Enumerable.Empty<IPublishedContent>())
+                        {
+                            var vacancyContent = vacancy as Vacancy;
+                            var curMetaDescr = "We are looking for a " + vacancyContent?.VacancyName;
+                            var metaTitle = vacancyContent?.VacancyName + " | ByteAnt";
+                            <div onclick="changeSharingMetatags('@curMetaDescr', '', '@metaTitle', '@imgAbsoluteUrl', '@vacancyContent?.Url()')" class="panel-heading @(vacancyContent?.Url() == currentUrl ? "active": "")">
+                                <div class="js-collapse" data-parent="#accordion" href="@(vacancyContent?.Url())" data-target="#mob@(i)" data-toggle="collapse">
+                                    <div>
+                                        <div class="carrier-text">
+                                            @vacancyContent?.VacancyName
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            i++;
+                        }
+                        <div class="col-xs-12 col-sm-7 panel-collapse collapse in">
+                            <div id="go-to-block" class="panel-body">
+                                <div id="go-to-block" class="summary">@Model.Description</div>
+                                <div class="social-block">
+                                    <span class="social-lbl">Share this vacancy via:</span>
+                                     <div class="share-block m-t-md">
+                            <div class="ss-box" data-ss-content="false" data-ss-social="facebook, pinterest, linkedIn, pinterest, telegram,  whatsapp, email"></div>
+                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Parent?.CompanySummary?.ToHtmlString()))
+                {
+                    <div class="col-xs-12 col-sm-7" style="padding-top:40px;">
+                        @Parent.CompanySummary
+                    </div>
+                }
+            </div>
+            <div class="row hidden-sm hidden-md hidden-lg">
+                <div class="col-xs-12">
+                    <div class=" contact-person">
+                        <div>
+                            @if (Parent?.Members?.Count() > 1)
+                            {
+                                <div class="contact-nav">
+                                    <a class="arr-icon arr-left slide-member-prev"></a>
+                                    <a class="arr-icon arr-right slide-member-next"></a>
+                                </div>
+                            }
+                        </div>
+                        <div id="recruiter-team-sm" class="owl-carousel">
+                            @{
+                                first = true;
+                            }
+                            @foreach (var recruiter in Parent?.Members ?? Enumerable.Empty<Recruiter>())
+                            {
+                                <div class="item">
+                                    <div class="person-info">
+                                        @if (first)
+                                        {
+                                            <img class="person-img" src="@(recruiter.RecruiterImage != null ? recruiter.RecruiterImage.Url() : "")" />
+                                            first = false;
+                                        }
+                                        else
+                                        {
+                                            <img class="person-img lazy" data-original="@(recruiter.RecruiterImage != null ? recruiter.RecruiterImage.Url() : "")" />
+                                        }
+                                        <div class="person-data">
+                                            <div class="person-fullname">@recruiter.RecruiterName</div>
+                                            <div class="person-position">@recruiter.RecruiterPosition</div>
+                                        </div>
+                                    </div>
+                                    <div class="person-email icon icon-email"><span title="Click to copy">@recruiter.RecruiterEmail</span></div>
+                                    <div class="person-skype icon icon-skype"><span title="Click to copy">@recruiter.RecruiterSkype</span></div>
+                                    <div class="person-phone icon icon-phone"><span title="Click to copy">@recruiter.RecruiterPhone</span></div>
+                                </div>
+                            }
+                        </div>
+                        <div class="hr-contact-btn apply-btn" data-toggle="modal" data-target="#hr-apply-modal">Apply</div>
+                        @*<div class="hr-contact-btn apply-with-btn">Apply With Linkedin</div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="hr-apply-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    @await Html.PartialAsync("ApplicationForm", new ByteAntU12DAStarterKit.Core.Models.ApplicationModel { RecapthaKey = (Model?.Parent?.Parent as Home)?.RecaptchaKey })
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("CareersSharedPart", Parent)
+</div>

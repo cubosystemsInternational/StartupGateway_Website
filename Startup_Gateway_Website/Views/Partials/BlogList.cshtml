@@ -1,0 +1,119 @@
+﻿@inherits UmbracoViewPage<ByteAntU12DAStarterKit.Core.Models.BlogResponseModel>
+@inject IImageUrlGenerator imageUrlGenerator
+@inject IShortStringHelper shortStringHelper
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Http.Extensions;
+@using Umbraco.Cms.Core.Media;
+@using Umbraco.Cms.Core.Strings;
+@using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+@{
+    var rootBlog = Umbraco.ContentAtRoot().First().Descendant<Blog>();
+    var defaultCover = rootBlog?.DefaultCover?.Url();
+    var siteUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var url = Context.Request.GetDisplayUrl().Contains("/umbraco/") ? Context.Request.GetTypedHeaders()?.Referer?.AbsoluteUri : Context.Request.GetDisplayUrl();
+    var curCul = string.Empty;
+    var culPref = string.Empty;
+    if (url != null)
+    {
+        var uri = new Uri(url);
+        curCul = rootBlog?.GetCultureFromDomains(uri);
+    }
+    if (curCul != null && curCul != "en-US")
+    {
+        culPref = "/" + curCul;
+    }
+    //var imageUrlGenerator = Context.RequestServices.GetRequiredService<IImageUrlGenerator>();
+    //var shortStringHelper = Context.RequestServices.GetRequiredService<IShortStringHelper>();
+}
+@foreach (var blogPost in Model.BlogpostsContent ?? Enumerable.Empty<IPublishedContent>())
+{
+    var shareUrl = "";
+    var bpUrl = blogPost.Url(curCul);
+    if (string.IsNullOrEmpty(bpUrl))
+    {
+        bpUrl = blogPost.Url();
+    }
+    shareUrl = siteUrl + bpUrl;
+    var bpMetaTitle = blogPost.Value<string>("title", curCul);
+    if (string.IsNullOrEmpty(bpMetaTitle))
+    {
+        bpMetaTitle = blogPost.Value<string>("title");
+    }
+    var seoMetaDescription = blogPost.Value<string>("seoMetaDescription", curCul);
+    if (string.IsNullOrEmpty(seoMetaDescription))
+    {
+        seoMetaDescription = blogPost.Value<string>("seoMetaDescription");
+    }
+    var bpMetaKeywords = blogPost.Value<IEnumerable<string>>("keywords", curCul);
+    if (bpMetaKeywords?.Count() == 0)
+    {
+        bpMetaKeywords = blogPost.Value<IEnumerable<string>>("keywords");
+    }
+    var bpMetaKeywordsStr = String.Join(", ", bpMetaKeywords ?? Enumerable.Empty<string>());
+    var pageTitle = blogPost.Value<string>("pageTitle", curCul);
+    if (string.IsNullOrEmpty(pageTitle))
+    {
+        pageTitle = blogPost.Value<string>("pageTitle");
+    }
+    var excerpt = blogPost.Value<string>("excerpt", curCul);
+    if (string.IsNullOrEmpty(excerpt))
+    {
+        excerpt = blogPost.Value<string>("excerpt");
+    }
+    var cover = blogPost.Value<ImageCropperValue>("cover");
+    var coverSrc = defaultCover;
+    if (cover != null)
+    {
+        coverSrc = cover.GetCropUrl("small", imageUrlGenerator);
+    }
+    var metaImage = coverSrc;
+    var bpTags = blogPost.Value<IEnumerable<string>>("tags", curCul);
+    if (bpTags?.Count() == 0)
+    {
+        bpTags = (blogPost.Value<IEnumerable<string>>("tags") ?? Enumerable.Empty<string>()).OrderBy(t => t);
+    }
+    else
+    {
+        bpTags = bpTags?.OrderBy(t => t);
+    }
+    <div class="col-xs-12">
+        <div class="post">
+            <a id="container" class="redirect" href="@bpUrl">
+                <div class="cover lazy" data-original="@(coverSrc)">
+                </div>
+            </a>
+            <div class="description p-m">
+                <ul class="post-categories" id="js-breadcrumb-get-value-list">
+                    @foreach (var tag in bpTags ?? Enumerable.Empty<string>())
+                    {
+                        <li>
+                            <a href="@(culPref + "/blog/tags/" + tag.ToUrlSegment(shortStringHelper))" name="@tag" class="post-category" onclick="changeTags(name)">
+                                <span>
+                                    @tag
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <a class="redirect" href="@bpUrl">
+                    <div class="text">
+                        <h3 class="title"> @pageTitle</h3>
+                        <p class="excert m-t-md m-b-none"> @excerpt</p>
+                    </div>
+                </a>
+                <div class="meta m-t-md m-b">
+                    <div class="icons clock-icon"></div>
+                    <span class="date">@(blogPost.Value<DateTime>("publishDateTime").ToString("dd MMM yyyy"))</span>
+                    @*<div class="icons eye-icon"></div>
+                <span class="views">100</span>*@
+                    <div class="share" data-toggle="modal" data-target="#blogPost" data-blog-link="@shareUrl">
+                        <div class="icons share-icon"></div>
+                        <span>share</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div id="loadMore" data-load-more="@Model.LoadMore.ToString().ToLowerInvariant()">
+</div>

@@ -1,0 +1,151 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Nicer table: Begin */
+
+.tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-color: #aaa;
+    margin: 0 auto;
+}
+
+.tg td {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 10px 13px;
+    border-style: solid;
+    border-width: 0;
+    overflow: hidden;
+    word-break: normal;
+    border-color: #aaa;
+    color: #333;
+    background-color: #fff;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    text-align: center !important;
+    vertical-align: top !important;
+}
+
+.tg th {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 10px 13px;
+    border-style: solid;
+    border-width: 0;
+    overflow: hidden;
+    word-break: normal;
+    border-color: #aaa;
+    color: #fff;
+    background-color: #f38630;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.tg tr:nth-child(odd) td {
+    background-color: #FCFBE3;
+    text-align: center !important;
+}
+
+
+
+
+
+/**umb_name:Heading 1*/
+.H1{font-size:300%}
+
+/**umb_name:Heading 2*/
+H2{font-size:200%}
+
+/**umb_name:Heading 3*/
+H3{font-size:150%}
+
+/**umb_name:Heading 4*/
+H4{font-size:100%}
+
+/**umb_name:Heading 5*/
+H5{font-size:75%}
+
+/**umb_name:Heading 6*/
+H6{font-size:50%}
+
+/**umb_name:font-size 12*/
+.font12{font-size: 12px;}
+
+/**umb_name:font-size 14*/
+.font14{font-size: 14px;}
+
+/**umb_name:font-size 18*/
+.font18{font-size: 18px;}
+
+/**umb_name:font-size 20*/
+.font20{font-size: 20px;}
+
+/**umb_name:font-size 22*/
+.font22{font-size: 22px;}
+
+
+
+
+
+/**umb_name:font-size 24*/
+.font24{font-size:24px;}
+
+/**umb_name:font-size 28*/
+.font28{font-size:28px;}

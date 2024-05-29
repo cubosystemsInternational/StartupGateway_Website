@@ -1,0 +1,249 @@
+﻿@inherits UmbracoViewPage<ContentModels.About>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+@{
+    Layout = "Master.cshtml";
+    ViewBag.headerClass = "dark";
+    var home = Umbraco.ContentAtRoot().FirstOrDefault() as ContentModels.Home;
+    var curCulture = Model.GetCultureFromDomains();
+}
+<div class="about-us-page">
+    <section class="section-1">
+        <div class="title-padding container">
+            <h1 class="title">@Model.Name</h1>
+            <div class="subtitle">
+                @Model.Header
+            </div>
+            @{
+                var yearFounded = home?.YearFounded;
+                if (!string.IsNullOrWhiteSpace(yearFounded))
+                {
+                    <div class="since">
+                        <span>since</span>
+                        <br>@yearFounded
+                    </div>
+                }
+            }
+        </div>
+    </section>
+    <section class="section-2">
+        <div class="text-wrap">
+            <div class="breadcrumb-wrp">
+                <ol class="breadcrumb">
+                    <li>
+                        @if (curCulture == "en-US")
+                        {
+                            <a href="/">Home</a>
+                        }
+                        else
+                        {
+                            <a href="/de/">Startseite</a>
+                        }
+                    </li>
+                    <li class="active">@Model.Name</li>
+                </ol>
+            </div>
+            <div class="section our-story-section">
+                <div class="text">
+                    <div class="title">@Model.StoryHeader</div>
+                    <div class="summary">
+                        @Model.StoryContent
+                    </div>
+                </div>
+                <div class="our-story-img img-position" style="background-image: url(@Model?.StoryPicture?.GetCropUrl(imageCropMode: ImageCropMode.Crop, width: 185, height: 185));"></div>
+            </div>
+            <div class="connecting-line">
+                <img src="~/images/dashed-line-right.svg" />
+            </div>
+            <div class="section-right byteant-highlights-section">
+                <div class="byteant-highlights-img img-position-right" style="background-image: url(@Model?.HighlightsPicture?.GetCropUrl(imageCropMode: ImageCropMode.Crop, width: 185, height: 185));"></div>
+                <div class="text-right">
+                    <div class="title section-left">@Model?.HighlightsHeader</div>
+                    <div class="summary">
+                        @Model?.HighlightsContent
+                    </div>
+                </div>
+            </div>
+            <div class="connecting-line">
+                <img src="~/images/dashed-line-left.svg" />
+            </div>
+            <div class="section our-goals-section">
+                <div class="text">
+                    <div class="title">@Model?.GoalsHeader</div>
+                    <div class="summary">
+                        @Model?.GoalsContent
+                    </div>
+                </div>
+                <div class="our-goals-img img-position" style="background-image: url(@Model?.GoalsPicture?.GetCropUrl(imageCropMode: ImageCropMode.Crop, width: 185, height: 185));"></div>
+            </div>
+            <div class="connecting-line">
+                <img src="~/images/dashed-line-right.svg" />
+            </div>
+            <div class="section-right our-vision-section">
+                <div class="our-vision-img img-position-right" style="background-image: url(@Model?.VisionPicture?.GetCropUrl(imageCropMode: ImageCropMode.Crop, width: 185, height: 185));"></div>
+                <div class="text-right">
+                    <div class="title section-left">@Model?.VisionHeader</div>
+                    <div class="summary">
+                        @Model?.VisionContent
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="staff">
+        <div class="container">
+            <h3 class="under-line ">@Model?.UnderlinedText</h3>
+            <div class="row">
+                @foreach (var item in @Model?.StaffMembers ?? Enumerable.Empty<StaffMember>())
+                {
+                    var member = item as StaffMember;
+                    <div class="col-lg-6 @(member.CheckSmallBlock == true ? "small-block" : "") ">
+                        <div class="row no-gutters person-info">
+                            <div class="col-sm-5 image lazy" data-original="@(member.Image == null ? "" : member.Image.Url())">
+                            </div>
+                            <div class="col-sm-7 text">
+                                <div class="info">
+                                    <h3 class="name">@member.Forname</h3>
+                                    <h1 class="position">@member.Occupation</h1>
+                                    <p class="description">
+                                        @member.Description
+                                    </p>
+                                    <div></div>
+                                    <div class="about-author-social-media">
+                                        @if (!string.IsNullOrEmpty(member.FacebookLink))
+                                        {
+                                            <a href="@member.FacebookLink" target="_blank">
+                                                <img src="~/images/author/facebook-01.svg" alt="Facebook Icon">
+                                            </a>
+                                        }
+                                        @if (!string.IsNullOrEmpty(member.LinkedIn))
+                                        {
+                                            <a href="@member.LinkedIn" target="_blank">
+                                                <img src="~/images/author/linkedin-01.svg" alt="LinkedIn Icon">
+                                            </a>
+                                        }
+                                        @if (!string.IsNullOrEmpty(member.Twitter))
+                                        {
+                                            <a href="@member.Twitter" target="_blank">
+                                                <img class="margin-height" src="~/images/author/twitter-01.svg" alt="Twitter Icon">
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    <section class="section-4" id="locations">
+        <div class="container">
+            <h3 class="text-center">
+                @(Umbraco.GetDictionaryValue("map.header"))
+                <div class="middle-under-line"></div>
+            </h3>
+            <div class="row">
+                <div class="col-xs-12">
+                    <img class="img-responsive hidden-xs" src="~/images/about-us/map.svg" />
+                    <img class="img-responsive visible-xs" src="~/images/about-us/world_map_mini.svg" />
+                    <div class="hidden-xs">
+                        <div id="canada">
+                            <span>canada</span>
+                            <div class="point-icon"></div>
+                        </div>
+                        <div id="usa">
+                            <span>usa</span>
+                            <div class="point-icon"></div>
+                        </div>
+                        <div id="iceland">
+                            <span>iceland</span>
+                            <div class="point-icon"></div>
+                        </div>
+                        <div id="uk">
+                            <div class="float-left">
+                                <span>UNITED KINGDOM</span>
+                                <br />
+                                <span>BELGIUM</span>
+                                <br />
+                                <span>NETHERLANDS</span>
+                            </div>
+                            <div class="point-line-cross-icon"> </div>
+                        </div>
+                        <div id="norway">
+                            <div class="point-line-up-icon"> </div>
+                            <div class="float-right">
+                                <span>norway</span>
+                                <br />
+                                <span>sweden</span>
+                                <br />
+                                <span>denmark</span>
+                            </div>
+                        </div>
+                        <div id="lithuania">
+                            <div class="point-line-down-sm-icon"> </div>
+                            <div>
+                                <span>lithuania</span>
+                                <br />
+                                <span>estonia</span>
+                                <br />
+                                <span>SWITZERLAND</span>
+                                <br />
+                            </div>
+                        </div>
+                        <div id="italy">
+                            <div class="point-line-down-lg-icon"></div>
+                            <div>
+                                <span>italy</span>
+                                <br />
+                                <span>greece</span>
+                                <br />
+                                <span>turkey</span>
+                            </div>
+                        </div>
+                        <div id="south-africa">
+                            <div class="point-icon"></div>
+                            <span>south africa</span>
+                        </div>
+                        <div id="china">
+                            <div class="point-icon"></div>
+                            <span>china</span>
+                        </div>
+                        <div id="singapore">
+                            <div class="point-icon"></div>
+                            <span>singapore</span>
+                        </div>
+                        <div id="australia">
+                            <span>australia</span>
+                            <div class="point-icon"></div>
+                        </div>
+                        <div id="new-zeland">
+                            <span>new zealand</span>
+                            <div class="point-icon"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-5">
+        <div class="left col-md-6 hidden-xs"><img src="@Model?.OurHomePicture?.GetCropUrl()" alt="@Model?.OurHomeHeader"></div>
+        <div class="right col-md-6">
+            <h3 class="under-line under-line-white">@Model?.OurHomeHeader</h3>
+            @Model?.OurHomeContent
+        </div>
+    </section>
+    <section class="section-8">
+        <div class="row no-gutters">
+            <div>
+                <div class="title text-center">@(Umbraco.GetDictionaryValue("about.sections.contactHeader"))</div>
+                <div class="summary text-center">@(Umbraco.GetDictionaryValue("about.sections.contactDescr"))</div>
+                <div class="button text-center">
+                    <a href="@home?.ContactUs?.Url()" class="btn btn-blue">
+                        <span>@(Umbraco.GetDictionaryValue("about.btns.contacts"))</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

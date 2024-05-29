@@ -1,0 +1,119 @@
+﻿<div class="welcome-dashboard" ng-controller="byteAntDashboardController">
+    <!--<h1><localize key="byteAntDashboard_heading"></localize> {{UserName}}!</h1>
+    <p><localize key="byteAntDashboard_bodytext"></localize></p>
+    <p><localize key="byteAntDashboard_copyright"></localize></p>-->
+               
+    <div class="row">
+        <div class="span9">
+            <uui-box id="starterkitguide" class="me-20px" headline-variant="h5">
+                <div slot="headline" class="headline">
+                    Starter Kit Guide <i class=" icon-info"></i>
+                </div>
+                <div style="position: relative">
+                    <uui-loader ng-if="isLoaderShown"></uui-loader>
+                    <div ng-if="isSubmitted" style="text-align: center">
+                        <br />
+                        <p>Here is Your Guide!</p>
+                        <a href="/content/User%20Guide%20Digital%20Agency%20Starter%20Kit.pdf" target="_blank" style="display: block; width: 150px; margin: 0 auto">
+                            <uui-symbol-file type="pdf"></uui-symbol-file>
+                        </a>
+                    </div>
+                    <p ng-if="!isSubmitted">
+                        We understand that getting started with the kit can be overwhelming.<br />
+                        That's why we've put together a guide to make things easier for you. Just fill out the form below, and we'll send it your way.
+                    </p>
+                    <uui-form ng-if="!isSubmitted">
+                        <form style="max-width: 800px;" ng-submit="submitStarterKitGuideForm($event)">
+                            <uui-form-layout-item>
+                                <uui-label slot="label" for="guidenameinput" required="">Name</uui-label>
+                                <span slot="description"></span>
+                                <div>
+                                    <uui-input id="guidenameinput" type="text" name="name" placeholder="" label="name" value="{{UserName}}" required="" required-message="You must enter a name">
+                                    </uui-input>
+                                </div>
+                            </uui-form-layout-item>
+                            <uui-form-layout-item>
+                                <uui-label slot="label" for="guidecompanyinput">Company</uui-label>
+                                <span slot="description"></span>
+                                <div>
+                                    <uui-input id="guidecompanyinput" type="text" name="company" placeholder="" label="company">
+                                    </uui-input>
+                                </div>
+                            </uui-form-layout-item>
+                            <uui-form-layout-item>
+                                <uui-label slot="label" for="guidepositioninput">Position</uui-label>
+                                <span slot="description"></span>
+                                <div>
+                                    <uui-input id="guidepositioninput" type="text" name="position" placeholder="" label="position">
+                                    </uui-input>
+                                </div>
+                            </uui-form-layout-item>
+                            <uui-form-layout-item>
+                                <uui-label slot="label" for="guideemailinput" required="">Email</uui-label>
+                                <span slot="description"></span>
+                                <div>
+                                    <uui-input id="guideemailinput" type="email" name="email" placeholder="" label="email" value="{{UserEmail}}" required="" required-message="You must enter a Email">
+                                    </uui-input>
+                                </div>
+                            </uui-form-layout-item>
+                            <div style="text-align: end;">
+                                <uui-button type="reset" label="Reset" look="secondary">
+                                    Reset
+                                </uui-button>
+                                <uui-button type="submit" label="Submit" look="primary" color="positive">
+                                    Submit
+                                </uui-button>
+                            </div>
+                        </form>
+                    </uui-form>
+                </div>
+            </uui-box>
+        </div>
+        <div class="span3">
+            <uui-box id="contactoursupport" headline-variant="h5">
+                <div slot="headline" class="headline">
+                    Contact Us <i class=" icon-message"></i>
+                </div>
+                <p>To contact our support team, please email <a href="mailto:info@byteant.com">info@byteant.com</a> or fill out a form and we will respond promptly.</p>
+                <uui-form>
+                    <form style="max-width: 800px;" ng-submit="submitContactForm($event)">
+                        <uui-form-layout-item>
+                            <uui-label slot="label" for="contactnameinput" required="">Name </uui-label>
+                            <span slot="description"></span>
+                            <div>
+                                <uui-input id="contactnameinput" type="text" name="name" placeholder="" label="name" value="{{UserName}}" required="true" required-message="You must enter a name">
+                                </uui-input>
+                            </div>
+                        </uui-form-layout-item>
+                        <uui-form-layout-item>
+                            <uui-label slot="label" for="contactemailinput" required="">Email</uui-label>
+                            <span slot="description"></span>
+                            <div>
+                                <uui-input id="contactemailinput" type="email" name="email" placeholder="" label="email" value={{UserEmail}} required="" required-message="You must enter a Email">
+                                </uui-input>
+                            </div>
+                        </uui-form-layout-item>
+                        <uui-form-layout-item>
+                            <uui-label slot="label" for="contactmessageinput" required="">Message</uui-label>
+                            <span slot="description"></span>
+                            <div>
+                                <uui-textarea id="contactmessageinput" name="message" label="message" required="" required-message="You must enter a message"></uui-textarea>
+                            </div>
+                        </uui-form-layout-item>
+                        <div style="text-align: end;">
+                            <uui-button type="reset" label="Reset" look="secondary">
+                                Reset
+                            </uui-button>
+                            <uui-button type="submit" label="Submit" look="primary" color="positive">
+                                Submit
+                            </uui-button>
+                        </div>
+                    </form>
+                </uui-form>
+            </uui-box>
+            <uui-toast-notification-container bottom-up="" style="bottom:0; left:0; right:0; height: 100vh; padding: var(--uui-size-layout-1);">
+            </uui-toast-notification-container>
+        </div>
+    </div>
+        
+</div>

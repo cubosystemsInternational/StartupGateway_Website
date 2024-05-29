@@ -1,0 +1,584 @@
+.full-width {
+  width: 100%;
+}
+
+.portfolio-page .section-1 {
+  background: linear-gradient(180deg, #003231 0%, #006b71 100%);
+  min-height: 13.7em;
+  padding-bottom: 20px;
+}
+
+.portfolio-page .section-1 .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.portfolio-page .section-1 .container::before,
+.portfolio-page .section-1 .container::after {
+  display: none;
+}
+
+.portfolio-page .section-1 .since {
+  color: white;
+  margin-top: -67px;
+  padding-right: 10px;
+  font-size: 36px;
+  line-height: 32px;
+}
+
+.portfolio-page .section-1 .since span {
+  float: right;
+  font-size: 18px;
+}
+
+.portfolio-page .section-1 .title {
+  color: white;
+  margin-top: 60px;
+  font-weight: 500;
+  font-size: 48px;
+}
+
+.portfolio-page .section-1 .subtitle {
+  color: #fff;
+  margin-top: 21px;
+  text-transform: uppercase;
+  font-size: 18px;
+}
+
+.portfolio-page .section-2 .portfolio-nav {
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.portfolio-page .section-2 .nav-justified > li > a {
+  padding: 10px 27px;
+}
+
+.portfolio-page .section-2 .portfolio-nav {
+}
+
+.portfolio-page .section-2 .tab-name {
+  color: inherit;
+}
+.portfolio-page .section-2 .tic-toe .row .project-center {
+  margin-bottom: -20px;
+  height: inherit;
+  display: flex;
+}
+
+.portfolio-page .section-2 .tic-toe .row .scroll-center {
+  z-index: 1;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  margin-left: -15px;
+  top: calc(50% - 106px);
+}
+
+.portfolio-page .section-2 .tic-toe .item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .scroll {
+  background: url(/images/portfolio/scroll-black.png) center no-repeat;
+  width: 30px;
+  height: 211px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .scroll {
+  background: url(/images/portfolio/scroll-white.png) center no-repeat;
+  width: 30px;
+  height: 211px;
+}
+
+.portfolio-page .section-2 .center-align {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portfolio-page .section-2 .tic-toe .project-title-wrapper {
+  max-width: 26em;
+}
+
+.portfolio-page .section-2 .tic-toe .row.project-position {
+  position: relative;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .background-center {
+  margin: auto;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .background-center {
+  margin: auto;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .project {
+  margin: auto;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .project {
+  padding-right: 15px;
+  margin: auto;
+  text-align: right;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .category {
+  font-size: 11.9pt;
+  text-transform: uppercase;
+  color: #003231;
+  max-width: 26em;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .category {
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .project-title {
+  font-weight: 400;
+  font-size: 3em;
+  padding-top: 0.14em;
+  max-width: 11.7em;
+  color: #003231;
+  line-height: 1.2em;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .project-title {
+  font-weight: 400;
+  font-size: 3em;
+  padding-top: 0.14em;
+  color: #ffffff;
+  line-height: 1.18em;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .project-title-wrapper {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.portfolio-page .breadcrumb-wrp {
+  padding-left: 15px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .country {
+  padding-top: 0.9em;
+  color: #003231;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .country {
+  padding-top: 14.8px;
+  color: #ffffff;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .country-category {
+  padding-left: 3px;
+  font-weight: 500;
+  color: #003231;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .country-category {
+  padding-left: 3px;
+  font-weight: 500;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .project-description {
+  float: right;
+  max-width: 26em;
+  line-height: 1.5em;
+  padding-top: 59.2px;
+  color: #ffffff;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .project-description {
+  max-width: 26em;
+  line-height: 1.5em;
+  padding-top: 58px;
+  color: #003231;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .technologies {
+  text-transform: uppercase;
+  font-size: 12.2pt;
+  margin-bottom: 25px;
+  color: #2f4351;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .technologies {
+  text-transform: uppercase;
+  font-size: 12.2pt;
+  margin-bottom: 25px;
+  color: #2f4351;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .technologies {
+  text-transform: uppercase;
+  font-size: 10.5pt;
+  padding-top: 70px;
+  color: #ffffff;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .technologies {
+  text-transform: uppercase;
+  font-size: 10.5pt;
+  padding-top: 70px;
+  color: #ffffff;
+}
+
+.portfolio-page .section-2 .technologies-imgs {
+  padding-top: 24px;
+}
+
+.portfolio-page .section-2 .button {
+  margin-top: 30px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .technologies-icons div > div {
+  margin-right: 13px;
+  margin-bottom: 13px;
+}
+
+.portfolio-page .section-2 .tic-toe .icon-row {
+  display: inline-flex;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .technologies-icons {
+  width: 34.5px;
+  height: 36.4px;
+  margin-left: 13.5px;
+  margin-bottom: 16.6px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .btn {
+  margin-top: 23px;
+  border: 2px solid #003231;
+  min-width: 268px;
+  line-height: 45px;
+  text-transform: uppercase;
+  color: #003231;
+  border-radius: 100px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .btn {
+  margin-top: 23px;
+  border: 2px solid #ffffff;
+  min-width: 270px;
+  line-height: 44.9px;
+  text-transform: uppercase;
+  color: #ffffff;
+  border-radius: 100px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-odd .btn span {
+  letter-spacing: -0.6px;
+  font-size: 17px;
+  color: #2f4351;
+  font-weight: 100;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .btn span {
+  letter-spacing: -0.6px;
+  font-size: 17px;
+  color: #ffffff;
+  font-weight: 100;
+}
+
+.portfolio-page .section-2 .project-img {
+  width: 60vh;
+  height: 60vh;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-y: center;
+}
+
+.portfolio-page .section-2 .ma-img {
+  background-image: url(/images/portfolio/mechanic-advisor.png);
+}
+
+.portfolio-page .section-2 .topsoft-img {
+  background-image: url(/images/portfolio/topsoft.png);
+}
+
+.portfolio-page .section-2 .bbc-img {
+  background-image: url(/images/portfolio/condo-black-book.png);
+}
+
+.portfolio-page .section-2 .comply26-img {
+  background-image: url(/images/portfolio/comply26.png);
+}
+
+.portfolio-page .section-2 .okapico-img {
+  background-image: url(/images/portfolio/okaico.com.png);
+}
+
+.portfolio-page .section-2 .vsd-img {
+  background-image: url(/images/portfolio/virtual-sport-diary.png);
+}
+
+.portfolio-page .section-2 .dunamis-img {
+  background-image: url(/images/portfolio/dunamis.png);
+}
+
+.portfolio-page .section-2 .keypass-img {
+  background-image: url(/images/portfolio/keypass.png);
+}
+
+.portfolio-page .section-2 .nudge-img {
+  background-image: url(/images/portfolio/little-nudge.png);
+}
+
+.portfolio-page .section-2 .storeboard-img {
+  background-image: url(/images/portfolio/storeboard.png);
+}
+
+.portfolio-page .section-2 .bigteetool-img {
+  background-image: url(/images/portfolio/gourmet-food.png);
+}
+
+.portfolio-page .section-2 .steaks-game-img {
+  background-image: url(/images/portfolio/steaks-game.png);
+}
+
+.portfolio-page .section-2 .byteant-app-img {
+  background-image: url(/images/portfolio/byteant-app.png);
+}
+
+.portfolio-page .row.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px 0px;
+}
+
+.row.no-gutters > [class^="col-"],
+.row.no-gutters > [class*=" col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.hide-project {
+  display: none;
+}
+
+.portfolio-page .section-2 .tic-toe .project-info {
+  padding: 20px;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .project-info {
+  right: 50%;
+}
+
+.portfolio-page .section-2 .tic-toe .project-even .back-grd-img {
+  left: 50%;
+}
+
+.portfolio-page .section-2 .tic-toe .background-1 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-2 {
+  background: linear-gradient(90deg, #003231 0%, #006b71 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-3 {
+  background: linear-gradient(0deg, #e8f6f9 0.01%, rgba(239, 239, 243, 0) 100.01%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-4 {
+  background: linear-gradient(90deg, #006b71 0%, #003231 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-5 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-6 {
+  background: linear-gradient(90deg, #003231 0%, #006b71 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-7 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-8 {
+  background: linear-gradient(90deg, #003231 0%, #006b71 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-9 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-10 {
+  background: linear-gradient(90deg, #003231 0%, #006b71 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-11 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-12 {
+  background: linear-gradient(90deg, #003231 0%, #006b71 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-13 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-14 {
+  background: linear-gradient(90deg, #003231 0%, #006b71 100%);
+  height: 100vh;
+}
+
+.portfolio-page .section-2 .tic-toe .background-15 {
+  background: linear-gradient(180deg, rgba(239, 239, 243, 0) 0%, #e8f6f9 100%);
+  height: 100vh;
+}
+
+.flags-sprite-icons {
+  background-image: url(/images/portfolio/flags.svg);
+  background-repeat: no-repeat;
+  background-size: 26px 170px;
+}
+
+.uk {
+  background-position: 0px 0px;
+  width: 26px;
+  height: 18px;
+}
+
+.portfolio-nav .portfolio-main-categories-tabs {
+  margin-top: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 992px) {
+  .portfolio-page .section-2 .tic-toe .background-1,
+  .portfolio-page .section-2 .tic-toe .background-2,
+  .portfolio-page .section-2 .tic-toe .background-3,
+  .portfolio-page .section-2 .tic-toe .background-4,
+  .portfolio-page .section-2 .tic-toe .background-5,
+  .portfolio-page .section-2 .tic-toe .background-6,
+  .portfolio-page .section-2 .tic-toe .background-7,
+  .portfolio-page .section-2 .tic-toe .background-8,
+  .portfolio-page .section-2 .tic-toe .background-9,
+  .portfolio-page .section-2 .tic-toe .background-10,
+  .portfolio-page .section-2 .tic-toe .background-11,
+  .portfolio-page .section-2 .tic-toe .background-12,
+  .portfolio-page .section-2 .tic-toe .background-13,
+  .portfolio-page .section-2 .tic-toe .background-14,
+  .portfolio-page .section-2 .tic-toe .background-15 {
+    height: auto;
+  }
+
+  .portfolio-page .section-2 .tic-toe .project-even .back-grd-img {
+    left: auto;
+  }
+
+  .portfolio-page .section-2 .tic-toe .project-even .project-info {
+    right: auto;
+  }
+
+  .portfolio-page .section-2 .tic-toe .project-even .project {
+    text-align: left;
+  }
+}
+
+@media (max-width: 1200px) {
+  .portfolio-page .section-2 .tic-toe .project-odd .project-title,
+  .portfolio-page .section-2 .tic-toe .project-even .project-title {
+    font-size: 26pt;
+  }
+
+  .portfolio-page .section-2 .project-img {
+    width: 32vh;
+    height: 32vh;
+  }
+
+  .portfolio-page .section-2 .tic-toe .project-info {
+    padding: 40px;
+  }
+
+  .portfolio-page .section-2 .tic-toe .background-1,
+  .portfolio-page .section-2 .tic-toe .background-2,
+  .portfolio-page .section-2 .tic-toe .background-3,
+  .portfolio-page .section-2 .tic-toe .background-4,
+  .portfolio-page .section-2 .tic-toe .background-5,
+  .portfolio-page .section-2 .tic-toe .background-6,
+  .portfolio-page .section-2 .tic-toe .background-7,
+  .portfolio-page .section-2 .tic-toe .background-8,
+  .portfolio-page .section-2 .tic-toe .background-9,
+  .portfolio-page .section-2 .tic-toe .background-10,
+  .portfolio-page .section-2 .tic-toe .background-11,
+  .portfolio-page .section-2 .tic-toe .background-12,
+  .portfolio-page .section-2 .tic-toe .background-13,
+  .portfolio-page .section-2 .tic-toe .background-14,
+  .portfolio-page .section-2 .tic-toe .background-15 {
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolio-page .section-1 {
+    height: 18em;
+  }
+
+  .portfolio-page .section-1 .since {
+    margin-top: 30px;
+  }
+
+  .portfolio-page .section-2 .project-img {
+    width: 30vh;
+    height: 30vh;
+  }
+
+  .portfolio-page .section-2 .tic-toe .project-odd .project-title {
+    width: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .portfolio-page .section-1 .since {
+    display: none;
+  }
+
+  .portfolio-page .section-1 {
+    height: 100%;
+  }
+
+  .portfolio-page .section-1 .title {
+    margin-top: 20px;
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 414px) {
+  .portfolio-page .section-2 .nav-pills > li {
+    font-size: 10pt;
+  }
+
+  .portfolio-page .nav > li > a {
+    padding: 6px 9px;
+  }
+
+  .portfolio-page .nav-pills.tags-container {
+    margin-top: 20px;
+  }
+}

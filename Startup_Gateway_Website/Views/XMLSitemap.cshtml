@@ -1,0 +1,59 @@
+﻿@inherits UmbracoViewPage
+@using System.Linq;
+@using Microsoft.AspNetCore.Http;
+@{
+    Layout = null;
+    Context.Response.ContentType = "text/xml";
+    var homePage = Umbraco.ContentAtRoot().FirstOrDefault();
+
+}
+<?xml version='1.0' encoding='UTF-8' ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <url>
+        <loc>@GetUrlWithDomainPrefix(homePage?.Url() ?? string.Empty, Context)</loc>
+        <lastmod>@(string.Format("{0:s}+00:00", homePage?.UpdateDate))</lastmod>
+    </url>
+    @{
+        ListChildNodes(homePage);
+    }
+</urlset>
+
+@functions {
+    private static string GetUrlWithDomainPrefix(string url, HttpContext context)
+    {
+        if (url.StartsWith("/"))
+            url = url.Substring(1);
+
+        var protocol = context.Request.Scheme;
+        var host = context.Request.Host.Value;
+        var domainPrefix = string.Format("{0}://{1}/", protocol, host);
+
+        if (url.StartsWith(domainPrefix))
+            return url;
+        else
+            return domainPrefix + url;
+    }
+    private void ListChildNodes(IPublishedContent? startNode)
+    {
+
+        foreach (var node in startNode?.Children ?? Enumerable.Empty<IPublishedContent>())
+        {
+            //all nodes with tempalte
+            if (node.TemplateId > 0 && node.Name != "Sitemap" && node.Name != "Not found")
+            {
+                <url>
+                    <loc>@GetUrlWithDomainPrefix(node.Url(), Context)</loc>
+                    <lastmod>@(string.Format("{0:s}+00:00", node.UpdateDate))</lastmod>
+                </url>
+            }
+
+            if (node.Level <= 100 && node.Children.Count() > 0)
+            {
+                ListChildNodes(node);
+            }
+        }
+    }
+}

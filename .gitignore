@@ -1,0 +1,35 @@
+##
+## Umbraco CMS
+##
+
+# JSON schema files for appsettings.json
+Startup_Gateway_Website/appsettings-schema.json
+Startup_Gateway_Website/appsettings-schema.*.json
+
+# Packages created from the backoffice (package.xml/package.zip)
+Startup_Gateway_Website/umbraco/Data/CreatedPackages/
+
+# Temp folder containing Examine indexes, NuCache, MediaCache, etc.
+Startup_Gateway_Website/umbraco/Data/TEMP/
+
+# SQLite database files
+Startup_Gateway_Website/umbraco/Data/*.sqlite.db
+Startup_Gateway_Website/umbraco/Data/*.sqlite.db-shm
+Startup_Gateway_Website/umbraco/Data/*.sqlite.db-wal
+
+# Log files
+Startup_Gateway_Website/umbraco/Logs/
+
+# Media files
+Startup_Gateway_Website/wwwroot/media/
+
+# Bin
+Startup_Gateway_Website/bin
+
+#obj
+Startup_Gateway_Website/obj
+
+#node modules
+Startup_Gateway_Website/node_modules
+
+.vs

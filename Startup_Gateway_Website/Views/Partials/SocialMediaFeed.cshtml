@@ -1,0 +1,59 @@
+﻿@inherits UmbracoViewPage
+@{
+    var home = Umbraco.ContentAtRoot().First() as Home;
+}
+@if (!string.IsNullOrEmpty(home?.TwitterFeedScript) || !string.IsNullOrEmpty(home?.FacebookFeedScript) || !string.IsNullOrEmpty(home?.LinkedInFeedScript))
+{
+    <div class="ba-social-media">
+        <h3 id="tagHeaderSelected" class="under-line">@(Umbraco.GetDictionaryValue("blog.socialMedia"))</h3>
+        <div class="ba-feed">
+            <div class="ba-media-selector">
+                @if (!string.IsNullOrEmpty(home.TwitterFeedScript))
+                {
+                    <a class="btn" id="btnTwitter">Twitter</a>
+                }
+                @if (!string.IsNullOrEmpty(home.FacebookFeedScript))
+                {
+                    <a class="btn" id="btnFacebook">Facebook</a>
+                }
+                @if (!string.IsNullOrEmpty(home.LinkedInFeedScript))
+                {
+                    <a class="btn" id="btnLinkedIn">LinkedIn</a>
+                }
+            </div>
+            @if (!string.IsNullOrEmpty(home.TwitterFeedScript))
+            {
+                <div class="tab-content js-twitter-feed-container" style="display:none;">@Html.Raw(home.TwitterFeedScript)</div>
+            }
+            @if (!string.IsNullOrEmpty(home.FacebookFeedScript))
+            {
+                <div class="tab-content js-facebook-feed-container" style="display:none;">@Html.Raw(home.FacebookFeedScript)</div>
+            }
+            @if (!string.IsNullOrEmpty(home.LinkedInFeedScript))
+            {
+                <div class="tab-content js-linkedin-feed-container" style="text-align: center; display:none;">@Html.Raw(home.LinkedInFeedScript)</div>
+            }
+        </div>
+    </div>
+}
+<script>
+    function socialMediaBlock() {
+        const tabs = document.querySelectorAll('.ba-media-selector .btn');
+        const tabsContainers = document.querySelectorAll('.ba-feed .tab-content');
+
+        if (tabs) {
+            tabs[0].classList.add('ba-btn-active')
+        }
+
+        if (tabsContainers) {
+            tabsContainers[0].style.removeProperty('display');
+        }
+    }
+
+    addEventListener("DOMContentLoaded", (event) => {
+        socialMediaBlock();
+
+    });
+
+
+</script>

@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web;
+@{ 
+    var site = Model.Content.Site();
+    var selection = site.Children.Where(x => x.IsVisible());
+}
+<div class="collapse navbar-collapse text-center">
+    <ul class="nav navbar-nav col-xs-8">
+@foreach (var item in selection)
+{
+        <li class="col-sm-3"><a href="@item.Url"><span>@item.Name</span></a></li>
+}
+        <li class="col-sm-3 visible-xs"><a href="~/contact"><span>Contact Us</span></a></li>
+    </ul>
+</div>

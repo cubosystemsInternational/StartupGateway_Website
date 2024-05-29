@@ -1,0 +1,900 @@
+﻿.marketplace a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.marketplace .marketplace-header-block {
+  height: 600px;
+  min-height: 600px;
+  background-size: cover;
+  width: 100%;
+}
+
+.marketplace .marketplace-header-info {
+  height: inherit;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  color: #fefefe;
+}
+
+.marketplace .marketplace-header-info .title-header {
+  font-size: 48px;
+  margin-bottom: 50px;
+  font-weight: 600;
+  margin-top: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.marketplace .marketplace-header-info .header-description {
+  font-size: 18px;
+  margin-bottom: 50px;
+  line-height: 27px;
+}
+
+.marketplace .header-button a {
+  color: #fefefe;
+  text-decoration: none;
+  letter-spacing: 1px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+  line-height: unset;
+  text-transform: uppercase;
+}
+
+.marketplace .header-button a div {
+  position: relative;
+  bottom: 2px;
+}
+
+.marketplace .our-services-section,
+.marketplace .expertise-section,
+.marketplace .get-section,
+.marketplace .services-section,
+.marketplace .can-benefit-section,
+.marketplace .online-section,
+.marketplace .recommended-section {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.marketplace .related-blogposts .section-title,
+.marketplace .services-section .section-title,
+.marketplace .services-section .section-description,
+.marketplace .expertise-section .section-description,
+.marketplace .expertise-section .section-title,
+.marketplace .recommended-section .section-title,
+.marketplace .recommended-section .section-description,
+.marketplace .online-section .section-title {
+  margin-bottom: 48px;
+}
+
+.marketplace .can-benefit-section {
+  min-height: 600px;
+  background: linear-gradient(#00bac3, #006b8c);
+}
+
+.marketplace .can-benefit-section .section-title {
+  color: #ffffff;
+}
+
+.marketplace .can-benefit-section .under-line::after {
+  background-color: #fefefe;
+}
+
+.marketplace .can-benefit-section .solution-item {
+  padding-top: 100px;
+}
+
+.marketplace .can-benefit-section .solution-item {
+  min-height: 480px;
+}
+
+.marketplace .can-benefit-section .item-img {
+  width: 96px;
+  height: 96px;
+  background-color: #00bcd4;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 52px;
+  border-radius: 50%;
+  margin-bottom: 32px;
+}
+
+.marketplace .can-benefit-section .item-title,
+.marketplace .can-benefit-section .item-description {
+  font-size: 16px;
+  line-height: 28px;
+  color: #fefefe;
+}
+
+.marketplace .can-benefit-section .item-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  width: 65%;
+}
+.marketplace .can-benefit-section .col-lg-4:last-child .item-title {
+}
+
+.marketplace .can-benefit-section .btn-blue-big {
+  margin-top: 45px;
+}
+
+.marketplace .services-section .text-wrap {
+  margin-left: 18.8%;
+  margin-right: 15.5%;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.marketplace .services-section .section {
+  padding-top: 98px;
+  position: relative;
+  padding-bottom: 65px;
+}
+
+.marketplace .services-section .section-right {
+  padding-top: 98px;
+  position: relative;
+  padding-bottom: 65px;
+}
+
+.marketplace .services-section .title {
+  font-size: 30pt;
+  border-left: 3px solid #0097a7;
+  padding-right: 47px;
+  padding-left: 47px;
+  padding-top: 17px;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+}
+
+.marketplace .services-section .summary {
+  font-size: 12pt;
+  max-width: 777px;
+  line-height: 1.65em;
+  margin-top: -2.3px;
+  display: inline-block;
+}
+
+.marketplace .services-section .byteant-highlights-img {
+  background-repeat: no-repeat;
+  width: 185px;
+  height: 185px;
+  display: inline-block;
+}
+
+.marketplace .services-section .our-story-img {
+  background-repeat: no-repeat;
+  width: 185px;
+  height: 185px;
+  display: inline-block;
+}
+
+.marketplace .services-section .our-goals-img {
+  background-repeat: no-repeat;
+  width: 185px;
+  height: 185px;
+  display: inline-block;
+}
+
+.marketplace .services-section .our-vision-img {
+  background-repeat: no-repeat;
+  width: 185px;
+  height: 185px;
+  display: inline-block;
+}
+
+.marketplace .services-section .img-position {
+  position: absolute;
+  top: calc(50% - 104px);
+  right: 0%;
+}
+
+.marketplace .services-section .img-position-right {
+  position: absolute;
+  top: calc(50% - 92px);
+}
+
+.marketplace .services-section .text {
+  display: inline-block;
+  position: relative;
+  max-width: 64%;
+}
+
+.marketplace .services-section .text-right {
+  display: inline-block;
+  position: relative;
+  margin-left: 25.5%;
+  text-align: left;
+}
+
+.marketplace .services-section ul {
+  margin-bottom: 0;
+}
+
+.marketplace .services-section .list-section {
+  margin-left: -13px;
+}
+
+.marketplace .our-services-section {
+  background-color: #f2f5f8;
+}
+
+.marketplace .our-services-section .services-container {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.marketplace .our-services-section .our-service-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 220px;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+.marketplace .our-services-section .item-img {
+  width: 54px;
+  height: 54px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 54px;
+  margin-bottom: 28px;
+}
+
+.marketplace .our-services-section .item-title {
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+  color: #323f4e;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.marketplace .expertise-section .expertise-item {
+  padding-top: 100px;
+}
+
+.marketplace .expertise-section .expertise-item {
+  min-height: 280px;
+}
+
+.marketplace .expertise-section .item-img {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 32px;
+}
+
+.marketplace .expertise-section .item-title,
+.marketplace .expertise-section .item-description {
+  font-size: 16px;
+  line-height: 28px;
+  color: #323f4e;
+}
+
+.marketplace .expertise-section .item-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.marketplace .contact-form > div {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.marketplace .contact-form-left > div {
+  padding: 100px 150px 100px 200px;
+  height: 100%;
+}
+
+.marketplace .contact-form-left {
+  background: #fff;
+}
+
+.marketplace .contact-form-left .title {
+  font-size: 2.5em;
+  margin-bottom: 15px;
+}
+
+.marketplace .contact-form .title {
+  font-size: 29pt;
+  font-weight: 500;
+  word-spacing: 3pt;
+}
+
+.marketplace .contact-form .content {
+  margin-bottom: 40px;
+}
+
+.marketplace .contact-form .contact-us-form input,
+.marketplace .contact-form .contact-us-form textarea {
+  width: 100%;
+  border: none;
+  padding: 10px 0;
+  font-weight: 700;
+  line-height: 1em;
+  outline: none;
+  resize: vertical;
+  opacity: 0.8;
+}
+
+.marketplace .contact-form .contact-us-form label {
+  font-size: 0.875em;
+  font-weight: 300;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  top: 35px;
+  position: relative;
+  transition: 0.3s;
+}
+
+.marketplace .contact-form .contact-us-form .btn-submit {
+  min-height: 41px;
+  line-height: 1;
+  margin: 20px 0px 20px 20px;
+}
+
+.marketplace #rc-imageselect,
+.g-recaptcha {
+  display: inline;
+}
+
+.marketplace .contact-form-right {
+  position: relative;
+  background: linear-gradient(31deg, #0a3466 -25%, #17b9e5 125%);
+  color: #fff;
+}
+
+.marketplace .contact-form-right > div.animate {
+  padding-top: 100px;
+  padding-bottom: 117px;
+}
+
+.marketplace .contact-form-right > div {
+  padding: 275px 87px 0px 107px;
+  height: 100%;
+  transition: padding 1s;
+}
+
+.marketplace .contact-form .icon {
+  padding-left: 40px;
+  position: relative;
+}
+
+.marketplace .contact-form .content {
+  margin-bottom: 40px;
+}
+
+.marketplace .contact-form .icon.icon-location::before {
+  background-image: url("/images/icon-location.png");
+}
+
+.marketplace .contact-form .icon::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 25px;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center 5px;
+}
+
+.marketplace .contact-form .icon.icon-phone::before {
+  background-image: url(/images/icon-phone.png);
+}
+
+.marketplace .contact-form .email-link {
+  color: inherit;
+}
+
+.marketplace .contact-form-right::after {
+  content: "";
+  display: inline-block;
+  background: url(/images/img004.png);
+  width: 317px;
+  height: 168px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-repeat: no-repeat;
+}
+
+.marketplace .contact-form .social-icon {
+  display: inline-block;
+  width: 34px;
+  height: 33px;
+  margin-right: 5px;
+  position: relative;
+  z-index: 1;
+}
+
+.marketplace .contact-form-left {
+  width: 64%;
+}
+
+.marketplace .related-blogposts {
+  background-color: #fff;
+  padding: 90px 0;
+  overflow: hidden;
+}
+
+.marketplace .related-blogposts #blogposts .owl-item {
+  opacity: 0;
+  transition: opacity 400ms;
+}
+
+.marketplace .related-blogposts #blogposts .owl-stage-outer {
+  overflow: visible;
+}
+
+.marketplace .related-blogposts #blogposts .owl-item.active {
+  opacity: 1;
+}
+
+.marketplace #blogposts .item {
+  border-radius: 10px;
+  height: 345px;
+  transition: 0.5s ease box-shadow;
+}
+
+.marketplace #blogposts .cover {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-position: center;
+  height: 170px;
+}
+
+.marketplace .related-blogposts #blogposts .card-tags {
+  margin-top: 0;
+  box-shadow: none;
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+  overflow: hidden;
+  height: 24px;
+}
+
+.marketplace .related-blogposts #blogposts .card-tags > li:first-child {
+  margin-left: 0;
+}
+
+.marketplace .related-blogposts #blogposts .card-tags > li {
+  border: 1px solid #c6e6f0;
+  border-radius: 100px;
+  display: inline-block;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  line-height: 16pt;
+  margin: 0 5px;
+}
+
+.marketplace .related-blogposts #blogposts .card-tags > li > a {
+  text-align: center;
+  position: relative;
+  display: block;
+  padding: 0px 8px;
+  text-transform: uppercase;
+  color: #2d4458;
+  border-radius: unset;
+  line-height: 17px;
+}
+
+.marketplace .related-blogposts #blogposts .card-tags > li > a > span {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.marketplace .related-blogposts #blogposts h3.title {
+  font-size: 24px;
+  line-height: 32px;
+  color: #2d4458;
+  margin-bottom: 0;
+}
+
+.marketplace .related-blogposts #blogposts .title,
+.marketplace .related-blogposts #blogposts .meta {
+  text-align: unset;
+}
+
+.marketplace #blogposts .owl-dots {
+  margin: 30px 50px 0 50px;
+  display: flex;
+  display: -ms-flexbox;
+  justify-content: center;
+}
+
+.marketplace #blogposts .owl-dots .owl-dot {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marketplace #blogposts .owl-dots .owl-dot.active span,
+.marketplace #blogposts .owl-dots .owl-dot:hover span {
+  width: 14px;
+  height: 14px;
+  border: 3px solid #cae6eb;
+  border-radius: 10px;
+  background: #0097a7;
+}
+
+.marketplace #blogposts .owl-dots .owl-dot span {
+  width: 6px;
+  height: 6px;
+  background: #92b1cc;
+  border-radius: 10px;
+}
+
+.marketplace #blogposts .item:hover {
+  background-color: #fff;
+  box-shadow: 10px 10px 60px 0px rgba(54, 54, 54, 0.13);
+}
+
+.marketplace .related-blogposts .title {
+  font-size: 46px;
+  margin-bottom: 50px;
+}
+
+.marketplace .meta {
+  color: #748a96;
+  font-weight: 700;
+  font-size: 10pt;
+  padding-bottom: 40px;
+}
+
+.marketplace .meta div {
+  margin-left: 18px;
+  display: inline-block;
+}
+
+.marketplace .meta div:first-child {
+  margin-left: 0;
+}
+
+.marketplace .meta .clock-icon {
+  width: 13px;
+  height: 13px;
+  background-position: 0 0;
+}
+
+.marketplace .meta .icons {
+  background: url("/images/Blog/Sprite.svg") no-repeat;
+  background-size: 45px 30px;
+  position: relative;
+  top: 1px;
+}
+
+.marketplace .meta div.share {
+  cursor: pointer;
+}
+
+.marketplace .meta .share-icon {
+  width: 14px;
+  height: 14px;
+  background-position: -13px 0;
+  top: 4px;
+}
+
+.marketplace .meta .icons {
+  background: url(/images/Blog/Sprite.svg) no-repeat;
+  background-size: 45px 30px;
+  position: relative;
+  top: 1px;
+}
+
+.marketplace .get-section {
+  min-height: 600px;
+  background: linear-gradient(#00bac3, #006b8c);
+}
+
+.marketplace .get-section .section-title {
+  color: #ffffff;
+}
+
+.marketplace .get-section .under-line::after {
+  background-color: #fefefe;
+}
+
+.marketplace .get-section .solution-item {
+  padding-top: 100px;
+}
+
+.marketplace .get-section .solution-item {
+  min-height: 480px;
+}
+
+.marketplace .get-section .item-img {
+  width: 96px;
+  height: 96px;
+  background-color: #00bcd4;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 52px;
+  border-radius: 50%;
+  margin-bottom: 32px;
+}
+
+.marketplace .get-section .item-title,
+.marketplace .get-section .item-description {
+  font-size: 16px;
+  line-height: 28px;
+  color: #fefefe;
+}
+
+.marketplace .get-section .item-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.marketplace .our-works-section .section-title {
+  padding-top: 75px;
+}
+
+.marketplace .our-works-section .our-work-col {
+  padding-top: 88px;
+  padding-bottom: 100px;
+  min-height: 600px;
+}
+
+.marketplace .our-works-section .our-work-col:first-child {
+  padding-left: 30px;
+  padding-right: 30px;
+  background-color: #f7f7f7;
+  background: linear-gradient(270deg, #009ece 0%, #00bac3 100%);
+}
+
+.marketplace .our-works-section .our-work-col:last-child {
+  padding-right: 30px;
+  padding-left: 30px;
+  background-color: #b2ebf2;
+  background: linear-gradient(300deg, #006b8c 0%, #00bac3 100%);
+}
+
+.marketplace .our-works-section .our-work-item {
+  position: relative;
+  padding-bottom: 100px;
+  height: 100%;
+}
+
+.marketplace .our-works-section .item-img {
+  width: 230px;
+  height: 157px;
+  margin-bottom: 68px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.marketplace .our-works-section .item-title {
+  font-size: 30px;
+  line-height: 40px;
+  margin-bottom: 25px;
+}
+
+.marketplace .our-works-section .item-title,
+.marketplace .our-works-section .item-description {
+  color: #fefefe;
+}
+
+.marketplace .our-works-section .item-description {
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.marketplace .our-works-section .our-work-item .view-details-btn {
+  position: absolute;
+  bottom: 0;
+}
+
+.marketplace .recommended-item {
+  min-height: 200px;
+  margin-bottom: 20px;
+}
+
+.marketplace .recommended-item .item-title,
+.marketplace .recommended-item .item-description {
+  font-size: 16px;
+  line-height: 28px;
+  color: #323f4e;
+}
+
+.marketplace .recommended-item .item-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.marketplace .last-connecting-line {
+  margin-top: -331px;
+  padding-right: 90px;
+  padding-left: 90px;
+}
+
+@media (max-width: 1324px) {
+  .marketplace .our-services-section .services-container {
+    justify-content: unset;
+    flex-wrap: wrap;
+  }
+
+  .marketplace .our-services-section .our-service-item {
+    margin-bottom: 30px;
+    min-width: 210px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .marketplace .contact-form > div {
+    display: block;
+  }
+
+  .marketplace .contact-form-left > div {
+    padding: 60px 5px 50px 5px;
+  }
+
+  .marketplace .contact-form-right > div.animate {
+    padding-top: 60px;
+    padding-bottom: 80px;
+  }
+
+  .marketplace .contact-form-right > div {
+    padding: 140px 0px 0px 45px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .marketplace .contact-form-right {
+    width: calc(100% - 64%);
+  }
+}
+
+@media (max-width: 800px) {
+  .marketplace .contact-form .contact-us-form .btn-submit {
+    width: 100%;
+    line-height: 45px;
+    margin: 110px 0px 20px 20px;
+  }
+}
+
+@media (min-width: 992px) {
+  .marketplace .services-section .our-story-section + .connecting-line {
+    margin-top: -325px;
+    padding-right: 90px;
+    padding-left: 90px;
+  }
+
+  .marketplace .services-section .byteant-highlights-section {
+    padding-top: 0px;
+    margin-top: -275px;
+  }
+
+  .marketplace .services-section .byteant-highlights-section + .connecting-line {
+    margin-top: -250px;
+    padding-right: 90px;
+    padding-left: 90px;
+  }
+
+  .marketplace .services-section .our-goals-section {
+    padding-top: 0px;
+    margin-top: -240px;
+  }
+
+  .marketplace .services-section .our-goals-section + .connecting-line {
+    margin-top: -355px;
+    padding-right: 90px;
+    padding-left: 90px;
+  }
+
+  .marketplace .services-section .our-vision-section {
+    padding-top: 0px;
+    margin-top: -270px;
+  }
+}
+
+@media only screen and (max-width: 1400px) and (min-width: 992px) {
+  .marketplace .services-section .our-story-section + .connecting-line {
+    margin-top: -260px;
+  }
+
+  .marketplace .services-section .byteant-highlights-section {
+    margin-top: -200px;
+  }
+
+  .marketplace .services-section .byteant-highlights-section + .connecting-line {
+    margin-top: -220px;
+  }
+
+  .marketplace .services-section .our-goals-section {
+    margin-top: -160px;
+  }
+
+  .marketplace .services-section .our-goals-section + .connecting-line {
+    margin-top: -200px;
+  }
+
+  .marketplace .services-section .our-vision-section {
+    margin-top: -180px;
+  }
+
+  .marketplace .services-section .img-position-right {
+    position: absolute;
+    top: calc(40% - 92px);
+  }
+}
+
+@media (max-width: 1200px) {
+  .marketplace .services-section .text-right {
+    margin-left: calc(184px + 10%);
+  }
+
+  .marketplace .services-section .text-wrap {
+    margin-left: 15%;
+    margin-right: 10%;
+  }
+}
+
+@media (max-width: 1050px) {
+  .marketplace .services-section .connecting-line {
+    display: none;
+  }
+
+  .marketplace .services-section .section,
+  .about-us-page .section-2 .section-right {
+    margin-top: 0px;
+  }
+}
+
+@media (max-width: 768px) {
+  .marketplace .services-section .text {
+    max-width: none;
+  }
+
+  .marketplace .services-section .text-right {
+    margin-left: 0px !important;
+  }
+
+  .marketplace .services-section .section {
+    padding-top: 33px;
+    padding-bottom: 22px;
+  }
+
+  .marketplace .services-section .about-us-page .section-right {
+    padding-top: 33px;
+    padding-bottom: 22px;
+  }
+
+  .marketplace .services-section .img-position {
+    display: none;
+  }
+
+  .marketplace .services-section .img-position-right {
+    display: none;
+  }
+
+  .marketplace .services-section .title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 1420px) {
+  .marketplace .contact-form .contact-us-form .btn-submit {
+    width: 100%;
+    line-height: 45px;
+    margin: 110px 0 20px 20px;
+  }
+}

@@ -1,0 +1,436 @@
+﻿@inherits UmbracoViewPage<ByteAntU12DAStarterKit.Core.Models.BlogpostModel>
+@inject IImageUrlGenerator imageUrlGenerator
+@inject IShortStringHelper shortStringHelper
+@using ByteAntU12DAStarterKit.Core.Models;
+@using Umbraco.Cms.Core.Models;
+@using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+@using Microsoft.AspNetCore.Http.Extensions;
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.Extensions.DependencyInjection;
+@using Umbraco.Cms.Core.Media;
+@using Umbraco.Cms.Core.Strings;
+@using System.Text.Json;
+@using System.Text.Encodings.Web;
+@{
+    Layout = "Master.cshtml";
+    var homeNode = Umbraco.ContentAtRoot().First();
+    var rootBlog = homeNode.Descendant<Blog>();
+    var defaultCover = rootBlog?.DefaultCover?.Url();
+    var imageUrl = defaultCover;
+    var curCul = rootBlog?.GetCultureFromDomains(new Uri(Context.Request.GetDisplayUrl()));
+    var siteUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var culPref = "";
+    if (curCul != "en-US")
+    {
+        culPref = "/" + curCul;
+    }
+    var serializerSettings = new JsonSerializerOptions { Encoder = JavaScriptEncoder.Default };
+
+    var blogPost = Model.Content as Blogpost;
+}
+@section ogTags {
+    <meta property='og:description' content="@blogPost?.Excerpt" />
+    <meta property='og:url' content="@blogPost?.UrlSegment" />
+    @if (blogPost?.Cover != null)
+    {
+        imageUrl = Context.Request.Scheme + "://" + Context.Request.Host + blogPost?.Cover.GetCropUrl("huge", imageUrlGenerator);
+    }
+    <meta property='og:image' content="@imageUrl" />
+    <meta property="og:type" content="article" />
+}
+@section AddToHead
+    {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <link rel="preload" as="font" crossorigin="crossorigin" type="font/woff2" href="~/fonts/fontawesome-webfont.woff2?v=4.5.0">
+    <script type="application/ld+json">
+        {
+        "@@context": "https://schema.org",
+        "@@type": "BlogPosting",
+        "mainEntityOfPage": "True",
+        "headline": "@JsonSerializer.Serialize(blogPost?.PageTitle, serializerSettings).Trim('"')",
+        "image": "@imageUrl",
+        "url": "@Model.Content.Url(null, UrlMode.Absolute)",
+        "datePublished": "@blogPost?.PublishDateTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:sszzz")",
+        "dateModified": "@Model.Content.UpdateDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:sszzz")",
+        "inLanguage": "en-US",
+
+        @foreach (var author in Model?.Authors ?? new List<AuthorModel?>())
+        {
+            var authorContent = author?.Content as Author;
+            @Html.Raw(string.Format("\"author\": {{\"@type\": \"Person\", \"name\": \"{0}\", \"description\": \"{1}\", \"url\": \"{2}\", \"sameAs\":[\"{3}\",\"{4}\"]}},",
+            JsonSerializer.Serialize(authorContent?.AuthorName, serializerSettings).Trim('"'), JsonSerializer.Serialize(authorContent?.Description, serializerSettings).Trim('"'),
+            JsonSerializer.Serialize(authorContent?.Facebook, serializerSettings).Trim('"'), JsonSerializer.Serialize(authorContent?.LinkedIn, serializerSettings).Trim('"'),
+            JsonSerializer.Serialize(authorContent?.Twitter, serializerSettings).Trim('"')))
+
+        }
+        "publisher": {
+        "@@type": "Organization",
+        "name": "ByteAnt",
+        "url": "@($"{Context.Request.Scheme}://{Context.Request.Host}")",
+        "logo": {
+        "@@type": "ImageObject",
+        "url": "@(Context.Request.Scheme + "://" + Context.Request.Host + Url.Content("~/images/big-logo.png"))"
+        }
+        },
+        "description": "@JsonSerializer.Serialize(blogPost?.Excerpt, serializerSettings).Trim('"')",
+        "keywords": @Html.Raw(JsonSerializer.Serialize(blogPost?.Tags, serializerSettings))
+        }
+    </script>
+}
+<div class="header-scroll">
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
+</div>
+<div class="blogpost">
+    <div class="container breadcrumb-wrp">
+        <ol class="breadcrumb">
+            <li>
+                @if (curCul == "en-US")
+                {
+                    <a href="/">Home</a>
+                }
+                else
+                {
+                    <a href="/de/">Startseite</a>
+                }
+            </li>
+            <li>
+                @if (curCul == "en-US")
+                {
+                    <a href="/blog/">Blog</a>
+                }
+                else
+                {
+                    <a href="/de/blog/">Blog</a>
+                }
+            </li>
+            <li class="active">@blogPost?.PageTitle</li>
+        </ol>
+    </div>
+    <section>
+        <div class="container ba-container">
+            <div id="ba-main-body" class="ba-main-body col-md-8">
+                <div class="row">
+                    <div class="tag-wrap">
+                        <ul class="tags m-b-none nav-pills">
+                            @foreach (var tag in (blogPost?.Tags ?? Enumerable.Empty<string>()).OrderBy(t => t))
+                            {
+                                <li>
+                                    <a href="/blog/tags/@(tag.ToUrlSegment(shortStringHelper))/">
+                                        <span>@tag</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <h1 class="title">@blogPost?.PageTitle</h1>
+                    <div class="meta under-line">
+                        <div class="icons clock-icon"></div>
+                        <span class="date">@(blogPost?.PublishDateTime.ToString("dd MMM yyyy"))</span>
+                        @*<div class="icons eye-icon"></div>
+                        <span class="views">100</span>*@
+                        <div class="share" data-toggle="modal" data-target="#blogPost" data-blog-link="@(Context.Request.GetDisplayUrl())">
+                            <div class="icons share-icon"></div>
+                            <span class="share">share</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-body blogpost-zoom">
+                    @Html.GetGridHtml(Model.Content, "bodyText", "bootstrap3-fluid")
+                </div>
+                @if (blogPost?.EBookDescription != null)
+                {
+                    <div class="book-descript">
+                        <p>@blogPost?.EBookDescription</p>
+                    </div>
+                }
+                <div class="col-md-12 mail-section">
+                    @if (blogPost?.EBookImg != null && !string.IsNullOrEmpty(blogPost?.EBookImg.Url()))
+                    {
+                        <div id="img-wrap" class="book-img col-md-12">
+                            <img src="@blogPost?.EBookImg.Url()" class="w-130" />
+                        </div>
+                    }
+                    <div class="ba-post-full-ver">
+                        @if (blogPost?.EnableDownload ?? false && blogPost?.PDffile != null && !string.IsNullOrEmpty(blogPost?.PDffile?.Url()))
+                        {
+                            var fileName = blogPost?.PDffile?.Name;
+                            var fileExtension = blogPost?.PDffile?.GetProperty("umbracoExtension")?.GetValue()?.ToString();
+
+                            if (!string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(fileExtension) && !fileName.EndsWith("." + fileExtension, StringComparison.OrdinalIgnoreCase))
+                            {
+                                fileName += "." + fileExtension;
+                            }
+
+                            @await Html.PartialAsync("BlogpostFullVersionForm", 
+                                new ByteAntU12DAStarterKit.Core.Models.BlogpostFullVersionModel
+                                {
+                                    FileUrl = blogPost?.PDffile?.Url(),
+                                    FileName = fileName,
+                                    ButtonText = blogPost?.ButtonText
+                                })
+                        }
+                    </div>
+                </div>
+                @{
+                    var tags = blogPost?.Tags?.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(tags))
+                    {
+                        var servicePage = homeNode.Children.FirstOrDefault(ch => ch.GetProperty("tags") != null && (ch.Value<IEnumerable<string>>("tags") ?? Enumerable.Empty<string>()).Contains(tags));
+                        if (servicePage != null)
+                        {
+                            var bannerImg = servicePage.Value<IPublishedContent>("Banner");
+                            if (bannerImg != null)
+                            {
+                                <div id="baner-blog" class="blog-baner lazy" data-original="@bannerImg.Url()">
+                                    <a href="@servicePage.Url()">
+                                    </a>
+                                </div>
+                            }
+                        }
+                    }
+                }
+                @if (Model.TagContent != null)
+                {
+                    var content = Model.TagContent.Content;
+                    var description = content.Value<string>("description");
+                    var callToAction = content.Value<string>("callToAction") ?? string.Empty;
+                    var callToActionUrl = content.Value<IEnumerable<Link>>("callToActionUrl")?.FirstOrDefault();
+                    var url = callToActionUrl?.Url;
+                    var target = callToActionUrl?.Target;
+                    var cssClass = callToAction.Contains("<br/>") ? "multiline" : string.Empty;
+
+                    <div class="p-b ba-message-block-mobile">
+                        <div class="ba-message">
+                            <span>@description</span>
+                            <div class="ba-call-to-action">
+                                <a class="@cssClass btn btn-red" href="@url" target="@target">@Html.Raw(callToAction)</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="post-read space-50 ">
+                    <div class="m-t-xl m-b-xl ">
+                        <span class="social-lbl">Share article via:</span>
+                        <div class="share-block m-t-md">
+                            <div class="ss-box" data-ss-content="false" data-ss-social="facebook, pinterest, linkedIn, pinterest, telegram,  whatsapp, email"></div>
+                        </div>
+                    </div>
+                </div>
+                @if (Model?.Authors != null && Model.Authors.Any())
+                {
+                    <div class="ba-author">
+                        @foreach (var author in Model?.Authors ?? new List<AuthorModel?>())
+                        {
+                            var authorContent = author?.Content as Author;
+                            <div class="author-item">
+                                <div class="ba-author-title under-line">About the Author</div>
+                                <div class="ba-author-general-info">
+                                    @if (authorContent?.Avatar != null)
+                                    {
+                                        <a class="ba-author-avatar lazy" href="@author?.Content.Url()" data-original="@authorContent?.Avatar.Url()">
+                                        </a>
+                                    }
+                                    <div>
+                                        <a href="@author?.Content.Url()" class="ba-author-name">@authorContent?.AuthorName</a>
+                                        <a href="@author?.Content.Url()" class="ba-author-position">@authorContent?.Position</a>
+                                        <div class="ba-author-social-media">
+                                            @if (!string.IsNullOrEmpty(authorContent?.Email))
+                                            {
+                                                <a href="mailto:@authorContent?.Email" class="ba-author-mail">
+                                                    <img class="margin-height" src="~/images/author/icon-email.svg" alt="Email Icon">
+                                                </a>
+                                            }
+                                            @if (!string.IsNullOrEmpty(authorContent?.Facebook))
+                                            {
+                                                <a href="@authorContent?.Facebook" target="_blank">
+                                                    <img src="~/images/author/facebook-01.svg" alt="Facebook Icon">
+                                                </a>
+                                            }
+                                            @if (!string.IsNullOrEmpty(authorContent?.LinkedIn))
+                                            {
+                                                <a href="@authorContent?.LinkedIn" target="_blank">
+                                                    <img src="~/images/author/linkedin-01.svg" alt="LinkedIn Icon">
+                                                </a>
+                                            }
+                                            @if (!string.IsNullOrEmpty(authorContent?.Twitter))
+                                            {
+                                                <a href="@authorContent?.Twitter" target="_blank">
+                                                    <img class="margin-height" src="~/images/author/twitter-01.svg" alt="Twitter Icon">
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ba-author-description">
+                                    @authorContent?.Description
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="ba-sidebar col-md-4 sticky">
+                <div class="ba-sidebar-title">@(Umbraco.GetDictionaryValue("blog.categories"))</div>
+                <div class="ba-category-list">
+                    <a class="ba-category" href="@(culPref)/blog/">
+                        <span>@Umbraco.GetDictionaryValue("tags.all")</span>
+                    </a>
+                    @foreach (var tag in Model?.Tags.Where(x => x != "ALL") ?? Enumerable.Empty<string>())
+                    {
+                        var clss = (blogPost?.Tags ?? Enumerable.Empty<string>()).Contains(tag) ? "ba-category ba-selected" : "ba-category";
+                        <a class="@clss" href="@(culPref)/blog/tags/@(tag.ToUrlSegment(shortStringHelper))/">
+                            <span>@tag</span>
+                        </a>
+                    }
+                </div>
+                @if (Model?.TagContent != null)
+                {
+                    var content = Model.TagContent.Content;
+                    var description = content.Value<string>("description");
+                    var callToAction = content.Value<string>("callToAction") ?? string.Empty;
+                    var callToActionUrl = content.Value<IEnumerable<Link>>("callToActionUrl")?.FirstOrDefault();
+                    var url = callToActionUrl?.Url;
+                    var target = callToActionUrl?.Target;
+                    var cssClass = callToAction.Contains("<br/>") ? "multiline" : string.Empty;
+
+                    <div class="ba-message">
+                        <span>@description</span>
+                        <div class="ba-call-to-action">
+                            <a class="@cssClass btn btn-red" href="@url" target="@target">@Html.Raw(callToAction)</a>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="modal fade js-blog-modal" id="blogPost" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span class="close-btn">&times;</span>
+                        </button>
+                        <h3 class="title">Share this POST</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="share-link flex-display-center" title="Click to copy">
+                            <span class="share-blog-link"></span>
+                        </div>
+                        <div class="m-t-xl m-b-xl">
+                            <span class="social-lbl">Share with social media</span>
+                            <div class=" m-t-md flex-display-center">
+                                <div class="ss-box" data-ss-content="false" data-ss-social="facebook, pinterest, linkedIn, pinterest, telegram,  whatsapp, email"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @if (Model?.RelatedBlogpost.Count > 0)
+    {
+        <section class="related-blogposts">
+            <div class="container">
+                <h1>@Umbraco.GetDictionaryValue("blog.nextPostsTitle")</h1>
+                <div id="blogposts" class="owl-carousel">
+                    @foreach (var item in Model.RelatedBlogpost)
+                    {
+                        var blogpost = item as Blogpost;
+                        var url = Context.Request.GetDisplayUrl().Contains("/umbraco/") ? Context.Request.GetTypedHeaders()?.Referer?.AbsoluteUri : Context.Request.GetDisplayUrl();
+                        var shareUrl = "";
+                        var bpUrl = item.Url(curCul);
+                        if (string.IsNullOrEmpty(bpUrl))
+                        {
+                            bpUrl = item.Url();
+                        }
+                        shareUrl = siteUrl + bpUrl;
+                        var bpMetaTitle = item.Value<string>("title", curCul);
+                        if (string.IsNullOrEmpty(bpMetaTitle))
+                        {
+                            bpMetaTitle = item.Value<string>("title");
+                        }
+                        var seoMetaDescription = item.Value<string>("seoMetaDescription", curCul);
+                        if (string.IsNullOrEmpty(seoMetaDescription))
+                        {
+                            seoMetaDescription = item.Value<string>("seoMetaDescription");
+                        }
+                        var bpMetaKeywords = item.Value<IEnumerable<string>>("keywords", curCul);
+                        if (bpMetaKeywords?.Count() == 0)
+                        {
+                            bpMetaKeywords = item.Value<IEnumerable<string>>("keywords");
+                        }
+                        var bpMetaKeywordsStr = String.Join(", ", bpMetaKeywords ?? Enumerable.Empty<string>());
+                        var pageTitle = item.Value<string>("pageTitle", curCul);
+                        if (string.IsNullOrEmpty(pageTitle))
+                        {
+                            pageTitle = item.Value<string>("pageTitle");
+                        }
+                        var cover = item.Value<ImageCropperValue>("cover");
+                        var coverSrc = defaultCover;
+                        if (cover != null)
+                        {
+                            coverSrc = cover.GetCropUrl("small", imageUrlGenerator);
+                        }
+                        var metaImage = coverSrc;
+                        <div class="item">
+                            <a href="@item.Url()">
+                                <div class="cover owl-lazy" data-src="@(blogpost?.Cover != null ? blogpost.Cover.GetCropUrl("small", imageUrlGenerator) : defaultCover)" alt="@blogpost?.Name"></div>
+                            </a>
+                            <div class="description m">
+                                <ul class="card-tags">
+                                    @foreach (var tag in (blogpost?.Tags ?? Enumerable.Empty<string>()).OrderBy(t => t))
+                                    {
+                                        <li>
+                                            <a href="/blog/tags/@(tag.ToUrlSegment(shortStringHelper))/" class="card-tag">
+                                                <span>
+                                                    @tag
+                                                </span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                                <a href="@item.Url()">
+                                    <h3 class="title m-t-xs">@blogpost?.Name</h3>
+                                </a>
+                                <div class="meta m-t">
+                                    <div class="icons clock-icon"></div>
+                                    <span class="date">@(blogpost?.PublishDateTime.ToString("dd MMM yyyy"))</span>
+
+                                    <div class="share" data-toggle="modal" onclick="shareClick('@shareUrl', '@seoMetaDescription', '@bpMetaKeywordsStr', '@bpMetaTitle', '@metaImage')" data-target="#blogPost" data-blog-link="@(shareUrl)">
+                                        <div class="icons share-icon"></div>
+                                        <span class="share">share</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+    @*@{
+    var homeContent = Model.Content.Site() as Home;
+    }*@
+    <div id="subscription-wrp">
+        @await Html.PartialAsync("SubscribeFormBlogPost", new ByteAntU12DAStarterKit.Core.Models.SubscribeModel())
+    </div>
+    @await Html.PartialAsync("SubscribeForm", new ByteAntU12DAStarterKit.Core.Models.SubscribeModel())
+</div>
+@section Scripts {
+    <script>
+
+        // When the user scrolls the page, execute myFunction
+        window.onscroll = function () { animateScroll() };
+
+        function animateScroll() {
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+        }
+
+    </script>
+}

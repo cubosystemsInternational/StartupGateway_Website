@@ -1,0 +1,20 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    ContentModels.Home home = Umbraco.ContentAtRoot().First() as ContentModels.Home;
+}
+
+<section class="contact-form contact-us" id="contact-as">
+    <div>
+        <div class="contact-form-left col-md-12">
+            <div>
+                <div class="title">@home.ContactHeader</div>
+                <div class="content">@home.ContactText</div>
+                @Html.Partial("ContactForm", new ByteAntU12DAStarterKit.Models.ContactModel { RecapthaKey = home.RecaptchaKey })
+            </div>
+        </div>
+        <div class="contact-form-right js-contact-home col-md-12">
+            @Html.Partial("ContactDetails")
+        </div>
+    </div>
+</section>
