@@ -3,16 +3,33 @@
 @using System.Net.Http;
 @using Newtonsoft.Json;
 @using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Http
+@using System.Web;
+
+
 
 @{
+    var domain = "https://localhost:44371";
     Layout = "Master.cshtml";
     ViewBag.headerClass = "dark";
     var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
     var curCulture = Model.GetCultureFromDomains();
 
-    // API URL
-    var apiUrl = "https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryNameIndustryName=";
-    dynamic projects = null;
+
+// Get the search term from the query string
+var queryString = ViewContext.HttpContext.Request.Query["search"].ToString();
+var searchTerm= HttpUtility.UrlDecode(queryString.TrimEnd('/'));
+var searchQuery = searchTerm.Replace("~", " ");
+var searchProjects = "";
+
+if (!string.IsNullOrWhiteSpace(searchQuery))
+{
+    searchProjects = searchQuery;
+}
+
+// API URL with search term
+var apiUrl = $"{domain}/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName={searchProjects}";
+dynamic projects = null;
 
     // Fetch data from the API
     using (var client = new HttpClient())
@@ -25,6 +42,8 @@
         }
     }
 }
+
+
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <div class="about-us-page">
@@ -91,15 +110,57 @@
         color: #777;
         font-size: 24px; /* Increased font size */
     }
+        
+      /**/  
+.card {
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 15px;
+}
+
+.card-title {
+    margin-bottom: 10px;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px 0 0 8px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-text {
+    margin-bottom: 10px;
+}
+
+.view-details {
+    margin-top: 20px;
+    width: 100%;
+}
+
+
+
+    
 </style>
 
 <div class="row mb-4">
     <div class="col-md-12 search-container">
-        <i class="material-icons search-icon">search</i> <!-- Material Icon for search -->
-        <input type="text" id="searchInput" class="search-input" placeholder="Search for projects...">
+        <!--<i class="material-icons search-icon">search</i>  Material Icon for search -->
+        <input type="text" id="searchInput" class="search-input" placeholder="Search for projects..." value="@searchQuery" >
         <button class="search-btn" id="searchBtn">Find</button>
     </div>
 </div>
+
 
 
             <div class="row" id="projectCards">
@@ -107,31 +168,35 @@
                 {
                     foreach (var project in projects)
                     {
-                        <div class="col-md-12">
-                <div class="project-card">
-                    <img src="image-placeholder.jpg" class="img-thumbnaie" alt="Project Image">
-                    <div class="project-details">
-                        <h5 class="card-title">@project.projectName</h5>
-                        <p class="card-text">@project.projectDescription</p>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p class="card-text"><strong>Company:</strong> @project.companyName</p>
-                                <p class="card-text"><strong>Founder:</strong> @project.founder</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p class="card-text"><strong>Valuation:</strong> $@project.projectValuation</p>
-                                <p class="card-text"><strong>Industry:</strong> @project.industry</p>
-                            </div>
-                        </div>
-                        <a href="#" class="btn btn-primary view-details" data-id="@project.id" data-title="@project.projectName">View Details</a>
-                    </div>
+                    <br>
+                        <div class="col-md-12 mb-3">
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-6">
+                <img src="@ViewBag.Domain/media/alhbhyy5/default.png" class="img-fluid rounded-start" alt="Project Image">
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">@project.projectName</h5>
+                    <p class="card-text"><strong>Valuation:</strong> $@project.projectValuation</p>
+                    <p class="card-text"><strong>Description:</strong> @project.projectDescription</p>
+                    <p class="card-text"><strong>Industry:</strong> @project.industry</p>
+                    <p class="card-text"><strong>Founder:</strong> @project.founder</p>
+                    <p class="card-text"><strong>Company:</strong> @project.companyName</p>
+                    <a href="#" class="btn btn-primary view-details" data-id="@project.id" data-title="@project.projectName">View Details</a>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
+
                     }
                 }
                 else
                 {
-                    <p>Failed to load projects from the API.</p>
+                    <p>No projects found.</p>
                 }
             </div>
         </div>
@@ -140,67 +205,86 @@
 
 @section Scripts {
     <script>
+    var domain = '@ViewBag.Domain';
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add event listener for the search button click
         document.getElementById('searchBtn').addEventListener('click', async function() {
             await searchProjects();
+            resetUrl();
         });
 
+        // Add event listener for the search input keydown event
         document.getElementById('searchInput').addEventListener('keydown', async function(e) {
             if (e.key === 'Enter') {
                 await searchProjects();
+                resetUrl();
             }
         });
+    });
 
-        async function searchProjects() {
-            var projectName = document.getElementById('searchInput').value.trim();
-            var encodedProjectName = encodeURIComponent(projectName).replace(/%20/g, '+');
-            var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=${encodedProjectName}&companyName=&IndustryNameIndustryName=`;
+    async function searchProjects() {
+        var projectName = document.getElementById('searchInput').value.trim();
+        var encodedProjectName = encodeURIComponent(projectName).replace(/%20/g, '+');
+        var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=${encodedProjectName}`;
 
-            try {
-                var response = await fetch(apiUrl);
-                if (response.ok) {
-                    var projects = await response.json();
-                    updateProjectCards(projects);
-                } else {
-                    console.error('Failed to fetch projects from the API.');
-                }
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-            }
-        }
-
-        function updateProjectCards(projects) {
-            var projectCardsDiv = document.getElementById('projectCards');
-            projectCardsDiv.innerHTML = '';
-
-            if (projects && projects.length > 0) {
-                var html = '';
-                projects.forEach(project => {
-                    html += `
-                        <div class="col-md-12">
-                            <div class="project-card">
-                                <img src="image-placeholder.jpg" class="project-image" alt="Project Image">
-                                <div class="project-details">
-                                    <h5 class="card-title">${project.projectName}</h5>
-                                    <p class="card-text">${project.projectDescription}</p>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p class="card-text"><strong>Company:</strong> ${project.companyName}</p>
-                                            <p class="card-text"><strong>Founder:</strong> ${project.founder}</p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p class="card-text"><strong>Valuation:</strong> $${project.projectValuation}</p>
-                                            <p class="card-text"><strong>Industry:</strong> ${project.industry}</p>
-                                        </div>
-                                    </div>
-                                    <a href="#" class="btn btn-primary view-details" data-id="${project.id}" data-title="${project.projectName}">View Details</a>
-                                </div>
-                            </div>
-                        </div>`;
-                });
-                projectCardsDiv.innerHTML = html;
+        try {
+            var response = await fetch(apiUrl);
+            if (response.ok) {
+                var projects = await response.json();
+                updateProjectCards(projects);
+             } else if (response.status === 404 || response.status === 500) {
+                // Handle 404 or 500 error
+                updateProjectCards([]);
             } else {
-                projectCardsDiv.innerHTML = '<p>No projects found.</p>';
+                console.error('Failed to fetch projects from the API.');
             }
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+        }
+    }
+
+    function updateProjectCards(projects) {
+        var projectCardsDiv = document.getElementById('projectCards');
+        projectCardsDiv.innerHTML = '';
+
+        if (projects && projects.length > 0) {
+            var html = '';
+            projects.forEach(project => {
+                html += `
+                <br/>
+                    <div class="col-md-12 mb-3">
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-6">
+                <img src="${domain}/media/alhbhyy5/default.png" class="img-fluid rounded-start project-image" alt="Project Image">
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">${project.projectName}</h5>
+                    <p class="card-text"><strong>Valuation:</strong> $${project.projectValuation}</p>
+                    <p class="card-text"><strong>Description:</strong> ${project.projectDescription}</p>
+                    <p class="card-text"><strong>Industry:</strong> ${project.industry}</p>
+                    <p class="card-text"><strong>Founder:</strong> ${project.founder}</p>
+                    <p class="card-text"><strong>Company:</strong> ${project.companyName}</p>
+                    <a href="#" class="btn btn-primary view-details" data-id="${project.id}" data-title="${project.projectName}">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`
+            });
+            projectCardsDiv.innerHTML = html;
+        } else {
+            projectCardsDiv.innerHTML = '<p>No projects found.</p>';
+        }
+    }
+    // Refresh the url 
+     function resetUrl() {
+            var newUrl = window.location.href.split('?')[0]; // Get the URL without query parameters
+            window.history.pushState({}, document.title, newUrl); // Update the URL without reloading the page
         }
     </script>
+
+
+
 }

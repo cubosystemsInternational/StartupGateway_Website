@@ -4,10 +4,108 @@
 }
 @section AddToHead {
     <link rel="stylesheet" href="~/bundles/index.min.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 }
+<style>
+    /* Custom CSS for the search bar */
+    .search-container {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        width: calc(100% - 160px);
+        padding: 15px 35px;
+        border: 2px solid #ccc;
+        border-radius: 30px;
+        font-size: 18px;
+        font-family: 'Roboto', sans-serif;
+        transition: border-color 0.3s ease;
+        background-color: #f7f7f7;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #4CAF50;
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 5%;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background-color: #ea3934;
+        color: #fff;
+        border-radius: 10px;
+        padding: 15px 25px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background-color: #8a130f;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        font-size: 24px;
+    }
+
+    /* for the background */
+    .content__text {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .background-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(7px);
+    }
+
+    .content-overlay {
+        position: relative;
+        z-index: 1;
+    }
+    #autocompleteList {
+    width: 58vw !important; /* Set the desired width */
+    
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
+    border: 1px solid #E0F7FA;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    position: absolute !important ;
+        left: 2vw;
+}
+/*.dropdown-menu > li > a {*/
+/*    padding: 10px 20px;*/
+/*    font-size: 16px;*/
+/*    font-family: 'Roboto', sans-serif;*/
+/*}*/
+
+</style>
+
 <div id="hurricane" class="hurricane-container">
     <main>
         <div class="content">
+                <video autoplay loop muted class="background-video">
+        <source src="https://localhost:44308/media/40lnnrf3/technology-network-background-free-video.mp4" type="video/mp4">
+        <!--Your browser does not support the video tag.-->
+    </video>
             <!--<canvas class="scene scene--full" id="scene"></canvas>-->
             <!--<script id="wrapVertexShader" type="x-shader/x-vertex">-->
             <!--    #define PI 3.1415926535897932384626433832795-->
@@ -31,25 +129,36 @@
           
 
 
-            
-            
-            
-            <div class="container content__text ">
+<div class="container content__text ">
                 <h1 class="content__title hurricane-title">@Model.KeyMessage</h1>
                 <h3 class="content__subtitle hurricane-subtitle">@Model.KeyMessageContent</h3>
                 <div class="anime-buttons">
-                    <div class="button btn-anime">
-                        <a href="#" class="btn btn-red" id="learn">
-                            <span>@(Umbraco.GetDictionaryValue("hp.btn.learnMore"))</span>
-                        </a>
-                    </div>
-                    <div class="button btn-anime">
-                        <a href="@Model.ContactUs?.Url()" target="_blank" class="btn btn-red">
-                            <span>@(Umbraco.GetDictionaryValue("hp.btn.contact"))</span>
-                        </a>
-                    </div>
+                    <!--<div class="button btn-anime">-->
+                    <!--    <a href="#" class="btn btn-red" id="learn">-->
+                    <!--        <span>@(Umbraco.GetDictionaryValue("hp.btn.learnMore"))</span>-->
+                    <!--    </a>-->
+                    <!--</div>-->
+                    <!--<div class="button btn-anime">-->
+                    <!--    <a href="@Model.ContactUs?.Url()" target="_blank" class="btn btn-red">-->
+                    <!--        <span>@(Umbraco.GetDictionaryValue("hp.btn.contact"))</span>-->
+                    <!--    </a>-->
+                    <!--</div>-->
                 </div>
             </div>
+
+            @* search bar *@
+<div class="search-container">
+    <input type="text" id="searchInputHome" class="search-input" placeholder="Search for projects..." autocomplete="off">
+    <button class="search-btn" id="searchBtnHome">Find</button>
+    <div id="autocompleteList" class="dropdown-menu" style="width: calc(100% - 160px); position: absolute; display: none;"></div>
+</div>
+
+
+
+@* Added Search bar *@
+
+
+
         </div>
     </main>
 </div>
@@ -360,6 +469,33 @@ foreach (var link in serviceItem.DownloadLink) {
     </div>
 </section>
 @section Scripts {
+
+
+@* for the search bar to work *@
+
+<script>
+    // JavaScript to handle the search functionality
+    document.getElementById('searchBtnHome').addEventListener('click', function() {
+        var searchTerm = document.getElementById('searchInputHome').value; // Get the search term
+        if (searchTerm) { // Check if the search term is not empty
+            var encodedSearchTerm = searchTerm.replace(/ /g, '~'); // Replace spaces with ~
+            window.location.href = '/projects?search=' + encodedSearchTerm; // Redirect to /projects with the encoded search term
+        }
+    });
+
+    // Optionally, you can submit the search on pressing Enter
+    document.getElementById('searchInputHome').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') { // Check if Enter key is pressed
+            event.preventDefault(); // Prevent the default form submission
+            document.getElementById('searchBtnHome').click(); // Trigger the button click
+        }
+    });
+</script>
+
+
+
+
+
     <script src="~/bundles/hurricane.min.js" asp-append-version="true"></script>
     <script src="~/bundles/home.min.js" asp-append-version="true"></script>
     <script>
@@ -405,6 +541,75 @@ foreach (var link in serviceItem.DownloadLink) {
         carousel.addEventListener('scroll', (e) => {
             var percentage = (e.target.scrollLeft / maxScroll) * 100;
             slider.value = percentage;
+        });
+    </script>
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+       $(document).ready(function() {
+        // Fetch industry names
+        $.ajax({
+            url: 'https://localhost:44371/api/industry/GetAllIndustry',
+            method: 'GET',
+            success: function(data) {
+                var industryNames = data.map(function(industry) {
+                    return industry.industryName;
+                });
+
+                // Set up input event listener
+                $("#searchInputHome").on('input', function() {
+                    var searchTerm = $(this).val().toLowerCase();
+                    var filteredNames = industryNames.filter(function(name) {
+                        return name.toLowerCase().includes(searchTerm);
+                    });
+
+                    // Show/hide the dropdown
+                    if (filteredNames.length > 0 && searchTerm) {
+                        var dropdown = $("#autocompleteList");
+                        dropdown.empty();
+                        filteredNames.forEach(function(name) {
+                            dropdown.append('<li><a href="#">' + name + '</a></li>');
+                        });
+                        dropdown.show();
+                    } else {
+                        $("#autocompleteList").hide();
+                    }
+                });
+
+                // Handle dropdown item click
+                $("#autocompleteList").on('click', 'li a', function() {
+                    $("#searchInputHome").val($(this).text());
+                    $("#autocompleteList").hide();
+                });
+
+                // Hide dropdown when clicking outside
+                $(document).click(function(event) {
+                    if (!$(event.target).closest('.search-container').length) {
+                        $("#autocompleteList").hide();
+                    }
+                });
+            },
+            error: function(err) {
+                console.error("Error fetching industry data: ", err);
+            }
+        });
+
+            // Handle search button click
+            $("#searchBtnHome").click(function() {
+                var searchTerm = $("#searchInputHome").val();
+                if (searchTerm) {
+                    var encodedSearchTerm = searchTerm.replace(/ /g, '~');
+                    window.location.href = '/projects?search=' + encodedSearchTerm;
+                }
+            });
+
+            // Handle enter key press
+            $("#searchInputHome").keypress(function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    $("#searchBtnHome").click();
+                }
+            });
         });
     </script>
 }
