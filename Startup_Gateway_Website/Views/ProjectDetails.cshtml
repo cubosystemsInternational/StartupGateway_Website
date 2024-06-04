@@ -1,0 +1,89 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Web.Common.PublishedModels.ProjectDetails>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using System.Net.Http;
+@using Newtonsoft.Json;
+@using System.Threading.Tasks;
+
+@{
+    Layout = "Master.cshtml";
+    ViewBag.headerClass = "dark";
+    var projectId = ViewContext.HttpContext.Request.Query["id"].ToString();
+    dynamic project = null;
+
+    if (!string.IsNullOrWhiteSpace(projectId))
+    {
+        var apiUrl = $"https://localhost:44371/api/projects/GetSingleProjectDetailById/{projectId}";
+
+        using (var client = new HttpClient())
+        {
+            var response = await client.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                project = JsonConvert.DeserializeObject<dynamic>(data);
+            }
+        }
+    }
+}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<div class="about-us-page">
+    <section class="section-1">
+        <div class="title-padding container">
+            <h1 class="title">@Model.Heading</h1>
+            <div class="subtitle">
+            </div>
+        </div>
+    </section>
+    <br>
+    <!-- New Projects Section -->
+    <section class="section-2">
+        <div class="container">
+<div class="row gx-4 gx-lg-5 align-items-center">
+                <div class="col-md-6">
+                    <img class="card-img-top mb-5 mb-md-0" src="@Url.Content("~/media/alhbhyy5/default.png")" alt="@project.projectName" />
+                </div>
+
+
+<div class="col-md-6">
+    <div class="mb-3">
+        <i class="material-icons text-muted" style="vertical-align: middle;">update</i>
+        <small class="text-muted">Last Modified: @project.modifiedOn</small>
+    </div>
+    <h1 class="display-5 fw-bolder title mb-3">@project.projectName</h1>
+    <div class="fs-5 mb-4">
+        <i class="material-icons text-muted" style="vertical-align: middle;">monetization_on</i>
+        <small>Project Valuation: <span class="text-decoration-line-through text-muted">$@project.projectValuation</span></small>
+    </div>
+    <div class="mb-3">
+        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">domain</i> <strong>Industry:</strong> @project.industryName</p>
+    </div>
+    <div class="mb-3">
+        
+        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">person</i> <strong>Founder:</strong> @project.founder</p>
+    </div>
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1 "><u><strong>Company Details</strong></u></h4>
+        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">home_work</i> <strong>Company Name:</strong> @project.companyName</p>
+        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">nature_people</i> <strong>Nature of Business:</strong> @project.natureOfBusiness</p>
+        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">info</i> <strong>About Company:</strong> @project.companyDescription</p>
+    </div>
+    
+    <div>
+        <h5 class="fw-bold col-4 text-start"><u>Contact Info</u></h5>
+        <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">email</i> <strong>Email:</strong> <a href="mailto:@project.email" class="text-decoration-none">@project.email</a></p>
+        <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">phone</i> <strong>Contact No:</strong> <a href="tel:@project.contactNo" class="text-decoration-none">@project.contactNo</a></p>
+    </div>
+</div>
+<p class="lead text-secondary mb-4"><i class="material-icons text-muted" style="vertical-align: middle;">description</i> <strong>Project Description:</strong></p>
+ 
+            </div>
+            <divclass="row gx-4">
+                <h5 class="display-5 fw-bolder">@project.projectDescription</h5>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+

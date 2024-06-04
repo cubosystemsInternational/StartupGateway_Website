@@ -72,49 +72,58 @@
 }
 @{
     void Navbar(IEnumerable<IPublishedContent> navigation, bool listStyle = true)
+{
+    IPublishedContent currentContent = Umbraco.AssignedContentItem;
+    ContentModels.Home? home = Umbraco.ContentAtRoot().FirstOrDefault() is ContentModels.Home h ? h : null;
+    var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+    var curCulture = Model.GetCultureFromDomains();
+    var homeNodes = home?.Children(curCulture).Select(x => x.Id) ?? Enumerable.Empty<int>();
+    navigation = navigation.Where(x => homeNodes.Contains(x.Id)).ToList();
+
+    // Add the Home link to the navigation
+    var navigationWithHome = new List<IPublishedContent> { home };
+    navigationWithHome.AddRange(navigation);
+
+    bool isCurrentPage;
+    int i = 1;
+    
+    foreach (var item in navigationWithHome)
     {
-        IPublishedContent currentContent = Umbraco.AssignedContentItem;
-        ContentModels.Home? home = Umbraco.ContentAtRoot().FirstOrDefault() is ContentModels.Home h ? h : null;
-        var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
-        var curCulture = Model.GetCultureFromDomains();
-        var homeNodes = home?.Children(curCulture).Select(x => x.Id) ?? Enumerable.Empty<int>();
-        navigation = navigation.Where(x => homeNodes.Contains(x.Id)).ToList();
-        bool isCurrentPage;
-        int i = 1;
-        foreach (var item in navigation)
+        if (item is ContentModels.Home)
         {
-            if (item is ContentModels.Home)
-            {
-                isCurrentPage = item == currentContent;
-            }
-            else
-            {
-                isCurrentPage = currentContent.IsDescendantOrSelf(item);
-            }
-            if (item.Url().Contains("/services/"))
-            {
-                <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
-                    <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
-                </li>
-            }
-            else
-            {
-                <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
-            }
-            if (listStyle && i != navigation.Count())
-            {
-                <li class="hidden-xs hidden-sm">
-                    <div class="point"></div>
-                </li>
-                i++;
-            }
+            isCurrentPage = item == currentContent;
+        }
+        else
+        {
+            isCurrentPage = currentContent.IsDescendantOrSelf(item);
+        }
+
+        if (item.Url().Contains("/services/"))
+        {
+            <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
+                <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
+        }
+        
+        if (listStyle && i != navigationWithHome.Count())
+        {
+            <li class="hidden-xs hidden-sm">
+                <div class="point"></div>
+            </li>
+            i++;
         }
     }
+}
     void RenderServicesMenu(Services? services)
     {
         @foreach (var item in services?.TechnicalAreas?.Where(t => t?.Landings?.Count() > 0) ?? Enumerable.Empty<Competency>())
         {
             <div class="nav-menu-item">
+            @*hide this sub nav title *@
                 <div class="nav-title">@item.CompetencyTitle</div>
                 @foreach (var landing in item?.Landings ?? Enumerable.Empty<IPublishedContent>())
                 {
@@ -244,7 +253,7 @@
                             }
                             @if (languages.Count > 1)
                             {
-                                <div class="dropdown lng-dropdown-wrp">
+                                <div class="dropdown lng-dropdown-wrp" hidden>
                                     <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                                     <div class="dropdown-menu lng-dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         @foreach (var cul in languages)
@@ -259,7 +268,7 @@
                     <div class="pull-right nav-btns-rght">
                         @if (languages.Count > 1)
                         {
-                            <div class="dropdown lng-dropdown-wrp">
+                            <div class="dropdown lng-dropdown-wrp" hidden>
                                 <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span>@currentLng</span><i class="caret pull-right"></i>
                                 </button>
@@ -281,6 +290,10 @@
                         }
                         <a href="@home?.ContactUs?.Url()" class="get-in-touch smoothScroll visible-lg">
                             <span>@home?.ContactUs?.Name</span>
+                        </a>
+                        @*Add the login button*@
+                        <a href="https://startupgateway.cubosystems.com/login" class="get-in-touch smoothScroll visible-lg login-btn-cu">
+                            <span>Login</span>
                         </a>
                     </div>
                     <div class="collapse navbar-collapse text-center">
@@ -319,10 +332,11 @@
                                     <img src="@(home?.DefaultLogo?.GetCropUrl(imageCropMode: ImageCropMode.Pad, imageCropAnchor: ImageCropAnchor.Left, width: 149, height: 59, furtherOptions: "&bgcolor=transparent"))" class="logo" alt="@home?.WebsiteName Logo" />
                                 </div>
                             </a>
+                           
                         }
                         @if (languages.Count > 1)
                         {
-                            <div class="dropdown lng-dropdown-wrp">
+                            <div class="dropdown lng-dropdown-wrp" @*Added hidden the Language button *@ hidden>
                                 <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                                 <div class="dropdown-menu lng-dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     @foreach (var cul in languages)
@@ -345,7 +359,7 @@
                 <div class="pull-right nav-btns-rght">
                     @if (languages.Count > 1)
                     {
-                        <div class="dropdown fade-wrp lng-dropdown-wrp">
+                        <div class="dropdown fade-wrp lng-dropdown-wrp"hidden>
                             <button class="dropdown-toggle lng-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span>@currentLng</span><i class="caret pull-right"></i>
                             </button>
@@ -368,6 +382,11 @@
                     <a href="@home?.ContactUs?.Url()" class="get-in-touch smoothScroll visible-lg ">
                         <span>@home?.ContactUs?.Name</span>
                     </a>
+                    
+                    @*Add the login button for the nav scroll*@
+                        <a href="https://startupgateway.cubosystems.com/login" class="get-in-touch smoothScroll visible-lg login-btn-cu">
+                            <span>Login</span>
+                        </a>
                 </div>
                 <div class="collapse navbar-collapse text-center">
                     <ul class="nav navbar-nav nav-btns-wrp">
@@ -554,7 +573,7 @@
         });
 
     </script>
-    <script type="text/javascript" src="https://widget.clutch.co/static/js/widget.js"></script>
+   
     <link rel="stylesheet" href="~/css/Custom/Custom_Style.css" />
     @RenderSection("Scripts", required: false)
     @if (!string.IsNullOrEmpty(home?.ScriptSectionEndBody))

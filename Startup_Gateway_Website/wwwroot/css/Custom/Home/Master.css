@@ -36,3 +36,12 @@ footer .nav-menu-item .nav-title {
 .navbar-default .get-in-touch:hover {
   background-color: #224483;
 }
+
+.login-btn-cu {
+    margin-left: 10px !important; /* Adjust the value as needed */
+}
+
+
+.navbar-nav .nav-active {
+    color: #f1604b !important;
+}

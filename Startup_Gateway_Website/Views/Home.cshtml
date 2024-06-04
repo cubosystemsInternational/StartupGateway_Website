@@ -78,7 +78,7 @@
         z-index: 1;
     }
     #autocompleteList {
-    width: 58vw !important; /* Set the desired width */
+    width: calc(100% - 200px); /* Set the desired width */
     
     max-height: 200px;
     overflow-y: auto;
@@ -88,7 +88,8 @@
     border-radius: 5px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    position: absolute !important ;
+    position: absolute;
+    display: none;
         left: 2vw;
 }
 /*.dropdown-menu > li > a {*/
@@ -148,9 +149,9 @@
 
             @* search bar *@
 <div class="search-container">
-    <input type="text" id="searchInputHome" class="search-input" placeholder="Search for projects..." autocomplete="off">
+    <input type="text" id="searchInputHome" class="search-input" placeholder="Search for An Industry..." autocomplete="off">
     <button class="search-btn" id="searchBtnHome">Find</button>
-    <div id="autocompleteList" class="dropdown-menu" style="width: calc(100% - 160px); position: absolute; display: none;"></div>
+    <div id="autocompleteList" class="dropdown-menu"></div>
 </div>
 
 
