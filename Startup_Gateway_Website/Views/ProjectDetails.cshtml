@@ -4,25 +4,47 @@
 @using Newtonsoft.Json;
 @using System.Threading.Tasks;
 
+
 @{
     Layout = "Master.cshtml";
     ViewBag.headerClass = "dark";
     var projectId = ViewContext.HttpContext.Request.Query["id"].ToString();
     dynamic project = null;
+    dynamic documents = null;
+    var DownloadProjectRelatedDocumentById = $"{GlobalVariables.ApiUrl}document/DownloadProjectRelatedDocumentById";
 
     if (!string.IsNullOrWhiteSpace(projectId))
     {
-        var apiUrl = $"https://localhost:44371/api/projects/GetSingleProjectDetailById/{projectId}";
+        var projectApiUrl = $"{GlobalVariables.ApiUrl}projects/GetSingleProjectDetailById/{projectId}";
+        var documentsApiUrl = $"{GlobalVariables.ApiUrl}document/GetActiveDocumentsForProject/{projectId}";
+        
 
         using (var client = new HttpClient())
         {
-            var response = await client.GetAsync(apiUrl);
-            if (response.IsSuccessStatusCode)
+            // Fetch project details
+            var projectResponse = await client.GetAsync(projectApiUrl);
+            if (projectResponse.IsSuccessStatusCode)
             {
-                var data = await response.Content.ReadAsStringAsync();
-                project = JsonConvert.DeserializeObject<dynamic>(data);
+                var projectData = await projectResponse.Content.ReadAsStringAsync();
+                project = JsonConvert.DeserializeObject<dynamic>(projectData);
+            }
+
+            // Fetch documents
+            var documentsResponse = await client.GetAsync(documentsApiUrl);
+            if (documentsResponse.IsSuccessStatusCode)
+            {
+                var documentsData = await documentsResponse.Content.ReadAsStringAsync();
+                documents = JsonConvert.DeserializeObject<dynamic>(documentsData);
             }
         }
+    }
+    
+    DateTime ConvertToLocalTime(string utcDateTime)
+    {
+        DateTime utcTime = DateTime.Parse(utcDateTime);
+        TimeZoneInfo localZone = TimeZoneInfo.Local;
+        DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, localZone);
+        return localTime;
     }
 }
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -39,51 +61,203 @@
     <!-- New Projects Section -->
     <section class="section-2">
         <div class="container">
-<div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="row gx-4 gx-lg-5 align-items-center">
                 <div class="col-md-6">
                     <img class="card-img-top mb-5 mb-md-0" src="@Url.Content("~/media/alhbhyy5/default.png")" alt="@project.projectName" />
                 </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <i class="material-icons text-muted" style="vertical-align: middle;">update</i>
+                        <small class="text-muted">Last Modified: @ConvertToLocalTime((string)project.modifiedOn).ToString("MM/dd/yyyy hh:mm tt") </small>
+                    </div>
+                    <h1 class="display-5 fw-bolder title mb-3">@project.projectName</h1>
+                    <div class="fs-5 mb-4">
+                        <i class="material-icons text-muted" style="vertical-align: middle;">monetization_on</i>
+                        <small>Project Valuation: <span class="text-decoration-line-through text-muted">$@project.projectValuation</span></small>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">domain</i> <strong>Industry:</strong> @project.industryName</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">person</i> <strong>Founder:</strong> @project.founder</p>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="fw-bold mb-1"><u><strong>Company Details</strong></u></h4>
+                        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">home_work</i> <strong>Company Name:</strong> @project.companyName</p>
+                        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">nature_people</i> <strong>Nature of Business:</strong> @project.natureOfBusiness</p>
+                        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">info</i> <strong>About Company:</strong> @project.companyDescription</p>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold col-4 text-start"><u>Contact Info</u></h5>
+                        <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">email</i> <strong>Email:</strong> <a href="mailto:@project.email" class="text-decoration-none">@project.email</a></p>
+                        <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">phone</i> <strong>Contact No:</strong> <a href="tel:@project.contactNo" class="text-decoration-none">@project.contactNo</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <!-- Content for the additional row -->
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="display-5 fw-bolder"><i class="material-icons text-muted" style="vertical-align: middle;">description</i> Project Description:</h4>
+                    <p class="lead text-secondary mb-4">@project.projectDescription</p>
+                </div>
+            </div>
+<div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="display-5 fw-bolder"><i class="material-icons text-muted" style="vertical-align: middle;">currency_exchange</i> Project Bids:</h4>
+                    <div class="table-responsive">
+                        <table id="bidsTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Investor</th>
+                                    <th>Investment Value</th>
+                                    <th>Investment Percentage</th>
+                                    <th>Date Invested</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table rows will be added dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+            @*<div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="display-5 fw-bolder"><i class="material-icons text-muted" style="vertical-align: middle;">book</i> Related Documents:</h4>
+                    <div class="lead text-secondary mb-4">
+                        @if (documents != null)
+                        {
+                            <ul>
+                                @foreach (var doc in documents)
+                                {
+                                    <li class="mb-4">
+                                        <div class="mb-2">
+                                            <strong>@doc.documentTitle</strong>
+                                        </div>
+                                        <a href="@($"{DownloadProjectRelatedDocumentById}/{doc.id}")" target="_blank">
+                                        <p class="small"><i class="material-icons text-muted" style="vertical-align: middle;">file_download</i>Download</p>
+                                        </a>
+                                        <div class="text-muted mt-2">
+                                            <small>@doc.documentBody</small><br>
+                                            <small>Last Modified: @ConvertToLocalTime((string)doc.modifiedOn).ToString("MM/dd/yyyy hh:mm tt")</small>
+                                        </div>
+                                    </li>
+                                    <br>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No related documents found.</p>
+                        }
+                    </div>
+                </div>
+            </div>*@
+            <div class="row mt-4">
+    <div class="col-12">
+        <h4 class="display-5 fw-bolder"><i class="material-icons text-muted align-middle" style="font-size: 1.5rem;">book</i> Related Documents:</h4>
+        <div class="lead text-secondary mb-4">
+            @if (documents != null)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="font-size: 1.3rem;">Title</th>
+                                <th style="font-size: 1.3rem;">Description</th>
+                                <th style="font-size: 1.3rem;">Last Modified</th>
+                                <th style="font-size: 1.3rem;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var doc in documents)
+                            {
+                                <tr>
+                                    <td style="font-size: 1.3rem;">@doc.documentTitle</td>
+                                    <td style="font-size: 1.3rem;">@doc.documentBody</td>
+                                    <td style="font-size: 1.3rem;">@ConvertToLocalTime((string)doc.modifiedOn).ToString("MM/dd/yyyy hh:mm tt")</td>
+                                    <td>
+  <a href="@($"{DownloadProjectRelatedDocumentById}/{doc.id}")" target="_blank">
+                                        <p class="small" style="font-size: 1.3rem;"><i class="material-icons text-muted" style="vertical-align: middle;">file_download</i>Download</p>
+                                        </a>
+</td>
 
-
-<div class="col-md-6">
-    <div class="mb-3">
-        <i class="material-icons text-muted" style="vertical-align: middle;">update</i>
-        <small class="text-muted">Last Modified: @project.modifiedOn</small>
-    </div>
-    <h1 class="display-5 fw-bolder title mb-3">@project.projectName</h1>
-    <div class="fs-5 mb-4">
-        <i class="material-icons text-muted" style="vertical-align: middle;">monetization_on</i>
-        <small>Project Valuation: <span class="text-decoration-line-through text-muted">$@project.projectValuation</span></small>
-    </div>
-    <div class="mb-3">
-        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">domain</i> <strong>Industry:</strong> @project.industryName</p>
-    </div>
-    <div class="mb-3">
-        
-        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">person</i> <strong>Founder:</strong> @project.founder</p>
-    </div>
-    <div class="mb-4">
-        <h4 class="fw-bold mb-1 "><u><strong>Company Details</strong></u></h4>
-        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">home_work</i> <strong>Company Name:</strong> @project.companyName</p>
-        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">nature_people</i> <strong>Nature of Business:</strong> @project.natureOfBusiness</p>
-        <p class="mb-1"><i class="material-icons text-muted" style="vertical-align: middle;">info</i> <strong>About Company:</strong> @project.companyDescription</p>
-    </div>
-    
-    <div>
-        <h5 class="fw-bold col-4 text-start"><u>Contact Info</u></h5>
-        <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">email</i> <strong>Email:</strong> <a href="mailto:@project.email" class="text-decoration-none">@project.email</a></p>
-        <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">phone</i> <strong>Contact No:</strong> <a href="tel:@project.contactNo" class="text-decoration-none">@project.contactNo</a></p>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    No related documents found.
+                </div>
+            }
+        </div>
     </div>
 </div>
-<p class="lead text-secondary mb-4"><i class="material-icons text-muted" style="vertical-align: middle;">description</i> <strong>Project Description:</strong></p>
- 
-            </div>
-            <divclass="row gx-4">
-                <h5 class="display-5 fw-bolder">@project.projectDescription</h5>
-            </div>
+
         </div>
     </section>
 </div>
 
 
+@* Investment Biding Script *@
+@section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+    var apiUrl = '@GlobalVariables.ApiUrl';
 
+        // Function to convert UTC to local time in JavaScript
+         function convertToLocalTime(utcDateTime) {
+            var date = new Date(utcDateTime);
+            var formattedDate = date.toLocaleString('en-US', { timeZone: 'UTC',
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit',
+            //hour12: true,
+            //hour: 'numeric',
+            //minute: '2-digit'
+            }); // Format the date
+            return formattedDate;
+        }
+
+        $(document).ready(function () {
+            var projectId = '@projectId'; // Embed project ID using Razor
+
+            // Fetch bids data from API
+            $.get(apiUrl + 'bids/GetAllBidsForASpecificProject/' + projectId, function (data) {
+                if (data.length === 0) {
+                    // If no bids available, display a message
+                    $('#bidsTable tbody').html('<tr><td colspan="3">No Bids Placed</td></tr>');
+                } else {
+                    // Populate table with bid data
+                    $.each(data, function (index, bid) {
+                        var row = $('<tr>').append(
+                            $('<td>').text(bid.investor),
+                            $('<td>').text('$' + bid.investmentValue), // Append '$' symbol to investment value
+                            $('<td>').text(bid.investmentPercentage + '%'), // Append '%' symbol to investment percentage
+
+                             $('<td>').text(convertToLocalTime(bid.modifiedOn)) // Format the date
+                        );
+                        $('#bidsTable tbody').append(row);
+                    });
+                }
+
+                // Initialize DataTable
+                $('#bidsTable').DataTable({
+                    "scrollY": "200px", // Set the height of the table
+                    "scrollCollapse": true,
+                    "paging": false, // Disable pagination
+                    "searching": false, // Disable searching
+                    "info": false // Disable showing info
+                });
+            });
+        });
+    </script>
+}
