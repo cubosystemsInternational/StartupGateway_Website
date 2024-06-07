@@ -5,9 +5,6 @@
 @using System.Threading.Tasks;
 @using Microsoft.AspNetCore.Http
 @using System.Web;
-
-
-
 @{
     var domain = "https://localhost:44371";
     Layout = "Master.cshtml";
@@ -21,14 +18,20 @@ var queryString = ViewContext.HttpContext.Request.Query["search"].ToString();
 var searchTerm= HttpUtility.UrlDecode(queryString.TrimEnd('/'));
 var searchQuery = searchTerm.Replace("~", " ");
 var searchProjects = "";
+var currentPage = 1;
+var projectsPerPage = 2; // Change this value to adjust the number of projects per page
+
+
+
 
 if (!string.IsNullOrWhiteSpace(searchQuery))
 {
     searchProjects = searchQuery;
 }
+var apiUrlIndustries = $"{domain}/api/Industry/GetAllIndustry";
+var apiUrlProjectsOfIndustries = $"{domain}/api/projects/GetAllProjectsOfIndustry";
+var apiUrl = $"{domain}/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName={searchProjects}&IndustryId=&Page={currentPage}&PageSize={projectsPerPage}";
 
-// API URL with search term
-var apiUrl = $"{domain}/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName={searchProjects}";
 dynamic projects = null;
 
     // Fetch data from the API
@@ -40,7 +43,42 @@ dynamic projects = null;
             var data = await response.Content.ReadAsStringAsync();
             projects = JsonConvert.DeserializeObject<dynamic>(data);
         }
+        
     }
+
+
+    dynamic industries = null;
+    // Fetch data from the API
+    using (var client = new HttpClient())
+    {
+        var industriesRes = await client.GetAsync(apiUrlIndustries);
+
+        if (industriesRes.IsSuccessStatusCode)
+        {
+            var industriesData = await industriesRes.Content.ReadAsStringAsync();
+            industries = JsonConvert.DeserializeObject<dynamic>(industriesData);
+            
+        }
+    }
+
+    
+    dynamic noOfProjectsOfIndustries = null;
+    // Fetch data from the API
+    using (var client = new HttpClient())
+    {
+        var noOfProjectsOfIndustriesRes = await client.GetAsync(apiUrlProjectsOfIndustries);
+
+        if (noOfProjectsOfIndustriesRes.IsSuccessStatusCode)
+        {
+            var data = await noOfProjectsOfIndustriesRes.Content.ReadAsStringAsync();
+            noOfProjectsOfIndustries = JsonConvert.DeserializeObject<dynamic>(data);
+            
+        }
+    }
+
+
+
+
 }
 
 
@@ -61,6 +99,113 @@ dynamic projects = null;
         <div class="container">
   
 <style>
+
+
+/*newly added css */
+
+.filter-content .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-content .custom-control {
+    margin-bottom: 5px; /* Adjust spacing between items */
+}
+
+
+
+.filter-content .custom-control-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-content .badge {
+    margin-left: 10px;
+    float: right; /* Adjust spacing between label text and badge */
+    }
+
+.icon-control {
+    margin-top: 5px;
+    float: right;
+    font-size: 80%;
+    
+}
+
+
+
+.btn-light {
+    background-color: #fff;
+    border-color: #e4e4e4;
+}
+
+.list-menu {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+.list-menu a {
+    color: #343a40;
+}
+
+.card-product-grid .info-wrap {
+    overflow: hidden;
+    padding: 18px 20px;
+}
+
+[class*='card-product'] a.title {
+    color: #212529;
+    display: block;
+}
+
+.card-product-grid:hover .btn-overlay {
+    opacity: 1;
+}
+.card-product-grid .btn-overlay {
+    -webkit-transition: .5s;
+    transition: .5s;
+    opacity: 0;
+    left: 0;
+    bottom: 0;
+    color: #fff;
+    width: 100%;
+    padding: 5px 0;
+    text-align: center;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+}
+@* .img-wrap {
+    overflow: hidden;
+    position: relative;
+} *@
+
+.title-filter {
+    font-size: 20px;
+    padding-left: 10px;
+    padding-top: 10px; /* Adjust the value as needed */
+    color: #8a130f; /* Add the orange color */
+}
+
+.pagination-container {
+    margin-top: 20px;
+    padding: 10px /* Adjust margin as needed */
+}
+
+.pagination-container nav {
+    display: flex;
+    justify-content: flex-end; /* Align navigation to the right */
+}
+.pagination {
+    margin-top: 20px;
+}
+
+
+
+
+
+/*newly added css ended */
+
+
     /* Custom CSS for the search bar */
     .search-container {
         position: relative;
@@ -136,7 +281,7 @@ dynamic projects = null;
 }
 
 .card-body {
-    padding: 20px;
+    padding: 12px;
 }
 
 .card-text {
@@ -148,9 +293,6 @@ dynamic projects = null;
     width: 100%;
 }
 
-
-
-    
 </style>
 
 <div class="row mb-4">
@@ -163,34 +305,120 @@ dynamic projects = null;
 
 
 
-            <div class="row" id="projectCards">
-                @if (projects != null)
-                {
-                    foreach (var project in projects)
-                    {
-                    <br>
-                        <div class="col-md-12 mb-3">
-    <div class="card mb-3">
-        <div class="row g-0">
-            <div class="col-md-6">
-                <img src="@ViewBag.Domain/media/alhbhyy5/default.png" class="img-fluid rounded-start" alt="Project Image">
-            </div>
-            <div class="col-md-6">
-                <div class="card-body">
-                    <h5 class="card-title">@project.projectName</h5>
-                    <p class="card-text"><strong>Valuation:</strong> $@project.projectValuation</p>
-                    <p class="card-text"><strong>Description:</strong> @project.projectDescription</p>
-                    <p class="card-text"><strong>Industry:</strong> @project.industry</p>
-                    <p class="card-text"><strong>Founder:</strong> @project.founder</p>
-                    <p class="card-text"><strong>Company:</strong> @project.companyName</p>
-                    <a href="/project-details?id=@project.id" class="btn btn-primary view-details" data-id="@project.id" data-title="@project.projectName">View Details</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+<!--newly added html-->
 
 
+<div class="container">
+	<div class="row">
+	<aside class="col-md-3">
+		
+<div class="card">
+	<article class="filter-group">
+		<header class="card-header-filter">
+							<h6 class="title-filter">Brands </h6>
+
+		</header>
+        
+		<div class="filter-content collapse show" id="collapse_2" style="">
+			<div class="card-body">
+				@* <label class="custom-control custom-checkbox d-flex flex-row"> *@
+                @if (industries != null ){
+                    foreach( var industry in industries){
+                        var industryId = industry.id;
+                        var num = noOfProjectsOfIndustries[industryId.ToString()];
+                        @if(num != 0 ){
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" value="@industryId" id="industryCheckbox@industryId" onchange="updateNum(this)">
+                            <label class="form-check-label mb-0" for="industryCheckbox@industryId">@industry.industryName</label>
+                            <span class="badge badge-pill badge-dark ml-auto"  >@num</span>
+                        </div>
+                        }else{
+                            <div class="form-check d-flex align-items-center">
+                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                <label class="form-check-label mb-0" for="flexCheckDefault">@industry.industryName</label>
+                                            </div>
+                        }
+                    
+                    }
+
+                }else{ <p>No industries found.</p>}
+            
+	        </div> 
+	<!-- card-body.// -->
+		</div>
+	</article> <!-- filter-group .// -->
+	<article class="filter-group">
+		<header class="card-header-filter">
+			<h6 class="title-filter">Project Value </h6>
+		</header>
+		<div class="filter-content collapse show" id="collapse_3" style="">
+			<div class="card-body">
+				@* <input type="range" class="custom-range" min="0" max="100" name=""> *@
+				<div class="form-row" >
+                    <div class="col-md-6">
+                    <label>Min</label>
+                    <input class="form-control" placeholder="$0" type="number" style="width: 100px "  >
+                    </div>
+                    <div class="col-md-6">
+                    <label>Max</label>
+                    <input class="form-control" placeholder="$1,0000" type="number" style="width: 100px " >
+                    </div>
+				</div> <!-- form-row.// -->
+                <div style = " padding : 20px" ><button class="btn btn-block btn-primary" >Apply</button></div>
+			</div><!-- card-body.// -->
+		</div>
+	</article> <!-- filter-group .// -->
+</div> <!-- card.// -->
+
+	</aside>
+	<main class="col-md-9">
+
+<header class="border-bottom mb-4 pb-3">
+		<div class="form-inline">
+			<span class="mr-md-auto">32 Items found </span>
+			<select class="mr-2 form-control">
+				<option>Latest items</option>
+				<option>Trending</option>
+				<option>Most Popular</option>
+				<option>Cheapest</option>
+			</select>
+			@* <div class="btn-group">
+				<a href="#" class="btn btn-outline-secondary" data-toggle="tooltip" title="" data-original-title="List view"> 
+					<i class="fa fa-bars"></i></a>
+				<a href="#" class="btn  btn-outline-secondary active" data-toggle="tooltip" title="" data-original-title="Grid view"> 
+					<i class="fa fa-th"></i></a>
+			</div> *@
+		</div>
+</header><!-- sect-heading -->
+
+
+                            <div class="row" id="projectCards">
+                                        @if (projects != null)
+                                        {
+                                            foreach (var project in projects)
+                                            {
+                                            <br>
+                                                <div class="col-md-12 mb-3">
+                                                <div class="card mb-3">
+                                <div class="row g-0">
+                                    <div class="col-md-6">
+                                        <img src="@ViewBag.Domain/media/alhbhyy5/default.png" class="img-fluid rounded-start" alt="Project Image">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@project.projectName</h5>
+                                            <p class="card-text"><strong>Valuation:</strong> $@project.projectValuation</p>
+                                            <p class="card-text"><strong>Description:</strong> @project.projectDescription</p>
+                                            <p class="card-text"><strong>Industry:</strong> @project.industry</p>
+                                            <p class="card-text"><strong>Founder:</strong> @project.founder</p>
+                                            <p class="card-text"><strong>Company:</strong> @project.companyName</p>
+                                            <a href="/project-details?id=@project.id" class="btn btn-primary view-details" data-id="@project.id" data-title="@project.projectName">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     }
                 }
@@ -198,13 +426,43 @@ dynamic projects = null;
                 {
                     <p>No projects found.</p>
                 }
+                
             </div>
-        </div>
     </section>
+    <!-- Pagination container -->
+<div class="pagination-container">
+    <nav class="" aria-label="Page navigation sample">
+        <ul class="pagination justify-content-end" id="pagination"> <!-- Add justify-content-end to align to the right -->
+            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
 </div>
+</div>
+
+</div> <!-- row end.// -->
+
+
+
+
+	</main>
+	</div>
+</div>
+
+
+<!--newly added html ended-->
+
+
+
+
 
 @section Scripts {
     <script>
+
+
     var domain = '@ViewBag.Domain';
     document.addEventListener("DOMContentLoaded", function() {
         // Add event listener for the search button click
@@ -225,7 +483,7 @@ dynamic projects = null;
     async function searchProjects() {
         var projectName = document.getElementById('searchInput').value.trim();
         var encodedProjectName = encodeURIComponent(projectName).replace(/%20/g, '+');
-        var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=${encodedProjectName}`;
+        var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=${encodedProjectName}&IndustryId=`;
 
         try {
             var response = await fetch(apiUrl);
@@ -242,6 +500,100 @@ dynamic projects = null;
             console.error('Error fetching projects:', error);
         }
     }
+            var industryIdForFilter = null;
+
+    
+    function updateNum(checkbox) {
+            var isChecked = checkbox.checked;
+
+            if (isChecked) {
+                industryIdForFilter = checkbox.value
+                console.log(industryIdForFilter);
+                console.log(@currentPage);
+                filterProjects(industryIdForFilter)
+                
+            } else {
+                // Handle the case when the checkbox is unchecked if needed
+            }
+         }
+    async function filterProjects(id) {
+
+            var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=&IndustryId=${id}&Page=${@currentPage}&PageSize=${@projectsPerPage}`;
+
+            try {
+                var response = await fetch(apiUrl);
+                if (response.ok) {
+                    var projects = await response.json();
+                    updateProjectCards(projects);
+                } else if (response.status === 404 || response.status === 500) {
+                    // Handle 404 or 500 error
+                    updateProjectCards([]);
+                } else {
+                    console.error('Failed to fetch projects from the API.');
+                }
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        } 
+
+
+     async function loadProjects() {
+
+        var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=&IndustryId=&Page=${@currentPage}&PageSize=${@projectsPerPage}`;
+        try {
+            var response = await fetch(apiUrl);
+            if (response.ok) {
+                var projects = await response.json();
+                updateProjectCards(projects);
+                updatePagination();
+            } else if (response.status === 404 || response.status === 500) {
+                // Handle 404 or 500 error
+                updateProjectCards([]);
+            } else {
+                console.error('Failed to fetch projects from the API.');
+            }
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+        }
+    }  
+
+@* 
+     document.addEventListener("DOMContentLoaded", function() {
+        // Call function to load projects on page load
+        loadProjects();
+
+        // Add event listener for pagination clicks
+        document.getElementById('pagination').addEventListener('click', function(e) {
+            if (e.target.tagName.toLowerCase() === 'a') {
+                @currentPage == parseInt(e.target.dataset.page);
+                loadProjects();
+            }
+        });
+    });
+ 
+    
+    function updatePagination() {
+        var paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+
+        var totalPages = Math.ceil(projects.totalCount / projectsPerPage);
+        for (var i = 1; i <= totalPages; i++) {
+            var li = document.createElement('li');
+            li.classList.add('page-item');
+            if (i === @currentPage) {
+                li.classList.add('active');
+            }
+            var a = document.createElement('a');
+            a.classList.add('page-link');
+            a.href = '#';
+            a.textContent = i;
+            a.dataset.page = i;
+            li.appendChild(a);
+            paginationContainer.appendChild(li);
+        }
+    }
+ *@
+
 
     function updateProjectCards(projects) {
         var projectCardsDiv = document.getElementById('projectCards');
@@ -266,7 +618,7 @@ dynamic projects = null;
                     <p class="card-text"><strong>Industry:</strong> ${project.industry}</p>
                     <p class="card-text"><strong>Founder:</strong> ${project.founder}</p>
                     <p class="card-text"><strong>Company:</strong> ${project.companyName}</p>
-                    <a href="/project-details?id=${project.id}" class="btn btn-primary view-details" data-id=${project.id} data-title=${project.founder}>View Details</a>
+                     <a href="/project-details?id=${project.id}" class="btn btn-primary view-details" data-id=${project.id} data-title=${project.founder}>View Details</a>
                 </div>
             </div>
         </div>
