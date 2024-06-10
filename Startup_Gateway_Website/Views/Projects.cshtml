@@ -85,6 +85,7 @@
 
 
 
+
 }
 
 
@@ -185,7 +186,7 @@
                     <input class="form-control" placeholder="$1,0000" type="number" style="width: 100px " >
                     </div>
                 </div> <!-- form-row.// -->
-                <div style = " padding : 20px" ><button class="btn btn-block btn-primary" onclick="handleApplyClick()" >Apply</button></div>
+                <div style = " padding : 20px" ><button class="btn btn-block btn-primary" id="applyBtn" onclick = "handleApply()" >Apply</button></div>
             </div><!-- card-body.// -->
         </div>
     </article> <!-- filter-group .// -->
@@ -218,33 +219,33 @@
                             {
                                 foreach (var project in projects)
                                 {
-                                                                                            <br>
-                                                                                                <div class="col-md-12 mb-3">
-                                                                                                <div class="card mb-3">
-                                                                                <div class="row g-0">
-                                                                                    <div class="col-md-6">
-                                                                                        <img src="@ViewBag.Domain/media/alhbhyy5/default.png" class="img-fluid rounded-start" alt="Project Image">
-                                                                                    </div>
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="card-body">
-                                                                                            <h5 class="card-title">@project.projectName</h5>
-                                                                                            <p class="card-text"><strong>Valuation:</strong> $@project.projectValuation</p>
-                                                                                            <p class="card-text"><strong>Description:</strong> @project.projectDescription</p>
-                                                                                            <p class="card-text"><strong>Industry:</strong> @project.industry</p>
-                                                                                            <p class="card-text"><strong>Founder:</strong> @project.founder</p>
-                                                                                            <p class="card-text"><strong>Company:</strong> @project.companyName</p>
-                                                                                            <a href="/project-details?id=@project.id" class="btn btn-primary view-details" data-id="@project.id" data-title="@project.projectName">View Details</a>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
+                                                                                                                                                    <br>
+                                                                                                                                                        <div class="col-md-12 mb-3">
+                                                                                                                                                        <div class="card mb-3">
+                                                                                                                                        <div class="row g-0">
+                                                                                                                                            <div class="col-md-6">
+                                                                                                                                                <img src="@ViewBag.Domain/media/alhbhyy5/default.png" class="img-fluid rounded-start" alt="Project Image">
+                                                                                                                                            </div>
+                                                                                                                                            <div class="col-md-6">
+                                                                                                                                                <div class="card-body">
+                                                                                                                                                    <h5 class="card-title">@project.projectName</h5>
+                                                                                                                                                    <p class="card-text"><strong>Valuation:</strong> $@project.projectValuation</p>
+                                                                                                                                                    <p class="card-text"><strong>Description:</strong> @project.projectDescription</p>
+                                                                                                                                                    <p class="card-text"><strong>Industry:</strong> @project.industry</p>
+                                                                                                                                                    <p class="card-text"><strong>Founder:</strong> @project.founder</p>
+                                                                                                                                                    <p class="card-text"><strong>Company:</strong> @project.companyName</p>
+                                                                                                                                                    <a href="/project-details?id=@project.id" class="btn btn-primary view-details" data-id="@project.id" data-title="@project.projectName">View Details</a>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
 
                                 }
                             }
                             else
                             {
-                                            <p>No projects found.</p>
+                                                                        <p>No projects found.</p>
                             }
 
             </div>
@@ -252,24 +253,28 @@
     <!-- Pagination container -->
 <!-- Pagination container -->
     <!-- Pagination container -->
-    <div class="pagination-container">
-        <nav aria-label="Page navigation sample">
-            <ul class="pagination justify-content-between" id="pagination">
-                <!-- Previous button -->
-                <li class="page-item" id="previousPage">
-                    <a class="page-link" href="#" onclick="changePage(currentPage - 1)" aria-label="Previous">
-                        <span aria-hidden="true">&laquo; Previous</span>
-                    </a>
-                </li>
-                <!-- Next button -->
-                <li class="page-item" id="nextPage">
-                    <a class="page-link" href="#" onclick="changePage(currentPage + 1)" aria-label="Next">
-                        <span aria-hidden="true">Next &raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+  <div class="pagination-container">
+    <nav aria-label="Page navigation sample"class = "nav-pagination">
+        <!-- Previous button -->
+        <li class="page-item" id="previousPage">
+            <a class="page-link" href="#" onclick="changePage(currentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo; Previous</span>
+            </a>
+        </li>
+
+        <ul class="pagination justify-content-between" id="pagination">
+            <!-- Pagination buttons will be dynamically inserted here -->
+        </ul>
+        
+        <!-- Next button -->
+        <li class="page-item" id="nextPage">
+            <a class="page-link" href="#" onclick="changePage(currentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">Next &raquo;</span>
+            </a>
+        </li>
+    </nav>
+</div>
+
 
 
 </div>
@@ -330,8 +335,22 @@
         function updateFilter() {
             selectedIndustries = Array.from(document.querySelectorAll('.form-check-input:checked')).map(checkbox => checkbox.value);
             currentPage = 1; // Reset to first page when updating filter
+            <!--fetchProjects();-->
+        }
+        
+        function getCheckedIndustryIds() {
+            var checkboxes = document.querySelectorAll('.industry-checkbox:checked');
+            var checkedIds = [];
+            checkboxes.forEach(function(checkbox) {
+                checkedIds.push(checkbox.value);
+            });
+            return checkedIds;
+        }
+
+        function handleApply() {
             fetchProjects();
         }
+
 
         async function fetchProjects() {
             const domain = 'https://localhost:44371';
