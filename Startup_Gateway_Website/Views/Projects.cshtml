@@ -106,199 +106,6 @@
 
 <style>
 
-
-/*newly added css */
-
-.filter-content .card-body {
-    display: flex;
-    flex-direction: column;
-}
-
-.filter-content .custom-control {
-    margin-bottom: 5px; /* Adjust spacing between items */
-}
-
-
-
-.filter-content .custom-control-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.filter-content .badge {
-    margin-left: 10px;
-    float: right; /* Adjust spacing between label text and badge */
-    }
-
-.icon-control {
-    margin-top: 5px;
-    float: right;
-    font-size: 80%;
-
-}
-
-
-
-.btn-light {
-    background-color: #fff;
-    border-color: #e4e4e4;
-}
-
-.list-menu {
-    list-style: none;
-    margin: 0;
-    padding-left: 0;
-}
-.list-menu a {
-    color: #343a40;
-}
-
-.card-product-grid .info-wrap {
-    overflow: hidden;
-    padding: 18px 20px;
-}
-
-[class*='card-product'] a.title {
-    color: #212529;
-    display: block;
-}
-
-.card-product-grid:hover .btn-overlay {
-    opacity: 1;
-}
-.card-product-grid .btn-overlay {
-    -webkit-transition: .5s;
-    transition: .5s;
-    opacity: 0;
-    left: 0;
-    bottom: 0;
-    color: #fff;
-    width: 100%;
-    padding: 5px 0;
-    text-align: center;
-    position: absolute;
-    background: rgba(0, 0, 0, 0.5);
-}
-                @* .img-wrap {
-    overflow: hidden;
-    position: relative;
-} *@
-
-.title-filter {
-    font-size: 20px;
-    padding-left: 10px;
-    padding-top: 10px; /* Adjust the value as needed */
-    color: #8a130f; /* Add the orange color */
-}
-
-.pagination-container {
-    margin-top: 20px;
-    padding: 10px /* Adjust margin as needed */
-}
-
-.pagination-container nav {
-    display: flex;
-    justify-content: flex-end; /* Align navigation to the right */
-}
-.pagination {
-    margin-top: 20px;
-}
-
-
-
-
-
-/*newly added css ended */
-
-
-    /* Custom CSS for the search bar */
-    .search-container {
-        position: relative;
-        margin-bottom: 20px;
-    }
-
-    .search-input {
-        width: calc(100% - 160px); /* Adjusted width for the input field */
-        padding: 15px 35px; /* Increased padding for a bigger size */
-        border: 2px solid #ccc; /* Increased border thickness */
-        border-radius: 30px; /* Adjusted border-radius for a bigger size */
-        font-size: 18px; /* Increased font size */
-        font-family: 'Roboto', sans-serif; /* Apply Google Font */
-        transition: border-color 0.3s ease;
-
-        background-color: #f7f7f7;
-    }
-
-    .search-input:focus {
-        outline: none;
-        border-color: #4CAF50;
-    }
-
-    .search-btn {
-        position: absolute;
-        right: 5%;
-        top: 50%;
-        transform: translateY(-50%);
-        border: none;
-        background-color: #ea3934;
-        color: #fff;
-        border-radius: 10px;
-        padding: 15px 35px; /* Increased padding for a bigger size */
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .search-btn:hover {
-        background-color: #8a130f;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 20px; /* Adjusted left position for proper spacing */
-        top: 50%;
-        transform: translateY(-50%);
-        color: #777;
-        font-size: 24px; /* Increased font size */
-    }
-
-      /**/  
-.card {
-    border: none;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.card-header {
-    background-color: #007bff;
-    color: white;
-    border-radius: 8px 8px 0 0;
-    padding: 10px 15px;
-}
-
-.card-title {
-    margin-bottom: 10px;
-}
-
-.img-fluid {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px 0 0 8px;
-}
-
-.card-body {
-    padding: 12px;
-}
-
-.card-text {
-    margin-bottom: 10px;
-}
-
-.view-details {
-    margin-top: 20px;
-    width: 100%;
-}
-
 </style>
 
 <div class="row mb-4">
@@ -327,7 +134,7 @@
         </header>
 
         <div class="filter-content collapse show" id="collapse_2" style="">
-            <div class="card-body">
+                                    <div class="card-body">
                                         @* <label class="custom-control custom-checkbox d-flex flex-row"> *@
                                         @if (industries != null)
                                         {
@@ -337,29 +144,27 @@
                                                 var num = noOfProjectsOfIndustries[industryId.ToString()];
                                                 @if (num != 0)
                                                 {
-                                                                                                <div class="form-check d-flex align-items-center">
-                                                                                                    <input class="form-check-input" type="checkbox" value="@industryId" id="industryCheckbox@industryId" onchange="updateNum(this)">
-                                                                                                    <label class="form-check-label mb-0" for="industryCheckbox@industryId">@industry.industryName</label>
-                                                                                                    <span class="badge badge-pill badge-dark ml-auto"  >@num</span>
-                                                                                                </div>
+                                                    <div class="form-check d-flex align-items-center">
+                                                        <input class="form-check-input" type="checkbox" value="@industryId" id="industryCheckbox@industryId" onchange="updateFilter()">
+                                                        <label class="form-check-label mb-0" for="industryCheckbox@industryId">@industry.industryName</label>
+                                                        <span class="badge badge-pill badge-dark ml-auto">@num</span>
+                                                    </div>
                                                 }
                                                 else
                                                 {
-                                                                                                    <div class="form-check d-flex align-items-center">
-                                                                                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                                                                                                        <label class="form-check-label mb-0" for="flexCheckDefault">@industry.industryName</label>
-                                                                                                                    </div>
+                                                    <div class="form-check d-flex align-items-center">
+                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                        <label class="form-check-label mb-0" for="flexCheckDefault">@industry.industryName</label>
+                                                    </div>
                                                 }
-
                                             }
-
                                         }
                                         else
                                         {
-                                                                <p>No industries found.</p>
+                                            <p>No industries found.</p>
                                         }
+                                    </div>
 
-            </div> 
     <!-- card-body.// -->
         </div>
     </article> <!-- filter-group .// -->
@@ -446,24 +251,26 @@
     </section>
     <!-- Pagination container -->
 <!-- Pagination container -->
-<div class="pagination-container">
-    <nav class="" aria-label="Page navigation sample">
-        <ul class="pagination justify-content-end" id="pagination">
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="?page=@(currentPage - 1)&search=@HttpUtility.UrlEncode(searchQuery)">Previous</a>
-            </li>
-                @for (var i = 1; i <= totalPages; i++)
-                {
-                                        <li class="page-item @(i == currentPage ? "active" : "")">
-                                            <a class="page-link" href="?page=@i&search=@HttpUtility.UrlEncode(searchQuery)">@i</a>
-                                        </li>
-                }
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link" href="?page=@(currentPage + 1)&search=@HttpUtility.UrlEncode(searchQuery)">Next</a>
-            </li>
-        </ul>
-    </nav>
-</div>
+    <!-- Pagination container -->
+    <div class="pagination-container">
+        <nav aria-label="Page navigation sample">
+            <ul class="pagination justify-content-between" id="pagination">
+                <!-- Previous button -->
+                <li class="page-item" id="previousPage">
+                    <a class="page-link" href="#" onclick="changePage(currentPage - 1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; Previous</span>
+                    </a>
+                </li>
+                <!-- Next button -->
+                <li class="page-item" id="nextPage">
+                    <a class="page-link" href="#" onclick="changePage(currentPage + 1)" aria-label="Next">
+                        <span aria-hidden="true">Next &raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
 
 </div>
 
@@ -478,295 +285,140 @@
 
 
 <!--newly added html ended-->
-
-
-
-
-
 @section Scripts {
-                            <script>
+    <script>
+        cDomain = '@ViewBag.Domain';
+        let currentPage = 1;
+        const projectsPerPage = 2;
+        let totalProjectCount = 0;
+        let selectedIndustries = [];
 
-
-                            var domain = '@ViewBag.Domain';
-                           document.addEventListener("DOMContentLoaded", function() {
-                                // Add event listener for the search button click
-                                document.getElementById('searchBtn').addEventListener('click', function() {
-                                    searchProjects();
-                                });
-
-                                // Add event listener for the search input keydown event
-                                document.getElementById('searchInput').addEventListener('keydown', function(e) {
-                                    if (e.key === 'Enter') {
-                                        searchProjects();
-                                    }
-                                });
-
-                                // Add event listener for the industry filter checkbox change
-                                var industryCheckboxes = document.querySelectorAll('.form-check-input');
-                                industryCheckboxes.forEach(function(checkbox) {
-                                    checkbox.addEventListener('change', function() {
-                                        searchProjects();
-                                    });
-                                });
-                            });
-
-                            async function searchProjects() {
-                                var projectName = document.getElementById('searchInput').value.trim();
-                                var encodedProjectName = encodeURIComponent(projectName).replace(/%20/g, '+');
-                                var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=${encodedProjectName}&IndustryId=&Page=${@currentPage}&PageSize=${@projectsPerPage}`;
-
-                                try {
-                                    var response = await fetch(apiUrl);
-                                    if (response.ok) {
-                                        var projects = await response.json();
-                                        updateProjectCards(projects.projectDetails);
-                                        updatePagination(projects.totalProjectCount);
-                                     } else if (response.status === 404 || response.status === 500) {
-                                        // Handle 404 or 500 error
-                                        updateProjectCards([]);
-                                    } else {
-                                        console.error('Failed to fetch projects from the API.');
-                                    }
-                                } catch (error) {
-                                    console.error('Error fetching projects:', error);
-                                }
-                            }
-                                    var industryIdForFilter = null;
-
-
-                            function updateNum(checkbox) {
-                                    var isChecked = checkbox.checked;
-
-                                    if (isChecked) {
-                                        <!--industryIdForFilter = checkbox.value-->
-                                        console.log(@selectedIndustryId);
-                                        selectedIndustryId =checkbox.value
-                                        <!--console.log(industryIdForFilter);-->
-                                        console.log(@selectedIndustryId);
-                                        console.log(@currentPage);
-                                        <!--filterProjects(industryIdForFilter)-->
-
-                                    } else {
-                                        // Handle the case when the checkbox is unchecked if needed
-                                    }
-                                 }
-                                 
-                                 var currentPage1 = 1;
-                                 
-                                 function handleApplyClick() {
-                                    console.log(@selectedIndustryId);
-                                    currentPage1 = @currentPage;
-                                    console.log(@currentPage);
-
-                                    console
-                                    if (selectedIndustryId !== 0) {
-                                        // Run your API call here
-                                        filterProjects(selectedIndustryId)
-                                        
-                                    } else {
-                                        console.log('Global variable is zero, not running API call.');
-                                    }
-                                }
-                                 
-                            
-                            async function filterProjects(id) {
-
-                                    var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=&IndustryId=${id}&Page=${@currentPage}&PageSize=${@projectsPerPage}`;
-
-                                    try {
-                                        var response = await fetch(apiUrl);
-                                        if (response.ok) {
-                                            var projects = await response.json();
-                                            updateProjectCards(projects.projectDetails);
-                                            updatePagination(projects.totalProjectCount);
-                                        } else if (response.status === 404 || response.status === 500) {
-                                            // Handle 404 or 500 error
-                                            updateProjectCards([]);
-                                        } else {
-                                            console.error('Failed to fetch projects from the API.');
-                                        }
-                                    } catch (error) {
-                                        console.error('Error fetching projects:', error);
-                                    }
-                                } 
-
-
-                             async function loadProjects() {
-
-                                var apiUrl = `https://localhost:44371/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=&IndustryId=&Page=${@currentPage}&PageSize=${@projectsPerPage}`;
-                                try {
-                                    var response = await fetch(apiUrl);
-                                    if (response.ok) {
-                                        var projects = await response.json();
-                                        updateProjectCards(projects.projectDetails);
-                                        updatePagination(projects.totalProjectCount);
-                                    } else if (response.status === 404 || response.status === 500) {
-                                        // Handle 404 or 500 error
-                                        updateProjectCards([]);
-                                    } else {
-                                        console.error('Failed to fetch projects from the API.');
-                                    }
-                                } catch (error) {
-                                    console.error('Error fetching projects:', error);
-                                }
-                            }  
-
-
-                          function handlePaginationClick(event) {
-                                    event.preventDefault();
-                                    var clickedPage = parseInt(event.target.dataset.page);
-                                    if (!isNaN(clickedPage)) {
-                                        currentPage = clickedPage;
-                                        loadProjects();
-                                    }
-                                }
-
-        @* 
-     document.addEventListener("DOMContentLoaded", function() {
-        // Call function to load projects on page load
-        loadProjects();
-
-        // Add event listener for pagination clicks
-        document.getElementById('pagination').addEventListener('click', function(e) {
-            if (e.target.tagName.toLowerCase() === 'a') {
-                @currentPage == parseInt(e.target.dataset.page);
-                loadProjects();
-            }
-        });
-    });
-
-
-
-    function updatePagination(totalCount) {
-            var totalPages = Math.ceil(totalCount / projectsPerPage);
-            var paginationContainer = document.getElementById('pagination');
-            paginationContainer.innerHTML = '';
-
-            if (totalPages > 1) {
-                var previousPage = currentPage - 1;
-                var nextPage = currentPage + 1;
-
-                // Previous button
-                var previousLi = document.createElement('li');
-                previousLi.classList.add('page-item');
-                if (currentPage === 1) {
-                    previousLi.classList.add('disabled');
+        /*async function fetchIndustries() {
+            const domain = 'https://localhost:44371';
+            try {
+                const response = await fetch(`${domain}/api/Industry/GetAllIndustry`);
+                if (response.ok) {
+                    const industries = await response.json();
+                    displayIndustries(industries);
+                } else {
+                    console.error('Failed to fetch industries.');
                 }
-                var previousA = document.createElement('a');
-                previousA.classList.add('page-link');
-                previousA.href = '#';
-                previousA.dataset.page = previousPage;
-                previousA.textContent = 'Previous';
-                previousA.onclick = handlePaginationClick;
-                previousLi.appendChild(previousA);
-                paginationContainer.appendChild(previousLi);
-
-                // Page numbers
-                for (var i = 1; i <= totalPages; i++) {
-                    var li = document.createElement('li');
-                    li.classList.add('page-item');
-                    if (i === currentPage) {
-                        li.classList.add('active');
-                    }
-                    var a = document.createElement('a');
-                    a.classList.add('page-link');
-                    a.href = '#';
-                    a.dataset.page = i;
-                    a.textContent = i;
-                    a.onclick = handlePaginationClick;
-                    li.appendChild(a);
-                    paginationContainer.appendChild(li);
-                }
-
-                // Next button
-                var nextLi = document.createElement('li');
-                nextLi.classList.add('page-item');
-                if (currentPage === totalPages) {
-                    nextLi.classList.add('disabled');
-                }
-                var nextA = document.createElement('a');
-                nextA.classList.add('page-link');
-                nextA.href = '#';
-                nextA.dataset.page = nextPage;
-                nextA.textContent = 'Next';
-                nextA.onclick = handlePaginationClick;
-                nextLi.appendChild(nextA);
-                paginationContainer.appendChild(nextLi);
+            } catch (error) {
+                console.error('Error fetching industries:', error);
             }
         }
- *@
 
-                         function updatePagination(totalProjectCount) {
-                                var paginationContainer = document.getElementById('pagination');
-                                var totalPages = Math.ceil(totalProjectCount / @projectsPerPage);
-                                var currentPage = @currentPage;
-                                var searchQuery = document.getElementById('searchInput').value.trim();
+        function displayIndustries(industries) {
+            const industryFilterContent = document.getElementById('industryFilterContent');
+            industryFilterContent.innerHTML = '';
+            if (industries && industries.length > 0) {
+                industries.forEach(industry => {
+                    const industryId = industry.id;
+                    const num = noOfProjectsOfIndustries[industryId.toString()];
+                    const checkbox = `<div class="form-check d-flex align-items-center">
+                                                                <input class="form-check-input" type="checkbox" value="${industryId}" id="industryCheckbox${industryId}" onchange="updateFilter()">
+                                                                <label class="form-check-label mb-0" for="industryCheckbox${industryId}">${industry.industryName}</label>
+                                                                <span class="badge badge-pill badge-dark ml-auto">${num}</span>
+                                                            </div>`;
+                    industryFilterContent.insertAdjacentHTML('beforeend', checkbox);
+                });
+            } else {
+                industryFilterContent.innerHTML = '<p>No industries found.</p>';
+            }
+        }*/
 
-                                paginationContainer.innerHTML = '';
+        function updateFilter() {
+            selectedIndustries = Array.from(document.querySelectorAll('.form-check-input:checked')).map(checkbox => checkbox.value);
+            currentPage = 1; // Reset to first page when updating filter
+            fetchProjects();
+        }
 
-                                var prevDisabled = currentPage === 1 ? 'disabled' : '';
-                                var nextDisabled = currentPage === totalPages ? 'disabled' : '';
+        async function fetchProjects() {
+            const domain = 'https://localhost:44371';
+            const searchQuery = document.getElementById('searchInput').value.trim();
+            const encodedSearchQuery = encodeURIComponent(searchQuery).replace(/%20/g, '+');
+            const apiUrl = `${domain}/api/projects/GetAllProjectDetailsWithFilter?projectName=&companyName=&IndustryName=${encodedSearchQuery}&IndustryId=${selectedIndustries.join(',')}&Page=${currentPage}&PageSize=${projectsPerPage}`;
 
-                                var prevPage = currentPage - 1;
-                                var nextPage = currentPage + 1;
+            try {
+                const response = await fetch(apiUrl);
+                if (response.ok) {
+                    const projectsData = await response.json();
+                    totalProjectCount = projectsData.totalProjectCount;
+                    displayProjects(projectsData.projectDetails);
+                    updatePagination();
+                } else {
+                    console.error('Failed to fetch projects from the API.');
+                }
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        }
 
-                                var prevLink = `<li class="page-item ${prevDisabled}"><a class="page-link" href="?page=${prevPage}&search=${searchQuery}">Previous</a></li>`;
-                                paginationContainer.insertAdjacentHTML('beforeend', prevLink);
+        function displayProjects(projects) {
+            const projectCards = document.getElementById('projectCards');
+            projectCards.innerHTML = '';
+            if (projects && projects.length > 0) {
+                projects.forEach(project => {
+                    const projectCard = `<div class="col-md-12 mb-3">
+                                                                <div class="card mb-3">
+                                                                    <div class="row g-0">
+                                                                        <div class="col-md-6">
+                                                                                    <img src="${cDomain}/media/alhbhyy5/default.png" class="img-fluid rounded-start" alt="Project Image">
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="card-body">
+                                                                                <h5 class="card-title">${project.projectName}</h5>
+                                                                                <p class="card-text"><strong>Valuation:</strong> $${project.projectValuation}</p>
+                                                                                <p class="card-text"><strong>Description:</strong> ${project.projectDescription}</p>
+                                                                                <p class="card-text"><strong>Industry:</strong> ${project.industry}</p>
+                                                                                <p class="card-text"><strong>Founder:</strong> ${project.founder}</p>
+                                                                                <p class="card-text"><strong>Company:</strong> ${project.companyName}</p>
+                                                                                <a href="/project-details?id=${project.id}" class="btn btn-primary view-details" data-id="${project.id}" data-title="${project.projectName}">View Details</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>`;
+                    projectCards.insertAdjacentHTML('beforeend', projectCard);
+                });
+            } else {
+                projectCards.innerHTML = '<p>No projects found.</p>';
+            }
+        }
 
-                                for (var i = 1; i <= totalPages; i++) {
-                                    var activeClass = i === currentPage ? 'active' : '';
-                                    var pageLink = `<li class="page-item ${activeClass}"><a class="page-link" href="?page=${i}&search=${searchQuery}">${i}</a></li>`;
-                                    paginationContainer.insertAdjacentHTML('beforeend', pageLink);
-                                }
+        function updatePagination() {
+            const totalPages = Math.ceil(totalProjectCount / projectsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLink = `<li class="page-item ${currentPage === i ? 'active' : ''}">
+                                                            <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                                                          </li>`;
+                pagination.insertAdjacentHTML('beforeend', pageLink);
+            }
+        }
 
-                                var nextLink = `<li class="page-item ${nextDisabled}"><a class="page-link" href="?page=${nextPage}&search=${searchQuery}">Next</a></li>`;
-                                paginationContainer.insertAdjacentHTML('beforeend', nextLink);
-                            }
+        window.changePage = function (page) {
+            currentPage = page;
+            fetchProjects();
+        };
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const domain = 'https://localhost:44371';
 
+            document.getElementById('searchBtn').addEventListener('click', function () {
+                currentPage = 1;
+                fetchProjects();
+            });
 
-                            function updateProjectCards(projects) {
-                                var projectCardsDiv = document.getElementById('projectCards');
-                                projectCardsDiv.innerHTML = '';
+            async function fetchData() {
+                //await fetchIndustries();
+                await fetchProjects();
+            }
 
-                                if (projects && projects.length > 0) {
-                                    var html = '';
-                                    projects.forEach(project => {
-                                        html += `
-                                        <br/>
-                                            <div class="col-md-12 mb-3">
-                            <div class="card mb-3">
-                                <div class="row g-0">
-                                    <div class="col-md-6">
-                                        <img src="${domain}/media/alhbhyy5/default.png" class="img-fluid rounded-start project-image" alt="Project Image">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${project.projectName}</h5>
-                                            <p class="card-text"><strong>Valuation:</strong> $${project.projectValuation}</p>
-                                            <p class="card-text"><strong>Description:</strong> ${project.projectDescription}</p>
-                                            <p class="card-text"><strong>Industry:</strong> ${project.industry}</p>
-                                            <p class="card-text"><strong>Founder:</strong> ${project.founder}</p>
-                                            <p class="card-text"><strong>Company:</strong> ${project.companyName}</p>
-                                             <a href="/project-details?id=${project.id}" class="btn btn-primary view-details" data-id=${project.id} data-title=${project.founder}>View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`
-                                    });
-                                    projectCardsDiv.innerHTML = html;
-                                } else {
-                                    projectCardsDiv.innerHTML = '<p>No projects found.</p>';
-                                }
-                            }
-                            // Refresh the url 
-                             function resetUrl() {
-                                    var newUrl = window.location.href.split('?')[0];
-                                    window.history.pushState({}, document.title, newUrl);
-                                }
-                            </script>
-
-
-
+            fetchData();
+        });
+    </script>
 }
+
+
