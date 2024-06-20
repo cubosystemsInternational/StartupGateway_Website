@@ -41,6 +41,10 @@ footer .nav-menu-item .nav-title {
     margin-left: 10px !important; /* Adjust the value as needed */
 }
 
+.logout-btn-cu {
+    margin-left: 10px !important; /* Adjust the value as needed */
+    background-color:olivedrab;
+}
 
 .navbar-nav .nav-active {
     color: #f1604b !important;

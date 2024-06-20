@@ -4,6 +4,14 @@
 @using Umbraco.Cms.Core.Models;
 @using ByteAntU12DAStarterKit.Core.Models;
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using System.IdentityModel.Tokens.Jwt;
+@using Newtonsoft.Json.Linq;
+@using Startup_Gateway_Website.Utils;
+@using System.Net.Http;
+@using System.Threading.Tasks;
+@using System.Text;
+
+
 @{
     Layout = null;
     Dictionary<string, string> languagesByCultures = new Dictionary<string, string>() { { "en-us", "English" }, { "de", "Deutsch" } };
@@ -15,6 +23,85 @@
     var curCulture = Model.GetCultureFromDomains();
     var currentLng = curCulture?.Split('-')[0];
     var culPref = "";
+
+    var getLoggedInContext = Context.Request.Cookies["IsLoggedIn"];
+    // Set IsLoggedIn based on the cookie value
+    bool IsLoggedIn = getLoggedInContext != null && getLoggedInContext.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+
+    void ChangeValueOfLoggedIn(bool value)
+    {
+        IsLoggedIn = value;
+        
+        // Emit JavaScript to log message on the client-side
+    @*if (value == true )
+        {
+            @:<script>console.log("User logged in.");</script>
+        }
+        else
+        {
+            @:<script>console.log("User logged out.");</script>
+        }*@
+    }
+
+    var accessToken = Context.Request.Cookies["accessToken"];
+    var refreshToken = Context.Request.Cookies["refreshToken"];
+    var device = Context.Request.Headers["User-Agent"].ToString();
+        <script>
+            console.log("Device " + '@device');
+        </script>
+    // Check if both access token and refresh token exist
+    @*if (accessToken != null && refreshToken != null)
+    {
+        <script>console.log('@accessToken');</script>
+        // User is logged in
+        IsLoggedIn = true;
+    }*@
+     if (accessToken == null && refreshToken != null)
+    {
+    @* // Get the current domain
+        var currentDomain = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        <script>console.log("hi"+'@currentDomain');</script>
+        // Call the RefreshAccessToken API endpoint
+        using (var client = new HttpClient())
+        {
+            client.BaseAddress = new Uri(currentDomain);
+
+            var json = $"\"{refreshToken}\"";  
+            // Create the request content as JSON
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            // Send the HTTP POST request
+            HttpResponseMessage response = client.Send(new HttpRequestMessage(HttpMethod.Post, "/Auth/RefreshAccessToken") { Content = content });
+            <script>console.log('@response.Content.');</script>
+
+            <script>console.log('@client.BaseAddress');</script>
+            if (response.IsSuccessStatusCode)
+            {
+                <script>console.log('@accessToken');</script>
+                IsLoggedIn = true;
+            }
+            else
+            {
+                IsLoggedIn = false;
+            }
+        }*@
+        // Call the JavaScript function to refresh the token
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    refreshAccessToken('@refreshToken');
+                });
+            </script>
+
+
+    }
+
+    if (accessToken != null)
+    {
+        // Use the utility method to decode the access token
+        var accessTokenPayload = TokenUtils.DecodeAccessToken(accessToken);
+    }
+
+
     if (curCulture != "en-US")
     {
         culPref = curCulture + "/";
@@ -69,7 +156,10 @@
     }
     string imgAbsoluteUrl = home == null ? "" : $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}" + Url.Content("~/images/big-logo.png");
     string canonicalAbsoluteUrl = Context.Request.Scheme + "://" + Context.Request.Host + Model.Url();
+
+
 }
+
 @{
     void Navbar(IEnumerable<IPublishedContent> navigation, bool listStyle = true)
 {
@@ -100,41 +190,44 @@
 
         if (item.Url().Contains("/services/"))
         {
-            <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
-                <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
-            </li>
+                <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
+                    <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
+                </li>
         }
         else
         {
-            <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
+                <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
         }
         
         if (listStyle && i != navigationWithHome.Count())
         {
-            <li class="hidden-xs hidden-sm">
-                <div class="point"></div>
-            </li>
+                <li class="hidden-xs hidden-sm">
+                    <div class="point"></div>
+                </li>
             i++;
         }
     }
 }
     void RenderServicesMenu(Services? services)
     {
-        @foreach (var item in services?.TechnicalAreas?.Where(t => t?.Landings?.Count() > 0) ?? Enumerable.Empty<Competency>())
+    @foreach (var item in services?.TechnicalAreas?.Where(t => t?.Landings?.Count() > 0) ?? Enumerable.Empty<Competency>())
         {
-            <div class="nav-menu-item">
-            @*hide this sub nav title *@
-                <div class="nav-title">@item.CompetencyTitle</div>
-                @foreach (var landing in item?.Landings ?? Enumerable.Empty<IPublishedContent>())
+                <div class="nav-menu-item">
+                @*hide this sub nav title *@
+                    <div class="nav-title">@item.CompetencyTitle</div>
+                    @foreach (var landing in item?.Landings ?? Enumerable.Empty<IPublishedContent>())
                 {
-                    <div class="nav-item">
-                        <a href="@landing.Url()">@landing.Name</a>
-                    </div>
+                        <div class="nav-item">
+                            <a href="@landing.Url()">@landing.Name</a>
+                        </div>
                 }
-            </div>
+                </div>
         }
     }
+
 }
+
+
 <!DOCTYPE html>
 <html lang="@curCulture" class="js">
 
@@ -244,11 +337,11 @@
                                 : home?.DefaultLogo?.GetCropUrl(imageCropMode: ImageCropMode.Pad, imageCropAnchor: ImageCropAnchor.Left, width: 149, height: 59, furtherOptions: "&bgcolor=transparent");
                                 if (!string.IsNullOrEmpty(logoUrl))
                                 {
-                                    <a href="~/@culPref" class="navbar-brand smoothScroll">
-                                        <div>
-                                            <img src="@logoUrl" class="logo" alt="@home?.WebsiteName Logo" />
-                                        </div>
-                                    </a>
+                                        <a href="~/@culPref" class="navbar-brand smoothScroll">
+                                            <div>
+                                                <img src="@logoUrl" class="logo" alt="@home?.WebsiteName Logo" />
+                                            </div>
+                                        </a>
                                 }
                             }
                             @if (languages.Count > 1)
@@ -292,9 +385,18 @@
                             <span>@home?.ContactUs?.Name</span>
                         </a>
                         @*Add the login button*@
-                        <a href="https://startupgateway.cubosystems.com/login" class="get-in-touch smoothScroll visible-lg login-btn-cu">
-                            <span>Login</span>
-                        </a>
+                        @if (IsLoggedIn == false)
+                        {
+                            <a href="@GlobalVariables.LoginDomain" class="get-in-touch smoothScroll visible-lg login-btn-cu">
+                                <span>Login</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a onclick="logout()" class="get-in-touch smoothScroll visible-lg logout-btn-cu">
+                                <span>Logout</span>
+                            </a>
+                        }
                     </div>
                     <div class="collapse navbar-collapse text-center">
                         <ul class="nav navbar-nav nav-btns-wrp">
@@ -384,9 +486,18 @@
                     </a>
                     
                     @*Add the login button for the nav scroll*@
-                        <a href="https://startupgateway.cubosystems.com/login" class="get-in-touch smoothScroll visible-lg login-btn-cu">
+                    @if (IsLoggedIn == false)
+                    {
+                        <a href="@GlobalVariables.LoginDomain" class="get-in-touch smoothScroll visible-lg login-btn-cu">
                             <span>Login</span>
                         </a>
+                    }
+                    else{
+                        <a onclick="logout()" class="get-in-touch smoothScroll visible-lg logout-btn-cu">
+                            <span>Logout</span>
+                        </a>
+                    }
+                       
                 </div>
                 <div class="collapse navbar-collapse text-center">
                     <ul class="nav navbar-nav nav-btns-wrp">
@@ -405,6 +516,8 @@
             </div>
         </div>
     </div>
+    @IsLoggedIn
+
     <div class="popup-menu">
         <span class="btn-close-menu btn-close-nav">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
@@ -462,6 +575,7 @@
     <a href="#" id="return-to-top">
         <img src="~/images/arrow-to-top.svg" />
     </a>
+
     @RenderBody()
     <footer class="">
         <div class="text-center footer-navigation-menu container">
@@ -552,7 +666,68 @@
     <!--<script src="~/js/get-email.js"></script>-->
     <!--<script src="~/lib/lazy-load.min.js"></script>-->
     <!--<script src="~/js/script.js"></script>-->
+  
+    <script>
+        async function refreshAccessToken(refreshToken) {
+            const currentDomain = window.location.origin;
+            console.log("Current Domain: " + currentDomain);
+
+            const url = `${currentDomain}/Auth/RefreshAccessToken`;
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            const body = JSON.stringify(refreshToken);
+            console.log("Request Body: " + body);
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: headers,
+                    body: body
+                });
+
+                console.log(response);
+
+                if (response.ok) {
+                    const accessToken = await response.text();  // Retrieve the new access token as text
+                    console.log("New Access Token: " + accessToken);
+
+                    // Perform actions with the new access token
+                } else {
+                    console.log("Failed to refresh token");
+                    // Handle failure
+                }
+            } catch (error) {
+                console.error("Error during fetch:", error);
+            }
+        }
+
+    </script>
     
+    <script>
+        function logout() {
+            fetch('/Auth/LogoutUser', {
+                method: 'GET',
+                credentials: 'same-origin' // Ensure cookies are sent along with the request
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Successful logout
+                        window.location.href = '/'; // Redirect to the root URL
+                    } else {
+                        // Failed to logout
+                        console.error('Failed to logout:', response.statusText);
+                        // Optionally display an error message or handle the error in UI
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout request:', error);
+                    // Handle any network errors or exceptions
+                });
+        }
+    </script>
+   
     <script>
         $.cookieMessage({
             'mainMessage': '@home?.CookieText',
@@ -580,6 +755,8 @@
     {
         @Html.Raw(home.ScriptSectionEndBody)
     }
+
+
 </body>
 
 </html>

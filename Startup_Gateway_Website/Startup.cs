@@ -1,3 +1,6 @@
+using log4net.Config;
+using log4net;
+
 namespace Startup_Gateway_Website
 {
     public class Startup
@@ -17,6 +20,10 @@ namespace Startup_Gateway_Website
         {
             _env = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
             _config = config ?? throw new ArgumentNullException(nameof(config));
+
+            // Configure log4net
+            var logRepository = LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly());
+            XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
         }
 
         /// <summary>
@@ -35,6 +42,9 @@ namespace Startup_Gateway_Website
                 .AddDeliveryApi()
                 .AddComposers()
                 .Build();
+
+            // Add controllers and other services as needed
+            services.AddControllers();
         }
 
         /// <summary>
@@ -61,6 +71,17 @@ namespace Startup_Gateway_Website
                     u.UseBackOfficeEndpoints();
                     u.UseWebsiteEndpoints();
                 });
-        }
-    }
+			// Added to handle the jwt
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllerRoute(
+						name: "default",
+	                    pattern: "{controller=Home}/{action=Index}/{id?}");
+				// Custom route for AuthController
+				endpoints.MapControllerRoute(
+					name: "auth",
+					pattern: "{controller=Auth}/{action=Welcome}/{id?}");
+			});
+		}
+	}
 }
