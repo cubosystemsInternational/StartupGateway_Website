@@ -1,5 +1,6 @@
 using log4net.Config;
 using log4net;
+using Startup_Gateway_Website.Utils;
 
 namespace Startup_Gateway_Website
 {
@@ -45,6 +46,7 @@ namespace Startup_Gateway_Website
 
             // Add controllers and other services as needed
             services.AddControllers();
+            services.AddScoped<VisitorSessionUtils>(); // Register VisitorSessionUtils with scoped lifetime
         }
 
         /// <summary>

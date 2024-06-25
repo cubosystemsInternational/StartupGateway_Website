@@ -23,6 +23,9 @@
     var curCulture = Model.GetCultureFromDomains();
     var currentLng = curCulture?.Split('-')[0];
     var culPref = "";
+    JObject accessTokenPayload = null;
+    var LoggedInUserId = "";
+    var currentDomain = $"{Context.Request.Scheme}://{Context.Request.Host}";
 
     var getLoggedInContext = Context.Request.Cookies["IsLoggedIn"];
     // Set IsLoggedIn based on the cookie value
@@ -43,20 +46,10 @@
             @:<script>console.log("User logged out.");</script>
         }*@
     }
-
     var accessToken = Context.Request.Cookies["accessToken"];
     var refreshToken = Context.Request.Cookies["refreshToken"];
-    var device = Context.Request.Headers["User-Agent"].ToString();
-        <script>
-            console.log("Device " + '@device');
-        </script>
-    // Check if both access token and refresh token exist
-    @*if (accessToken != null && refreshToken != null)
-    {
-        <script>console.log('@accessToken');</script>
-        // User is logged in
-        IsLoggedIn = true;
-    }*@
+
+    
      if (accessToken == null && refreshToken != null)
     {
     @* // Get the current domain
@@ -86,10 +79,10 @@
             }
         }*@
         // Call the JavaScript function to refresh the token
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    refreshAccessToken('@refreshToken');
-                });
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        refreshAccessToken('@refreshToken');
+                    });
             </script>
 
 
@@ -98,8 +91,69 @@
     if (accessToken != null)
     {
         // Use the utility method to decode the access token
-        var accessTokenPayload = TokenUtils.DecodeAccessToken(accessToken);
+        accessTokenPayload = TokenUtils.DecodeAccessToken(accessToken);
     }
+
+    if (accessTokenPayload != null)
+    {
+        LoggedInUserId = accessTokenPayload["UserId"].ToString();
+    }
+
+    var userAgent = Context.Request.Headers["User-Agent"].ToString();
+    <script src="https://cdn.jsdelivr.net/npm/ua-parser-js/dist/ua-parser.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Check if the page was loaded as a new navigation, not as a reload
+            if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+                return; // Skip running the tracking code
+            }
+
+            const currentUrl = window.location.href;
+            const parserUg = new UAParser(navigator.userAgent);
+            const browser = (parserUg.getBrowser().name || "") + " " + (parserUg.getBrowser().version || "");
+            const os = (parserUg.getOS().name || "") + " " + (parserUg.getOS().version || "");
+            const cpu = parserUg.getCPU().architecture || "";
+            const device = (parserUg.getDevice().type || "") + " " + (parserUg.getDevice().vendor || "") + " " + (parserUg.getDevice().model || "");
+            const userId = parseInt('@LoggedInUserId', 10); // Ensure LoggedInUserId is available
+
+            var originUrl = document.referrer; // The URL of the previous page
+
+            // Construct the data payload
+            const data = {
+                Browser: browser,
+                OS: os,
+                CPU: cpu,
+                Device: device,
+                UserId: userId,
+                originUrl: originUrl,
+                currentUrl: currentUrl
+            };
+
+            fetch('@currentDomain/Auth/CheckAndTrackVisitorSession', { // Update with your actual URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.Message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+
+
+
+
 
 
     if (curCulture != "en-US")
@@ -190,20 +244,20 @@
 
         if (item.Url().Contains("/services/"))
         {
-                <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
-                    <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
-                </li>
+                    <li class="nav-item-centered panel-heading panel-heading-desctop nodecoration panel-title lead" data-toggle="collapse" data-parent="#panel-814345">
+                        <a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a>
+                    </li>
         }
         else
         {
-                <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
+                    <li class="nav-item-centered"><a href="@item.Url()" class="@( isCurrentPage ? "nav-active" : "")"><span>@item.Name</span></a></li>
         }
         
         if (listStyle && i != navigationWithHome.Count())
         {
-                <li class="hidden-xs hidden-sm">
-                    <div class="point"></div>
-                </li>
+                    <li class="hidden-xs hidden-sm">
+                        <div class="point"></div>
+                    </li>
             i++;
         }
     }
@@ -212,16 +266,16 @@
     {
     @foreach (var item in services?.TechnicalAreas?.Where(t => t?.Landings?.Count() > 0) ?? Enumerable.Empty<Competency>())
         {
-                <div class="nav-menu-item">
-                @*hide this sub nav title *@
-                    <div class="nav-title">@item.CompetencyTitle</div>
-                    @foreach (var landing in item?.Landings ?? Enumerable.Empty<IPublishedContent>())
+                    <div class="nav-menu-item">
+                    @*hide this sub nav title *@
+                        <div class="nav-title">@item.CompetencyTitle</div>
+                        @foreach (var landing in item?.Landings ?? Enumerable.Empty<IPublishedContent>())
                 {
-                        <div class="nav-item">
-                            <a href="@landing.Url()">@landing.Name</a>
-                        </div>
+                            <div class="nav-item">
+                                <a href="@landing.Url()">@landing.Name</a>
+                            </div>
                 }
-                </div>
+                    </div>
         }
     }
 
@@ -337,11 +391,11 @@
                                 : home?.DefaultLogo?.GetCropUrl(imageCropMode: ImageCropMode.Pad, imageCropAnchor: ImageCropAnchor.Left, width: 149, height: 59, furtherOptions: "&bgcolor=transparent");
                                 if (!string.IsNullOrEmpty(logoUrl))
                                 {
-                                        <a href="~/@culPref" class="navbar-brand smoothScroll">
-                                            <div>
-                                                <img src="@logoUrl" class="logo" alt="@home?.WebsiteName Logo" />
-                                            </div>
-                                        </a>
+                                            <a href="~/@culPref" class="navbar-brand smoothScroll">
+                                                <div>
+                                                    <img src="@logoUrl" class="logo" alt="@home?.WebsiteName Logo" />
+                                                </div>
+                                            </a>
                                 }
                             }
                             @if (languages.Count > 1)
@@ -517,6 +571,7 @@
         </div>
     </div>
     @IsLoggedIn
+    
 
     <div class="popup-menu">
         <span class="btn-close-menu btn-close-nav">
@@ -650,6 +705,7 @@
         </div>
     }
     <script src="~/bundles/scripts.min.js" asp-append-version="true"></script>
+
     <!--<script src="~/lib/javascript/jquery-3.2.1.min.js"></script>-->
     <!--<script src="~/lib/javascript/bootstrap-3.3.7.min.js"></script>-->
     <!--<script src="~/lib/javascript/anime.min.js"></script>-->
@@ -704,7 +760,40 @@
         }
 
     </script>
-    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var cookies = document.cookie.split(';').reduce((cookies, cookie) => {
+                var [name, value] = cookie.split('=').map(c => c.trim());
+                cookies[name] = value;
+                return cookies;
+            }, {});
+
+            if (cookies['UpdateUserIdentity'] === 'true') {
+                // Remove the LoginSuccess cookie
+                document.cookie = "UpdateUserIdentity=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+                // Make the API call
+                fetch(`${currentDomain}/Auth/ProcessVisitorSession`, {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Visitor session processed successfully.');
+                        } else {
+                            console.error('Failed to process visitor session.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    </script>
+
+
     <script>
         function logout() {
             fetch('/Auth/LogoutUser', {

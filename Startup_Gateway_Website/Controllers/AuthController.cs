@@ -1,9 +1,13 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Polly;
+using Startup_Gateway_Website.Models.Request;
+using Startup_Gateway_Website.Models.Response;
 using Startup_Gateway_Website.Utils;
 using System.IdentityModel.Tokens.Jwt;
 using Umbraco.Cms.Core.Web;
@@ -15,7 +19,16 @@ namespace Startup_Gateway_Website.Controllers
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
-		[HttpGet("test")]
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly VisitorSessionUtils _visitorSessionUtils;
+
+        public AuthController(IHttpClientFactory clientFactory, VisitorSessionUtils visitorSessionUtils)
+        {
+            _clientFactory = clientFactory;
+            _visitorSessionUtils = visitorSessionUtils; 
+        }
+
+        [HttpGet("test")]
 		public IActionResult Welcome()
 		{
 			return Content("This is the test action method...");
@@ -59,63 +72,63 @@ namespace Startup_Gateway_Website.Controllers
                     Secure = Request.IsHttps,
                     SameSite = SameSiteMode.Strict
                 });
+                // Set a flag to indicate a successful login
+                Response.Cookies.Append("UpdateUserIdentity", "true", new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = Request.IsHttps,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(5) // Short-lived cookie
+                });
             }
 
             // Redirect to the Home page, for example, the dashboard
             return Redirect("/");
         }
 
-        //private async Task CreateSessionAndTrack()
-        //{
-        //    var sessionId = Request.Cookies["VisitorSessionId"];
-        //    if (string.IsNullOrEmpty(sessionId))
-        //    {
-        //        var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-        //        var device = Request.Headers["User-Agent"].ToString();
-        //        var userId = User?.Identity?.IsAuthenticated == true ? (int?)int.Parse(User.Identity.Name) : null;
+        [HttpPost]
+        public async Task<IActionResult> CheckAndTrackVisitorSession([FromBody] VisitorSessionRequest request)
+        {
+            try
+            {
+                var visitorSessionUUID = Request.Cookies["VisitorSessionUUID"];
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var visitorSessionId = Request.Cookies["VisitorSessionId"];
+                if (string.IsNullOrEmpty(visitorSessionUUID) && string.IsNullOrEmpty(visitorSessionId))
+                {
+                    var sessionResult = await _visitorSessionUtils.CreateSessionAsync(request,ip);
+                    visitorSessionUUID = sessionResult.VisitorSessionUUID;
+                    visitorSessionId = sessionResult.Id.ToString();
 
-        //        var client = _clientFactory.CreateClient();
+                    Response.Cookies.Append("VisitorSessionUUID", visitorSessionUUID, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = Request.IsHttps,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    });
+                    Response.Cookies.Append("VisitorSessionId", visitorSessionId, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = Request.IsHttps,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    });
 
-        //        var session = new
-        //        {
-        //            Ip = ip,
-        //            Device = device,
-        //            UserId = userId,
-        //            Status = "active",
-        //            ModifiedBy = "system",
-        //            DateTime = DateTime.UtcNow,
-        //            ModifiedOn = DateTime.UtcNow
-        //        };
 
-        //        var response = await client.PostAsJsonAsync("https://yourapi.com/api/visitortracking/logsession", session);
-        //        response.EnsureSuccessStatusCode();
+                }
+                // Track the session activity
+                await _visitorSessionUtils.TrackSessionActivityAsync(request.OriginUrl, request.CurrentUrl, request.UserId, int.Parse(visitorSessionId));
 
-        //        sessionId = await response.Content.ReadAsStringAsync();
-        //        Response.Cookies.Append("VisitorSessionId", sessionId, new CookieOptions
-        //        {
-        //            HttpOnly = true,
-        //            Secure = Request.IsHttps,
-        //            SameSite = SameSiteMode.Strict,
-        //            Expires = DateTimeOffset.UtcNow.AddYears(1)
-        //        });
-        //    }
 
-        //    // Track the session activity
-        //    var trackSession = new
-        //    {
-        //        VisitorSessionId = sessionId,
-        //        DateTime = DateTime.UtcNow,
-        //        OriginalUrl = Request.Headers["Referer"].ToString(),
-        //        CurrentUrl = Request.Path.ToString(),
-        //        Status = "active",
-        //        ModifiedBy = "system",
-        //        ModifiedOn = DateTime.UtcNow
-        //    };
-
-        //    var trackingClient = _clientFactory.CreateClient();
-        //    var trackingResponse = await trackingClient.PostAsJsonAsync("https://yourapi.com/api/visitortracking/track", trackSession);
-        //    trackingResponse.EnsureSuccessStatusCode();
-        //}
+                return Ok(new { Message = "Visitor session checked and tracked successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Add proper logging here
+                return StatusCode(500, new { Message = "An error occurred while checking and tracking the visitor session.", Details = ex.Message });
+            }
+        }
 
         [HttpGet]
 		public IActionResult GetAccessToken()
@@ -187,10 +200,13 @@ namespace Startup_Gateway_Website.Controllers
                     else
                     {
                         // If accessToken is null or empty, remove the existing access token cookie
-
+                        
                         Response.Cookies.Delete("IsLoggedIn");
                         Response.Cookies.Delete("accessToken");
                         Response.Cookies.Delete("refreshToken");
+                        Response.Cookies.Delete("VisitorSessionId");
+                        Response.Cookies.Delete("VisitorSessionUUID");
+                        Response.Cookies.Delete("UpdateUserIdentity");
                         return BadRequest("Failed to refresh access token. New access token is null or empty.");
                     }
                 }
@@ -201,6 +217,9 @@ namespace Startup_Gateway_Website.Controllers
                     Response.Cookies.Delete("IsLoggedIn");
                     Response.Cookies.Delete("accessToken");
                     Response.Cookies.Delete("refreshToken");
+                    Response.Cookies.Delete("VisitorSessionId");
+                    Response.Cookies.Delete("VisitorSessionUUID");
+                    Response.Cookies.Delete("UpdateUserIdentity");
                     return BadRequest("Failed to refresh access token. New access token is null or empty.");
                 }
             }
@@ -215,27 +234,46 @@ namespace Startup_Gateway_Website.Controllers
 
 
         [HttpGet]
-        public IActionResult LogoutUser()
+        public async Task<IActionResult> LogoutUser()
         {
             try
             {
                 // Get access and refresh tokens from cookies
                 var accessToken = Request.Cookies["accessToken"];
                 var refreshToken = Request.Cookies["refreshToken"];
+                var visitorSessionUUID = Request.Cookies["VisitorSessionUUID"];
+                var visitorSessionId = Request.Cookies["VisitorSessionId"];
 
-                if (accessToken != null && refreshToken != null)
+                if (accessToken != null && refreshToken != null && visitorSessionUUID != null)
                 {
+                    // Decode the access token to get the payload
+                    var accessTokenPayload = TokenUtils.DecodeAccessToken(accessToken);
+
+                    // Convert the UserId to an integer
+                    int loggedInUserId = int.Parse(accessTokenPayload["UserId"].ToString());
+
+                    // Inactivate the visitor session asynchronously using VisitorSessionUtils instance
+                    bool isSessionInactivated = await _visitorSessionUtils.InactivateVisitorSessionAsync(visitorSessionUUID, loggedInUserId, accessToken);
+
+                    if (!isSessionInactivated)
+                    {
+                        return BadRequest("Failed to inactivate visitor session.");
+                    }
+
                     bool isTokenRevoked = TokenUtils.RevokeTheToken(refreshToken, accessToken);
 
                     if (isTokenRevoked)
                     {
                         // Remove cookies
                         Response.Cookies.Delete("IsLoggedIn");
-                        Response.Cookies.Delete("accessToken");
+                        Response.Cookies.Delete("accessToken"); 
                         Response.Cookies.Delete("refreshToken");
+                        Response.Cookies.Delete("VisitorSessionId");
+                        Response.Cookies.Delete("VisitorSessionUUID");
+                        Response.Cookies.Delete("UpdateUserIdentity");
 
                         // Redirect to root URL
-                        return Ok("Successfully Logged Out and revoked tokens.");
+                        return Ok("Successfully Logged Out, revoked tokens, and inactivated visitor session.");
                     }
                     else
                     {
@@ -254,6 +292,32 @@ namespace Startup_Gateway_Website.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ProcessVisitorSession()
+        {
+            var visitorSessionUUID = Request.Cookies["VisitorSessionUUID"];
+            var accessTokenFromCookie = Request.Cookies["accessToken"];
+
+            if (accessTokenFromCookie == null)
+            {
+                return BadRequest(new { success = false, message = "Access token not found in cookies." });
+            }
+
+            var accessTokenUser = TokenUtils.DecodeAccessToken(accessTokenFromCookie);
+
+            if (!string.IsNullOrEmpty(visitorSessionUUID))
+            {
+                var userId = int.Parse(accessTokenUser["UserId"].ToString());
+                var updateResult = await _visitorSessionUtils.UpdateUserIdByVisitorSessionUUIDAsync(visitorSessionUUID, userId, accessTokenFromCookie);
+
+                if (!updateResult)
+                {
+                    return BadRequest(new { success = false, message = "Failed to update UserId for visitor session." });
+                }
+            }
+
+            return Ok(new { success = true });
+        }
 
     }
 }
