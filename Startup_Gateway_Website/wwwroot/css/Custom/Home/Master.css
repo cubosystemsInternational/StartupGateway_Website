@@ -49,3 +49,29 @@ footer .nav-menu-item .nav-title {
 .navbar-nav .nav-active {
     color: #f1604b !important;
 }
+
+.view-profile{
+  padding-left: 80px;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+  padding: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.avatar {
+    width: 52px; /* Adjust the width as needed */
+    height: 50px; /* Adjust the height to maintain the aspect ratio */
+    border-radius: 100%; /* Make the image circular */
+    cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+    
+}
+.container.top-menu-wrp {
+  width:90%;
+}
+ .nav-btns-rght {
+  display: inline-flex;
+  align-items: baseline;
+}
+ .nav-btns-rght {
+  align-items: flex-end;
+} 

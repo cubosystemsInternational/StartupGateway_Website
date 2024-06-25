@@ -1,5 +1,211 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Web.Common.PublishedModels.UserProfile>
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @{
-	Layout = null;
+    Layout = "Master1.cshtml";
+    ViewBag.headerClass = "dark";
+    var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
+    var curCulture = Model.GetCultureFromDomains();
 }
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div class="about-us-page">
+    <section class="section-1">
+        <div class="title-padding container"
+            style="display: flex; align-items: center; justify-content: space-between;">
+            <h3 class="title" style="margin: 0;">@Model.Heading</h3>
+            <button
+                style="margin-left: 10px; padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+                <a href="/" style="color: white; text-decoration: none;">Home</a>
+            </button>
+        </div>
+
+    </section>
+
+    <div class="container-xl px-4 mt-4">
+        Account page navigation
+        <nav class="nav nav-borders">
+            <a class="nav-link active ms-0" href="" target="__blank">Profile</a>
+            <a class="nav-link" href="" target="__blank">Billing</a>
+            <a class="nav-link" href="security/">Security</a>
+            <a class="nav-link" href="" target="__blank">Notifications</a>
+        </nav>
+
+        <!--    <ul class="nav nav-tabs">-->
+        <!--  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>-->
+        <!--  <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>-->
+        <!--  <li><a data-toggle="tab" href="#menu2">Menu 2</a></li>-->
+        <!--  <li><a data-toggle="tab" href="#menu3">Menu 3</a></li>-->
+        <!--</ul>-->
+
+        <hr class="mt-0 mb-4">
+        <div class="row">
+            <div class="col-xl-4">
+                <!-- Profile picture card-->
+                <div class="card mb-4 mb-xl-0">
+                    <div class="card-header">Profile Picture</div>
+                    <div class="card-body text-center">
+                        <!-- Profile picture image-->
+                        <img class="img-account-profile rounded-circle mb-2"
+                            src="http://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                        <!-- Profile picture help block-->
+                        <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                        <!-- Profile picture upload button-->
+                        <button class="btn btn-primary" type="button">Upload new image</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <!-- Account details card-->
+                <div class="card mb-4">
+                    <div class="card-header">Account Details</div>
+                    <div class="card-body">
+                        <form>
+                            <!-- Form Group (username)-->
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputUsername">Username (how your name will appear to
+                                    other users on the site)</label>
+                                <input class="form-control" id="inputUsername" type="text"
+                                    placeholder="Enter your username" value="username" disabled>
+                            </div>
+                            <!-- Form Row-->
+                            <div class="row gx-3 mb-3">
+                                <!-- Form Group (first name)-->
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="inputFirstName">First name</label>
+                                    <input class="form-control" id="inputFirstName" type="text"
+                                        placeholder="Enter your first name" value="Valerie">
+                                </div>
+                                <!-- Form Group (last name)-->
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="inputLastName">Last name</label>
+                                    <input class="form-control" id="inputLastName" type="text"
+                                        placeholder="Enter your last name" value="Luna">
+                                </div>
+                            </div>
+                            <!-- Form Row        -->
+                            <div class="row gx-3 mb-3">
+                                <!-- Form Group (organization name)-->
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="inputOrgName">Organization name</label>
+                                    <input class="form-control" id="inputOrgName" type="text"
+                                        placeholder="Enter your organization name" value="Start Bootstrap" disabled>
+                                </div>
+                                <!-- Form Group (location)-->
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="inputLocation">Location</label>
+                                    <input class="form-control" id="inputLocation" type="text"
+                                        placeholder="Enter your location" value="San Francisco, CA">
+                                </div>
+                            </div>
+                            <!-- Form Group (email address)-->
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputEmailAddress">Email address</label>
+                                <input class="form-control" id="inputEmailAddress" type="email"
+                                    placeholder="Enter your email address" value="name@example.com" disabled>
+                            </div>
+                            <!-- Form Row-->
+                            <div class="row gx-3 mb-3">
+                                <!-- Form Group (phone number)-->
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="inputPhone">Phone number</label>
+                                    <input class="form-control" id="inputPhone" type="tel"
+                                        placeholder="Enter your phone number" value="555-123-4567" disabled>
+                                </div>
+                                <!-- Form Group (birthday)-->
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="inputBirthday">Birthday</label>
+                                    <input class="form-control" id="inputBirthday" type="text" name="birthday"
+                                        placeholder="Enter your birthday" value="06/10/1988">
+                                </div>
+                            </div>
+                            <!-- Save changes button-->
+                            <button class="btn btn-primary" type="button" id="saveChangesBtn">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="~/css/Custom/UserProfile.css" />
+
+</div>
+
+
+<script>
+    let userData = null;
+    const userId = 1;
+    async function fetchUserDetails() {
+        const domain = 'https://localhost:44371';
+        const userId = 1;
+        const apiUrl = `${domain}/api/Users/GetUserDetailsById?userId=${userId}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                const userDetails = await response.json();
+                userData = userDetails;
+                console.log(userData);
+                populateForm(userData);
+            } else {
+                console.error('Failed to fetch user details from the API.');
+            }
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        }
+    }
+
+    function populateForm(data) {
+        document.getElementById('inputUsername').value = data.firstName + ' ' + data.lastName;
+        document.getElementById('inputFirstName').value = data.firstName;
+        document.getElementById('inputLastName').value = data.lastName;
+        document.getElementById('inputOrgName').value = data.startupCompanyName;
+        document.getElementById('inputLocation').value = data.address;
+        document.getElementById('inputEmailAddress').value = data.email;
+        document.getElementById('inputPhone').value = data.contactNumber; // Add phone if available in userData
+        document.getElementById('inputBirthday').value = data.dateOfBirth.split('T')[0];
+    }
+
+    window.onload = function () {
+        fetchUserDetails();
+    }
+
+
+    async function updateUserDetails(formData) {
+        const domain = 'https://localhost:44371';
+
+        const apiUrl = `${domain}/api/Users/UpdateUserDetails?userId=${userId}`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            if (response.ok) {
+                const userDetails = await response.json();
+                console.log('User details updated successfully:', userDetails);
+                fetchUserDetails();
+            } else {
+                console.error('Failed to update user details.');
+            }
+        } catch (error) {
+            console.error('Error updating user details:', error);
+        }
+    }
+
+    document.getElementById('saveChangesBtn').addEventListener('click', function () {
+        const formData = {
+            userId: userId,
+            firstName: document.getElementById('inputFirstName').value,
+            lastName: document.getElementById('inputLastName').value,
+            startupCompanyName: document.getElementById('inputOrgName').value,
+            address: document.getElementById('inputLocation').value,
+            email: document.getElementById('inputEmailAddress').value,
+            contactNumber: document.getElementById('inputPhone').value,
+            dateOfBirth: document.getElementById('inputBirthday').value
+        };
+        updateUserDetails(formData);
+    });
+</script>
