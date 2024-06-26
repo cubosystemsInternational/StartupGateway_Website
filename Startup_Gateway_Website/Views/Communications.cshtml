@@ -1,0 +1,358 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Web.Common.PublishedModels.Communication>
+@using Umbraco.Cms.Web.Common.PublishedModels
+@using System.Net.Http
+@using Newtonsoft.Json
+@using System.Threading.Tasks
+@using Microsoft.AspNetCore.Http
+@using System.Web
+
+@{
+    var domain = "https://localhost:44371";
+    Layout = "Master.cshtml";
+    ViewBag.headerClass = "dark";
+    var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
+    var curCulture = Model.GetCultureFromDomains();
+
+    var investorId = 20; // Set the investorId here
+    var apiUrlCommunication = $"{domain}/api/Communication/GetAllCommunicationsForInvestor?investorId={investorId}";
+    var apiUrlFounders = $"{domain}/api/Founders/GetAllFounders"; // API URL to get founders
+    var apiSendCommunication = $"{domain}/api/Communication/SendCommunication"; // API URL to send communication
+
+}
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+<style>
+    .dataTables_filter {
+        float: left;
+    }
+    .custom-button {
+        float: left;
+        margin-right: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border:none !important;
+        background-color:#0096c7;
+        color: white;
+    }
+    .custom-button:hover {
+        background-color:#0077b6;
+        color: white;
+    }
+    .dataTables_filter input {
+        width: 300px; /* Increase the width of the search bar */
+    }
+    div.dt-buttons {
+        float: right;
+    }
+   button.dt-button, div.dt-button, a.dt-button, input.dt-button {
+        
+        border: 1px solid rgba(0, 0, 0, 0) !important;
+        background: transparent;
+    }
+    button.dt-button{
+        
+        font-size:1.3em !important;
+    }
+    #dt-search-0{
+        width:50%;
+    }
+    
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        color: #333;
+    }
+    .dt-button .fa {
+        margin-right: 5px;
+    }
+    .btn-copy .fa {
+        color: #007bff;
+    }
+    .btn-csv .fa {
+        color: #003566;
+    }
+    .btn-excel .fa {
+        color: #28a745;
+    }
+    .btn-pdf .fa {
+        color: #dc3545;
+    }
+    .btn-print .fa {
+        color: #6c757d;
+    }
+    
+    .badge-sent {
+        background-color: #28a745;
+    }
+    .badge-failed {
+        background-color: #dc3545;
+    }
+    .badge-pending {
+        background-color: #ffc107;
+    }
+</style>
+
+<div class="about-us-page">
+    <section class="section-1">
+        <div class="title-padding container">
+            <h1 class="title">@Model.Heading</h1>
+        </div>
+    </section>
+    <br>
+    <section class="section-2">
+        <div class="container">
+            <button class="custom-button" id="customButton">Start <span><i class="fa fa-comments"></i></span></button>
+            <table id="communicationsTable" class="hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Investor</th>
+                        <th>Founder</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<div id="customModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Start A Communication</h2>
+        <form id="communicationForm">
+            <div class="form-group">
+                <label for="founderSelect">Select Founder:</label>
+                <select id="founderSelect" class="form-control">
+                    <!-- Options will be dynamically loaded here -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subjectInput">Subject:</label>
+                <input type="text" id="subjectInput" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="messageTextarea">Message:</label>
+                <textarea id="messageTextarea" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="modal-footer button-container">
+                <button type="button" id="sendButton" class="btn btn-primary">Send</button>
+                <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.flash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#communicationsTable').DataTable({
+                "ajax": {
+                    "url": "@apiUrlCommunication",
+                    "dataSrc": ""
+                },
+                "columns": [
+                    { "data": "investorName" },
+                    { "data": "founderName" },
+                    { "data": "subject" },
+                    { "data": "message" },
+                    {
+                        "data": "status",
+                        "render": function (data, type, row) {
+                            let badgeClass = '';
+                            let statusText = '';
+                            switch (data) {
+                                case 0:
+                                    badgeClass = 'badge-sent';
+                                    statusText = 'Sent';
+                                    break;
+                                case 1:
+                                    badgeClass = 'badge-failed';
+                                    statusText = 'Failed';
+                                    break;
+                                case 2:
+                                    badgeClass = 'badge-pending';
+                                    statusText = 'Pending';
+                                    break;
+                                default:
+                                    badgeClass = 'badge-secondary';
+                                    statusText = 'Unknown';
+                            }
+                            return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';
+                        }
+                    }
+                ],
+                "dom": 'Bfrtip',
+                "buttons": [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa fa-copy"></i>',
+                        titleAttr: 'Copy',
+                        className: 'btn-copy'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-file-csv"></i>',
+                        titleAttr: 'CSV',
+                        className: 'btn-csv'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel"></i>',
+                        titleAttr: 'Excel',
+                        className: 'btn-excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf"></i>',
+                        titleAttr: 'PDF',
+                        className: 'btn-pdf'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fa fa-print"></i>',
+                        titleAttr: 'Print',
+                        className: 'btn-print'
+                    }
+                ],
+                "pagingType": "full_numbers",
+                "responsive": true
+            });
+
+        });
+    </script>
+    
+    <script type="text/javascript">
+    $(document).ready(function () {
+        // Fetch founders for the dropdown
+        $.ajax({
+            url: "@apiUrlFounders",
+            method: 'GET',
+            success: function (data) {
+                var $founderSelect = $('#founderSelect');
+                $founderSelect.empty();
+                $.each(data, function (index, founder) {
+                    $founderSelect.append($('<option>', { 
+                        value: founder.id,
+                        text: founder.name 
+                    }));
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching founders:', error);
+            }
+        });
+
+        // Show the modal
+        $('#customButton').click(function() {
+            $('#customModal').show();
+        });
+
+        // Close the modal
+        $('.close, #cancelButton').click(function() {
+            $('#customModal').hide();
+        });
+
+        // Close the modal when clicking outside of it
+        $(window).click(function(event) {
+            if (event.target.id === 'customModal') {
+                $('#customModal').hide();
+            }
+        });
+
+        // Send button click event
+        $('#sendButton').click(function() {
+            var selectedFounderId = $('#founderSelect').val();
+            var subject = $('#subjectInput').val();
+            var message = $('#messageTextarea').val();
+
+            var communicationData = {
+                founderId: selectedFounderId,
+                subject: subject,
+                message: message
+            };
+
+            $.ajax({
+                url: '@apiSendCommunication',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(communicationData),
+                success: function(response) {
+                    alert('Communication sent successfully!');
+                    $('#customModal').hide();
+                },
+                error: function(error) {
+                    console.error('Error sending communication:', error);
+                    alert('Failed to send communication.');
+                }
+            });
+        });
+    });
+</script>
+
+}
+
+<!-- Modal CSS -->
+<style>
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%; /* Could be more or less, depending on screen size */
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .button-container {
+            text-align: center;
+    }
+</style>
+
