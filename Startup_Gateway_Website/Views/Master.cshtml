@@ -95,6 +95,7 @@ IsLoggedIn = false;
         // Use the utility method to decode the access token
         accessTokenPayload = TokenUtils.DecodeAccessToken(accessToken);
     }
+   
 
     if (accessTokenPayload != null)
     {
@@ -617,7 +618,7 @@ IsLoggedIn = false;
             </div>
         </div>
     </div>
-    @IsLoggedIn
+   @* @IsLoggedIn  *@
 
 
     <div class="popup-menu">

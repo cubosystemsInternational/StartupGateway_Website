@@ -5,6 +5,8 @@
 @using System.Threading.Tasks
 @using Microsoft.AspNetCore.Http
 @using System.Web
+@using Startup_Gateway_Website.Utils;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor;
 
 @{
     var domain = "https://localhost:44371";
@@ -15,10 +17,35 @@
 
     var investorId = 20; // Set the investorId here
     var apiUrlCommunication = $"{domain}/api/Communication/GetAllCommunicationsForInvestor?investorId={investorId}";
-    var apiUrlFounders = $"{domain}/api/Founders/GetAllFounders"; // API URL to get founders
-    var apiSendCommunication = $"{domain}/api/Communication/SendCommunication"; // API URL to send communication
+    var apiUrlFounders = $"{domain}/api/Users/GetAllActiveFounders"; // API URL to get founders
+    var apiSendCommunication = $"{domain}/api/Communication/AddCommunicationAndSendEmailFromInvestor"; // API URL to send communication
 
+    //Render conditional
+    var getLoggedInContext = Context.Request.Cookies["IsLoggedIn"];
+    // Set IsLoggedIn based on the cookie value
+    bool IsLoggedIn = getLoggedInContext != null && getLoggedInContext.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+
+
+
+    var LoggedInUserId ="";
+    
+    if(Context.Request.Cookies["accessToken"] != null )
+    {
+        var accessToken = Context.Request.Cookies["accessToken"];
+        var accessTokenPayload = TokenUtils.DecodeAccessToken(accessToken);
+        LoggedInUserId = accessTokenPayload["UserId"].ToString();
+    }
+    
+    @*  This is to do a redirect if not authenticated 
+    if (string.IsNullOrEmpty(LoggedInUserId))
+    {
+        //var noResultsUrl = Url.Action("NoResults", "Home");
+        HttpContextAccessor.HttpContext.Response.Redirect("/");
+        return;
+    }*@
 }
+
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
@@ -96,6 +123,13 @@
     .badge-pending {
         background-color: #ffc107;
     }
+    
+div.dt-paging , div#communicationsTable_info.dt-info {
+text-align: center;
+}
+div.dt-length {
+text-align: right;
+}
 </style>
 
 <div class="about-us-page">
@@ -107,7 +141,7 @@
     <br>
     <section class="section-2">
         <div class="container">
-            <button class="custom-button" id="customButton">Start <span><i class="fa fa-comments"></i></span></button>
+            <button class="custom-button" id="customButton">Start -> <span><i class="fa fa-comments"></i></span></button>
             <table id="communicationsTable" class="hover" style="width:100%">
                 <thead>
                     <tr>
@@ -135,16 +169,20 @@
             <div class="form-group">
                 <label for="founderSelect">Select Founder:</label>
                 <select id="founderSelect" class="form-control">
+                    <option value="">-Select Founder-</option> <!-- Default no value option -->
                     <!-- Options will be dynamically loaded here -->
                 </select>
+                <p id="founder-error" style="color: red; display: none;"></p> <!-- Founder error message -->
             </div>
             <div class="form-group">
                 <label for="subjectInput">Subject:</label>
                 <input type="text" id="subjectInput" class="form-control">
+                <p id="subject-error" style="color: red; display: none;"></p> <!-- Subject error message -->
             </div>
             <div class="form-group">
                 <label for="messageTextarea">Message:</label>
                 <textarea id="messageTextarea" class="form-control" rows="4"></textarea>
+                <p id="message-error" style="color: red; display: none;"></p> <!-- Message error message -->
             </div>
             <div class="modal-footer button-container">
                 <button type="button" id="sendButton" class="btn btn-primary">Send</button>
@@ -153,6 +191,7 @@
         </form>
     </div>
 </div>
+
 
 
 
@@ -166,151 +205,267 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
     <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<!-- Toastr CSS and JS For To Show Success -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function () {
-            $('#communicationsTable').DataTable({
-                "ajax": {
-                    "url": "@apiUrlCommunication",
-                    "dataSrc": ""
-                },
-                "columns": [
-                    { "data": "investorName" },
-                    { "data": "founderName" },
-                    { "data": "subject" },
-                    { "data": "message" },
-                    {
-                        "data": "status",
-                        "render": function (data, type, row) {
-                            let badgeClass = '';
-                            let statusText = '';
-                            switch (data) {
-                                case 0:
-                                    badgeClass = 'badge-sent';
-                                    statusText = 'Sent';
-                                    break;
-                                case 1:
-                                    badgeClass = 'badge-failed';
-                                    statusText = 'Failed';
-                                    break;
-                                case 2:
-                                    badgeClass = 'badge-pending';
-                                    statusText = 'Pending';
-                                    break;
-                                default:
-                                    badgeClass = 'badge-secondary';
-                                    statusText = 'Unknown';
-                            }
-                            return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';
-                        }
+       $(document).ready(function () {
+    // Initialize DataTable
+    var table = $('#communicationsTable').DataTable({
+        "ajax": {
+            "url": "@apiUrlCommunication",
+            "dataSrc": ""
+        },
+        "columns": [
+            { "data": "investorName" },
+            { "data": "founderName" },
+            { "data": "subject" },
+            { "data": "message" },
+            {
+                "data": "status",
+                "render": function (data, type, row) {
+                    let badgeClass = '';
+                    let statusText = '';
+                    switch (data) {
+                        case 0:
+                            badgeClass = 'badge-sent';
+                            statusText = 'Sent';
+                            break;
+                        case 1:
+                            badgeClass = 'badge-failed';
+                            statusText = 'Failed';
+                            break;
+                        case 2:
+                            badgeClass = 'badge-pending';
+                            statusText = 'Pending';
+                            break;
+                        default:
+                            badgeClass = 'badge-secondary';
+                            statusText = 'Unknown';
                     }
-                ],
-                "dom": 'Bfrtip',
-                "buttons": [
-                    {
-                        extend: 'copy',
-                        text: '<i class="fa fa-copy"></i>',
-                        titleAttr: 'Copy',
-                        className: 'btn-copy'
-                    },
-                    {
-                        extend: 'csv',
-                        text: '<i class="fa fa-file-csv"></i>',
-                        titleAttr: 'CSV',
-                        className: 'btn-csv'
-                    },
-                    {
-                        extend: 'excel',
-                        text: '<i class="fa fa-file-excel"></i>',
-                        titleAttr: 'Excel',
-                        className: 'btn-excel'
-                    },
-                    {
-                        extend: 'pdf',
-                        text: '<i class="fa fa-file-pdf"></i>',
-                        titleAttr: 'PDF',
-                        className: 'btn-pdf'
-                    },
-                    {
-                        extend: 'print',
-                        text: '<i class="fa fa-print"></i>',
-                        titleAttr: 'Print',
-                        className: 'btn-print'
-                    }
-                ],
-                "pagingType": "full_numbers",
-                "responsive": true
-            });
+                    return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';
+                }
+            }
+        ],
+        "dom": 'Bfrtlip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fa fa-copy"></i>',
+                titleAttr: 'Copy',
+                className: 'btn-copy'
+            },
+            {
+                extend: 'csv',
+                text: '<i class="fa fa-file-csv"></i>',
+                titleAttr: 'CSV',
+                className: 'btn-csv'
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel"></i>',
+                titleAttr: 'Excel',
+                className: 'btn-excel'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf"></i>',
+                titleAttr: 'PDF',
+                className: 'btn-pdf'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fa fa-print"></i>',
+                titleAttr: 'Print',
+                className: 'btn-print'
+            }
+        ],
+        "pagingType": "full_numbers",
+        "responsive": true
+    });
 
-        });
-    </script>
+//------------------------------------------------- For the Founder Communication popup -------------------------
+// Function to get query parameters
+    function getQueryParameter(name) {
+        let urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+// Function to trim trailing slashes
+    function trimTrailingSlash(str) {
+        return str.replace(/\/+$/, '');
+    }
     
-    <script type="text/javascript">
-    $(document).ready(function () {
-        // Fetch founders for the dropdown
+    // Pre-select founder if UserId is present in URL
+    var getUserId = getQueryParameter('UserId');
+    var userId = trimTrailingSlash(getUserId);
+    console.log("hi" +userId );
+    // Note if the UserId value in url then it will show the popup 
+    if (userId) {
+        $('#customModal').show();
+        // Fetch founders and set the selected founder
         $.ajax({
             url: "@apiUrlFounders",
             method: 'GET',
             success: function (data) {
                 var $founderSelect = $('#founderSelect');
-                $founderSelect.empty();
+                $founderSelect.empty(); // Clear existing options
+                $founderSelect.append($('<option>', { 
+                    value: '',
+                    text: '-Select Founder-' 
+                })); // Add default option
                 $.each(data, function (index, founder) {
-                    $founderSelect.append($('<option>', { 
+                    var option = $('<option>', { 
                         value: founder.id,
-                        text: founder.name 
-                    }));
+                        text: founder.fullName 
+                    });
+                    if (founder.id == userId) {
+                        option.attr('selected', 'selected'); // Set the founder as selected
+                    }
+                    $founderSelect.append(option);
                 });
             },
             error: function (error) {
                 console.error('Error fetching founders:', error);
             }
         });
+    }
+    
+//------------------------------------------------- END -------------------------
+else{
+    // Fetch founders for the dropdown
+    $.ajax({
+        url: "@apiUrlFounders",
+        method: 'GET',
+        success: function (data) {
+            var $founderSelect = $('#founderSelect');
+            $founderSelect.empty(); // Clear existing options
+            $founderSelect.append($('<option>', { 
+                value: '',
+                text: '-Select Founder-' 
+            })); // Add default option
+            $.each(data, function (index, founder) {
+                $founderSelect.append($('<option>', { 
+                    value: founder.id,
+                    text: founder.fullName 
+                }));
+            });
+        },
+        error: function (error) {
+            console.error('Error fetching founders:', error);
+        }
+    });
+}
 
-        // Show the modal
-        $('#customButton').click(function() {
-            $('#customModal').show();
-        });
 
-        // Close the modal
-        $('.close, #cancelButton').click(function() {
+    // Function to reset the form and hide error messages
+    function resetForm() {
+        $('#founderSelect').val('');
+        $('#subjectInput').val('');
+        $('#messageTextarea').val('');
+        $('#founder-error').hide();
+        $('#subject-error').hide();
+        $('#message-error').hide();
+    }
+
+    // Show the modal
+    $('#customButton').click(function() {
+        $('#customModal').show();
+    });
+
+    // Close the modal
+    $('.close, #cancelButton').click(function() {
+        $('#customModal').hide();
+        resetForm();
+    });
+
+    // Close the modal when clicking outside of it
+    $(window).click(function(event) {
+        if (event.target.id === 'customModal') {
             $('#customModal').hide();
-        });
+            resetForm();
+        }
+    });
 
-        // Close the modal when clicking outside of it
-        $(window).click(function(event) {
-            if (event.target.id === 'customModal') {
-                $('#customModal').hide();
+    // Hide error message when typing in any input field
+    $('#founderSelect, #subjectInput, #messageTextarea').on('input', function() {
+        $(this).next('p').hide(); // Hide the next sibling <p> element
+    });
+
+    // Send button click event
+    $('#sendButton').click(function() {
+        var selectedFounderId = $('#founderSelect').val();
+        var subject = $('#subjectInput').val();
+        var message = $('#messageTextarea').val();
+
+        // Validation checks
+        var hasError = false;
+
+        if (!selectedFounderId) {
+            $('#founder-error').text('Please select a founder.').show();
+            hasError = true;
+        }
+
+        if (!subject.trim()) {
+            $('#subject-error').text('Please enter a subject.').show();
+            hasError = true;
+        }
+
+        if (!message.trim()) {
+            $('#message-error').text('Please enter a message.').show();
+            hasError = true;
+        }
+
+        if (hasError) {
+            return;
+        }
+
+        var communicationData = {
+            Id: 0,
+            InvestorId: parseInt('@LoggedInUserId', 10),
+            UserId: parseInt(selectedFounderId, 10),
+            Subject: subject,
+            Message: message,
+            Status: 0,
+            ModifiedBy: parseInt('@LoggedInUserId', 10),
+            ModifiedOn: new Date().toISOString() // Add current UTC time in ISO format
+        };
+
+        // Disable send button to prevent multiple submissions
+        $('#sendButton').prop('disabled', true);
+
+        $.ajax({
+            url: '@apiSendCommunication' + '?userId=' + parseInt('@LoggedInUserId', 10),
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(communicationData),
+            success: function(response) {
+                // Show success notification
+                toastr.success('Communication sent successfully!');
+
+                // Hide the modal after a delay
+                setTimeout(function() {
+                    $('#customModal').hide();
+                    resetForm();
+                    // Refresh the DataTable
+                    table.ajax.reload();
+                    // Re-enable send button
+                    $('#sendButton').prop('disabled', false);
+                }, 500); // 2-second delay before hiding the modal
+            },
+            error: function(error) {
+                console.error('Error sending communication:', error);
+                toastr.error('Failed to send communication.');
+                // Re-enable send button
+                $('#sendButton').prop('disabled', false);
             }
         });
-
-        // Send button click event
-        $('#sendButton').click(function() {
-            var selectedFounderId = $('#founderSelect').val();
-            var subject = $('#subjectInput').val();
-            var message = $('#messageTextarea').val();
-
-            var communicationData = {
-                founderId: selectedFounderId,
-                subject: subject,
-                message: message
-            };
-
-            $.ajax({
-                url: '@apiSendCommunication',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(communicationData),
-                success: function(response) {
-                    alert('Communication sent successfully!');
-                    $('#customModal').hide();
-                },
-                error: function(error) {
-                    console.error('Error sending communication:', error);
-                    alert('Failed to send communication.');
-                }
-            });
-        });
     });
+});
+</script>
+
+
 </script>
 
 }

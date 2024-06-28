@@ -8,10 +8,14 @@
 @{
     Layout = "Master.cshtml";
     ViewBag.headerClass = "dark";
-    var projectId = ViewContext.HttpContext.Request.Query["id"].ToString();
+    var projectId = ViewContext.HttpContext.Request.Query["id"].ToString().TrimEnd('/');
     dynamic project = null;
     dynamic documents = null;
     var DownloadProjectRelatedDocumentById = $"{GlobalVariables.ApiUrl}document/DownloadProjectRelatedDocumentById";
+    //Render conditional
+    var getLoggedInContext = Context.Request.Cookies["IsLoggedIn"];
+    // Set IsLoggedIn based on the cookie value
+    bool IsLoggedIn = getLoggedInContext != null && getLoggedInContext.Equals("true", StringComparison.OrdinalIgnoreCase);
 
     if (!string.IsNullOrWhiteSpace(projectId))
     {
@@ -28,13 +32,14 @@
                 var projectData = await projectResponse.Content.ReadAsStringAsync();
                 project = JsonConvert.DeserializeObject<dynamic>(projectData);
             }
-
+if(IsLoggedIn){
             // Fetch documents
             var documentsResponse = await client.GetAsync(documentsApiUrl);
             if (documentsResponse.IsSuccessStatusCode)
             {
                 var documentsData = await documentsResponse.Content.ReadAsStringAsync();
                 documents = JsonConvert.DeserializeObject<dynamic>(documentsData);
+            }
             }
         }
     }
@@ -48,7 +53,7 @@
     }
 }
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 <div class="about-us-page">
     <section class="section-1">
         <div class="title-padding container">
@@ -91,6 +96,14 @@
                         <h5 class="fw-bold col-4 text-start"><u>Contact Info</u></h5>
                         <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">email</i> <strong>Email:</strong> <a href="mailto:@project.email" class="text-decoration-none">@project.email</a></p>
                         <p class="mb-1 text-end"><i class="material-icons text-muted" style="vertical-align: middle;">phone</i> <strong>Contact No:</strong> <a href="tel:@project.contactNo" class="text-decoration-none">@project.contactNo</a></p>
+                   
+                    @if(IsLoggedIn){
+                   <a href="/communication?projectId=@projectId&UserId=@project.founderId" class="btn btn-sm btn-success">
+                    <strong>Start A Communication</strong>
+                    <span><i class="fa fa-comments"></i></span>
+                    </a>
+                    }
+                    
                     </div>
                 </div>
             </div>
@@ -103,7 +116,8 @@
                     <p class="lead text-secondary mb-4">@project.projectDescription</p>
                 </div>
             </div>
-<div class="row mt-4">
+ @if(IsLoggedIn){
+            <div class="row mt-4">
                 <div class="col-12">
                     <h4 class="display-5 fw-bolder"><i class="material-icons text-muted" style="vertical-align: middle;">currency_exchange</i> Project Bids:</h4>
                     <div class="table-responsive">
@@ -123,6 +137,7 @@
                     </div>
                 </div>
             </div>
+}
             <br>
             @*<div class="row mt-4">
                 <div class="col-12">
@@ -156,6 +171,7 @@
                     </div>
                 </div>
             </div>*@
+@if(IsLoggedIn){
             <div class="row mt-4">
     <div class="col-12">
         <h4 class="display-5 fw-bolder"><i class="material-icons text-muted align-middle" style="font-size: 1.5rem;">book</i> Related Documents:</h4>
@@ -197,10 +213,10 @@
                     No related documents found.
                 </div>
             }
+            </div>
         </div>
     </div>
-</div>
-
+}
         </div>
     </section>
 </div>
@@ -226,7 +242,7 @@
             }); // Format the date
             return formattedDate;
         }
-
+if('@IsLoggedIn'){
         $(document).ready(function () {
             var projectId = '@projectId'; // Embed project ID using Razor
 
@@ -259,5 +275,6 @@
                 });
             });
         });
+}
     </script>
 }
