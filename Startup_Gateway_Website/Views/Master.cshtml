@@ -26,6 +26,7 @@
     var culPref = "";
     JObject accessTokenPayload = null;
     var LoggedInUserId = "";
+    var LoggedInUserFullName = "";
     var currentDomain = $"{Context.Request.Scheme}://{Context.Request.Host}";
 
     var getLoggedInContext = Context.Request.Cookies["IsLoggedIn"];
@@ -100,6 +101,7 @@ IsLoggedIn = false;
     if (accessTokenPayload != null)
     {
         LoggedInUserId = accessTokenPayload["UserId"].ToString();
+        LoggedInUserFullName = accessTokenPayload["UserFullName"].ToString();
     }
 
     var userAgent = Context.Request.Headers["User-Agent"].ToString();
@@ -464,31 +466,28 @@ IsLoggedIn = false;
                         <a href="@home?.ContactUs?.Url()" class="get-in-touch smoothScroll visible-lg">
                             <span>@home?.ContactUs?.Name</span>
                         </a>
-                        @*Add the login button*@
-                        @if (IsLoggedIn == false)
-                        {
-                            <a href="@GlobalVariables.LoginDomain"
-                                class="get-in-touch smoothScroll visible-lg login-btn-cu">
-                                <span>Login</span>
-                            </a>
-                        }
-                        else
-                        {
-                            <a onclick="logout()" class="get-in-touch smoothScroll visible-lg logout-btn-cu">
-                                <span>Logout</span>
-                            </a>
-                        }
+                       @* Add the login button *@
+@if (!IsLoggedIn)
+{
+    <a href="@GlobalVariables.LoginDomain" class="get-in-touch smoothScroll visible-lg login-btn-cu">
+        <span>Login</span>
+    </a>
+}
+else
+{
+    <div class="dropdown visible-lg">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <img id ="profileImg" src="@Url.Content("~/media/3pbdvc0v/defaultprofilepic.jpg")" alt="Avatar" class="avatar">
+            <span class="username">@LoggedInUserFullName</span>
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li class="text-left" ><a href="/user-profile/">View Profile</a></li>
+            <li class="text-left" ><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+    </div>
+}
 
-                        <div class="view-profile">
-                            <a href="user-profile/">
-                                <img src="@Url.Content("~/media/oshhgwgc/profilepictest.jpg")" alt="Avatar"
-                                    class="avatar">
-                                <!--<img src="http://bootdey.com/img/Content/avatar/avatar1.png" alt="Avatar"-->
-                                <!--    class="avatar">-->
-                                <!--<img class="img-account-profile rounded-circle mb-2"-->
-                                <!--    src="http://bootdey.com/img/Content/avatar/avatar1.png" alt="">-->
-                            </a>
-                        </div>
 
                     </div>
                     <div class="collapse navbar-collapse text-center">
@@ -591,18 +590,26 @@ IsLoggedIn = false;
                     </a>
 
                     @*Add the login button for the nav scroll*@
-                    @if (IsLoggedIn == false)
-                    {
-                        <a href="@GlobalVariables.LoginDomain" class="get-in-touch smoothScroll visible-lg login-btn-cu">
-                            <span>Login</span>
-                        </a>
-                    }
-                    else
-                    {
-                        <a onclick="logout()" class="get-in-touch smoothScroll visible-lg logout-btn-cu">
-                            <span>Logout</span>
-                        </a>
-                    }
+                    @if (!IsLoggedIn)
+{
+    <a href="@GlobalVariables.LoginDomain" class="get-in-touch smoothScroll visible-lg login-btn-cu">
+        <span>Login</span>
+    </a>
+}
+else
+{
+    <div class="dropdown visible-lg">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <img id ="profileImg" src="@Url.Content("~/media/3pbdvc0v/defaultprofilepic.jpg")" alt="Avatar" class="avatar">
+            <span class="username">@LoggedInUserFullName</span>
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li class="text-left" ><a href="/user-profile/">View Profile</a></li>
+            <li class="text-left" ><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+    </div>
+}
 
                 </div>
                 <div class="collapse navbar-collapse text-center">
@@ -682,7 +689,51 @@ IsLoggedIn = false;
                         }
                     }
                 }
+                @*----------------------------*@
+                @if(IsLoggedIn){
+                 <li class="panel">
+    <div class="nav-border-mobile">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" class="collapsed" href="#collapseProfile">
+                <img id="profileImg1" src="@Url.Content("~/media/3pbdvc0v/defaultprofilepic.jpg")" alt="Avatar" class="avatar">
+                <p class="text-fullName">@LoggedInUserFullName</p>
+                <i class="fa fa-angle-up"></i></a>
+        </h4>
+    </div>
+    <div id="collapseProfile" class="panel-collapse collapse ">
+    <ul class="panel-group nav-menu-mob-wrap">
+        <li class="panel-default ">
+            <div class="nav-border-mobile">
+                <h4 class="panel-collapse-title mobrehight">
+                    <a href="/user-profile/" class="collapsed mobPofile">
+                         <i class="fa fa-user mobIconr"></i> <p class="text-mobIconr">View Profile </p>
+                    </a>
+                </h4>
+            </div>
+        </li>
+        <li class="panel-default">
+            <div class="nav-border-mobile">
+                <h4 class="panel-collapse-title mobrehight">
+                    <a href="#" onclick="logout()">
+                        <i class="fa fa-sign-out mobIconrLogout"></i> <p class="text-mobIconr"> Logout </p>
+                    </a>
+                </h4>
+            </div>
+        </li>
+    </ul>
+</div>
+
+</li>
+}
+
+                @*----------------------------*@
+                
+         @if(!IsLoggedIn){
+                <li class="panel"><a href="@GlobalVariables.LoginDomain"><span>Login</span></a></li>
+              }
                 <li class="panel"><a href="@home?.ContactUs?.Url()"><span>@home?.ContactUs?.Name</span></a></li>
+                
+                
             </ul>
         </div>
     </div>

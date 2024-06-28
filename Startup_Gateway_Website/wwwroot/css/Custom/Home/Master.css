@@ -75,3 +75,95 @@ footer .nav-menu-item .nav-title {
  .nav-btns-rght {
   align-items: flex-end;
 } 
+
+/* Styles for avatar and dropdown */ 
+img#profileImg.avatar {
+    margin-left: 25px;
+}
+
+    .dropdown-toggle .username {
+        margin-right: 10px;
+    }
+    .dropdown-menu {
+        min-width: 160px;
+    }
+    .dropdown-menu li a {
+        padding: 10px 25px;
+        display: block;
+    }
+    .slide-in ul {
+    padding-left: 0px !important; 
+    margin-left: auto;
+}
+
+.fxss{
+    position: absolute;
+
+}
+.mobPofile#text{
+    margin-left: 100px;
+
+}
+
+#collapseProfile ul, #collapseProfile li {
+    list-style: none;
+}
+#collapseProfile .panel-collapse-title a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    width: 100%;
+}
+.mobIconr{
+    /*padding-left: 170px;*/
+    position: absolute;
+}
+.text-mobIconr{
+    padding-left: 25px;
+    margin-top: 10px;
+}
+.mobIconrLogout{
+    position: absolute;
+}
+.text-fullName{
+   padding-left: 70px;
+    position: absolute;
+    margin-top: 15px;
+}
+}
+
+/* This is for the Login Button and the Contact Button in Mobile View */
+/* Style for the last child */
+.popup-menu .navbar-nav>li:last-child>a:hover {
+    background-color: #e93636 !important;
+}
+.popup-menu .navbar-nav>li:last-child>a {
+    max-width: 350px; !important;
+}
+
+/* Style for the second-to-last child */
+.popup-menu .navbar-nav>li:nth-last-child(2)>a {
+    text-align: center;
+    background-color: #7280c5;
+    border-radius: 25px;
+    color: #fff;
+    margin-top: 40px;
+    font-size: 16px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    max-width: 350px;
+}
+
+/* Style for the second-to-last child */
+.popup-menu .navbar-nav>li:nth-last-child(2)>a:hover {
+    background-color: #5866a9 !important;
+}
+
+/*Reduce the User full name div height*/
+.mobrehight{
+    
+    padding-top: 0px !important; 
+    padding-bottom: 0px !important;
+}
