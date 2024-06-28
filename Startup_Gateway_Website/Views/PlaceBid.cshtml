@@ -1,0 +1,29 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    Layout = "Master1.cshtml";
+}
+
+<div class="modal" id="bidModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeBidModal">&times;</span>
+            <h2>Create Bid</h2>
+        </div>
+        <div class="modal-body">
+            <form id="bidForm">
+                <div class="mb-3">
+                    <label for="investmentValue" class="form-label">Investment Value</label>
+                    <input type="number" class="form-control" id="investmentValue" placeholder="Enter investment value">
+                </div>
+                <div class="mb-3">
+                    <label for="investmentPercent" class="form-label">Investment Percent</label>
+                    <input type="number" class="form-control" id="investmentPercent" placeholder="Enter investment percent">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelButton" class="btn">Cancel</button>
+            <button id="createBidButton" class="btn btn-primary">Create Bid</button>
+        </div>
+    </div>
+</div>

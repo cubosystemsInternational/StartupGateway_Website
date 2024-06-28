@@ -102,6 +102,10 @@ if(IsLoggedIn){
                     <strong>Start A Communication</strong>
                     <span><i class="fa fa-comments"></i></span>
                     </a>
+                    <a href="/bids?projectId=@projectId" class="btn btn-sm btn-success">
+                    <strong>Start bidding</strong>
+                    <span><i class="fa fa-comments"></i></span>
+                    </a>
                     }
                     
                     </div>
@@ -218,7 +222,9 @@ if(IsLoggedIn){
     </div>
 }
         </div>
+        
     </section>
+
 </div>
 
 
@@ -226,6 +232,8 @@ if(IsLoggedIn){
 @section Scripts {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+   
     <script>
     var apiUrl = '@GlobalVariables.ApiUrl';
 
@@ -277,4 +285,106 @@ if('@IsLoggedIn'){
         });
 }
     </script>
+    <script>
+        // Get modal element
+        var modal = document.getElementById("bidModal");
+        // Get open modal button
+        var openModalBtn = document.getElementById("openBidModal");
+        // Get close button
+        var closeModalBtn = document.getElementById("closeBidModal");
+        // Get cancel button
+        var cancelBtn = document.getElementById("cancelButton");
+
+        // Listen for open click
+        openModalBtn.addEventListener('click', openModal);
+        // Listen for close click
+        closeModalBtn.addEventListener('click', closeModal);
+        // Listen for cancel click
+        cancelBtn.addEventListener('click', closeModal);
+        // Listen for outside click
+        window.addEventListener('click', outsideClick);
+
+        // Function to open modal
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        // Function to close modal
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Function to close modal if outside click
+        function outsideClick(e) {
+            if (e.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Function to handle form submission
+        document.getElementById('createBidButton').addEventListener('click', function() {
+            const investmentValue = document.getElementById('investmentValue').value;
+            const investmentPercent = document.getElementById('investmentPercent').value;
+
+            // Perform validation or form submission here
+            console.log('Investment Value:', investmentValue);
+            console.log('Investment Percent:', investmentPercent);
+
+            // Close the modal if needed
+            closeModal();
+        });
+    </script>
+    <style>
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 35%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 }

@@ -1,5 +1,566 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Web.Common.PublishedModels.GeneralPage>
+@using Umbraco.Cms.Web.Common.PublishedModels
+@using System.Net.Http
+@using Newtonsoft.Json
+@using System.Threading.Tasks
+@using Microsoft.AspNetCore.Http
+@using System.Web
+
 @{
-	Layout = null;
+    var domain = "https://localhost:44371";
+    Layout = "Master.cshtml";
+    ViewBag.headerClass = "dark";
+    var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
+    var curCulture = Model.GetCultureFromDomains();
+    var projectId = ViewContext.HttpContext.Request.Query["projectId"].ToString();
+    var investorId = 20; // Set the investorId here
+    var apiUrlCommunication = $"{domain}/api/Communication/GetAllCommunicationsForInvestor?investorId={investorId}";
+    var apiUrlFounders = $"{domain}/api/Founders/GetAllFounders"; // API URL to get founders
+    var apiSendCommunication = $"{domain}/api/Communication/SendCommunication"; // API URL to send communication
+
 }
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+<script>
+    // Function to get query parameter by name
+    function getQueryParam(param) {
+        let urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Retrieve projectId from query string
+    let projectId = getQueryParam('projectId');
+
+    // Function to clean up the projectId (e.g., remove slashes)
+    function cleanProjectId(id) {
+        return id ? id.replace(/\//g, '') : null;
+    }
+
+    // Clean the projectId
+    let cleanedProjectId = cleanProjectId(projectId);
+
+    console.log('Cleaned Project ID:', cleanedProjectId);
+    
+    // Now you can use cleanedProjectId for further operations
+</script>
+
+<div class="about-us-page">
+    <section class="section-1">
+        <div class="title-padding container">
+            <h1 class="title">@Model.Heading</h1>
+        </div>
+    </section>
+    <br>
+    <section class="section-2">
+        <div class="container">
+            <button id="openBidModal" class="btn">Bid</button>
+
+            <table id="communicationsTable" class="hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Inverstor</th>
+                        <th>Investment value</th>
+                        <th>Investment Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+
+    <div id="bidModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" id="closeBidModal">&times;</span>
+            <h2>Create Bid</h2>
+        </div>
+        <div class="modal-body">
+            <form id="bidForm">
+                <div class="form-group">
+                    <label for="investmentValue" class="form-label">Investment Value</label>
+                    <input type="number" class="form-control" id="investmentValue" placeholder="Enter investment value">
+                </div>
+                <div class="form-group">
+                    <label for="investmentPercent" class="form-label">Investment Percent</label>
+                    <input type="number" class="form-control" id="investmentPercent" placeholder="Enter investment percent">
+                </div>
+                <div class="form-group">
+                    <label for="comments" class="form-label">Comments</label>
+                    <textarea class="form-control" id="comments" placeholder="Enter comments" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelButton1" class="btn">Cancel</button>
+            <button id="createBidButton" class="btn btn-primary">Create Bid</button>
+        </div>
+    </div>
+</div>
+
+
+        
+ <script>
+        // Get modal element
+        var modal = document.getElementById("bidModal");
+        // Get open modal button
+        var openModalBtn = document.getElementById("openBidModal");
+        // Get close button
+        var closeModalBtn = document.getElementById("closeBidModal");
+        // Get cancel button
+        var cancelBtn = document.getElementById("cancelButton1");
+
+        // Listen for open click
+        openModalBtn.addEventListener('click', openModal);
+        // Listen for close click
+        closeModalBtn.addEventListener('click', closeModal);
+        // Listen for cancel click
+        cancelBtn.addEventListener('click', closeModal);
+        // Listen for outside click
+        window.addEventListener('click', outsideClick);
+
+        // Function to open modal
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        // Function to close modal
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Function to close modal if outside click
+        function outsideClick(e) {
+            if (e.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+        const userId = 1;
+
+        async function addABid(formData) {
+            const domain = 'https://localhost:44371';
+            const apiUrl = `${domain}/api/Bids/AddBid`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+                if (response.ok) {
+                    const userDetails = await response.json();
+                    console.log('Bid created successfully:', userDetails);
+                    fetchUserDetails();
+                } else {
+                    console.error('Failed to create bid.');
+                }
+            } catch (error) {
+                console.error('Error creating bid:', error);
+            }
+        }
+
+        document.getElementById('createBidButton').addEventListener('click', function () {
+            const formData = {
+                userId: userId,
+                projectId: cleanedProjectId, // Or set the appropriate project ID
+                investmentValue: document.getElementById('investmentValue').value,
+                investmentPercentage: document.getElementById('investmentPercent').value,
+                comments: document.getElementById('comments').value,
+                modifiedBy: userId
+            };
+
+            addABid(formData);
+            closeModal();
+        });
+
+ 
+    </script>
+   
+
+@section Scripts{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.flash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#communicationsTable').DataTable({
+                "ajax": {
+                    "url": "@apiUrlCommunication",
+                    "dataSrc": ""
+                },
+                "columns": [
+                    { "data": "investor" },
+                    { "data": "investmentValue" },
+                    { "data": "investmentPercentage" },
+                    <!--{-->
+                    <!--    "data": "status",-->
+                    <!--    "render": function (data, type, row) {-->
+                    <!--        let badgeClass = '';-->
+                    <!--        let statusText = '';-->
+                    <!--        switch (data) {-->
+                    <!--            case 0:-->
+                    <!--                badgeClass = 'badge-sent';-->
+                    <!--                statusText = 'Sent';-->
+                    <!--                break;-->
+                    <!--            case 1:-->
+                    <!--                badgeClass = 'badge-failed';-->
+                    <!--                statusText = 'Failed';-->
+                    <!--                break;-->
+                    <!--            case 2:-->
+                    <!--                badgeClass = 'badge-pending';-->
+                    <!--                statusText = 'Pending';-->
+                    <!--                break;-->
+                    <!--            default:-->
+                    <!--                badgeClass = 'badge-secondary';-->
+                    <!--                statusText = 'Unknown';-->
+                    <!--        }-->
+                    <!--        return '<span class="badge ' + badgeClass + '">' + statusText + '</span>';-->
+                    <!--    }-->
+                    <!--}-->
+                ],
+                "dom": 'Bfrtip',
+                "buttons": [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa fa-copy"></i>',
+                        titleAttr: 'Copy',
+                        className: 'btn-copy'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-file-csv"></i>',
+                        titleAttr: 'CSV',
+                        className: 'btn-csv'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel"></i>',
+                        titleAttr: 'Excel',
+                        className: 'btn-excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf"></i>',
+                        titleAttr: 'PDF',
+                        className: 'btn-pdf'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fa fa-print"></i>',
+                        titleAttr: 'Print',
+                        className: 'btn-print'
+                    }
+                ],
+                "pagingType": "full_numbers",
+                "responsive": true
+            });
+
+        });
+    </script>
+    
+    <script type="text/javascript">
+    $(document).ready(function () {
+        // Fetch founders for the dropdown
+        $.ajax({
+            url: "@apiUrlFounders",
+            method: 'GET',
+            success: function (data) {
+                var $founderSelect = $('#founderSelect');
+                $founderSelect.empty();
+                $.each(data, function (index, founder) {
+                    $founderSelect.append($('<option>', { 
+                        value: founder.id,
+                        text: founder.name 
+                    }));
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching founders:', error);
+            }
+        });
+
+        // Show the modal
+        $('#customButton').click(function() {
+            $('#customModal').show();
+        });
+
+        // Close the modal
+        $('.close, #cancelButton').click(function() {
+            $('#customModal').hide();
+        });
+
+        // Close the modal when clicking outside of it
+        $(window).click(function(event) {
+            if (event.target.id === 'customModal') {
+                $('#customModal').hide();
+            }
+        });
+
+        // Send button click event
+        $('#sendButton').click(function() {
+            var selectedFounderId = $('#founderSelect').val();
+            var subject = $('#subjectInput').val();
+            var message = $('#messageTextarea').val();
+
+            var communicationData = {
+                founderId: selectedFounderId,
+                subject: subject,
+                message: message
+            };
+
+            $.ajax({
+                url: '@apiSendCommunication',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(communicationData),
+                success: function(response) {
+                    alert('Communication sent successfully!');
+                    $('#customModal').hide();
+                },
+                error: function(error) {
+                    console.error('Error sending communication:', error);
+                    alert('Failed to send communication.');
+                }
+            });
+        });
+    });
+</script>
+
+}
+
+
+    <style>
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 35%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    
+<style>
+    /* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    overflow: auto; /* Enable scroll if needed */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto; /* 10% from the top and centered */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Shadow for depth */
+    width: 40%; /* Could be more or less, depending on screen size */
+    animation: fadeIn 0.3s ease-in-out; /* Fade-in animation */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+/* Buttons */
+
+.btn {
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+    }
+
+.btn-primary {
+            background-color: #007bff;
+        }
+
+.btn:hover {
+            background-color: #0056b3;
+        }
+
+
+
+.btn:focus {
+    outline: none;
+}
+
+/* Form styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Fade-in animation */
+
+</style>
+
+   <style>
+    .dataTables_filter {
+        float: left;
+    }
+    .custom-button {
+        float: left;
+        margin-right: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border:none !important;
+        background-color:#0096c7;
+        color: white;
+    }
+    .custom-button:hover {
+        background-color:#0077b6;
+        color: white;
+    }
+    .dataTables_filter input {
+        width: 300px; /* Increase the width of the search bar */
+    }
+    div.dt-buttons {
+        float: right;
+    }
+   button.dt-button, div.dt-button, a.dt-button, input.dt-button {
+        
+        border: 1px solid rgba(0, 0, 0, 0) !important;
+        background: transparent;
+    }
+    button.dt-button{
+        
+        font-size:1.3em !important;
+    }
+    #dt-search-0{
+        width:50%;
+    }
+    
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        color: #333;
+    }
+    .dt-button .fa {
+        margin-right: 5px;
+    }
+    .btn-copy .fa {
+        color: #007bff;
+    }
+    .btn-csv .fa {
+        color: #003566;
+    }
+    .btn-excel .fa {
+        color: #28a745;
+    }
+    .btn-pdf .fa {
+        color: #dc3545;
+    }
+    .btn-print .fa {
+        color: #6c757d;
+    }
+    
+    .badge-sent {
+        background-color: #28a745;
+    }
+    .badge-failed {
+        background-color: #dc3545;
+    }
+    .badge-pending {
+        background-color: #ffc107;
+    }
+</style>
+
+   
+
