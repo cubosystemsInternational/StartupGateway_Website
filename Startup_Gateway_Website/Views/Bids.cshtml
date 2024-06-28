@@ -12,11 +12,9 @@
     ViewBag.headerClass = "dark";
     var home = Umbraco.ContentAtRoot().FirstOrDefault() as Home;
     var curCulture = Model.GetCultureFromDomains();
-    var projectId = ViewContext.HttpContext.Request.Query["projectId"].ToString();
+    var projectId = ViewContext.HttpContext.Request.Query["projectId"].ToString().Trim("/");
+    var apiBids= $"{domain}/api/Bids/GetAllBidsOfAProjectForTable?projectId={projectId}";
     var investorId = 20; // Set the investorId here
-    var apiUrlCommunication = $"{domain}/api/Communication/GetAllCommunicationsForInvestor?investorId={investorId}";
-    var apiUrlFounders = $"{domain}/api/Founders/GetAllFounders"; // API URL to get founders
-    var apiSendCommunication = $"{domain}/api/Communication/SendCommunication"; // API URL to send communication
 
 }
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -24,28 +22,7 @@
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
-<script>
-    // Function to get query parameter by name
-    function getQueryParam(param) {
-        let urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    }
 
-    // Retrieve projectId from query string
-    let projectId = getQueryParam('projectId');
-
-    // Function to clean up the projectId (e.g., remove slashes)
-    function cleanProjectId(id) {
-        return id ? id.replace(/\//g, '') : null;
-    }
-
-    // Clean the projectId
-    let cleanedProjectId = cleanProjectId(projectId);
-
-    console.log('Cleaned Project ID:', cleanedProjectId);
-    
-    // Now you can use cleanedProjectId for further operations
-</script>
 
 <div class="about-us-page">
     <section class="section-1">
@@ -170,15 +147,18 @@
         document.getElementById('createBidButton').addEventListener('click', function () {
             const formData = {
                 userId: userId,
-                projectId: cleanedProjectId, // Or set the appropriate project ID
+                projectId: @projectId, // Or set the appropriate project ID
                 investmentValue: document.getElementById('investmentValue').value,
                 investmentPercentage: document.getElementById('investmentPercent').value,
                 comments: document.getElementById('comments').value,
                 modifiedBy: userId
             };
 
-            addABid(formData);
-            closeModal();
+           addABid(formData).then(() => {
+            table.ajax.reload(null, false); // false to keep the current page
+            });
+                closeModal();
+
         });
 
  
@@ -197,14 +177,20 @@
     <script src="//cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function () {
+        var table = $(document).ready(function () {
             $('#communicationsTable').DataTable({
                 "ajax": {
-                    "url": "@apiUrlCommunication",
+                    "url": "@apiBids",
                     "dataSrc": ""
                 },
                 "columns": [
-                    { "data": "investor" },
+                    { 
+                        "data": null,
+                        "title": "#",
+                        "render": function (data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
                     { "data": "investmentValue" },
                     { "data": "investmentPercentage" },
                     <!--{-->
@@ -267,79 +253,14 @@
                     }
                 ],
                 "pagingType": "full_numbers",
+                "searching": false,
                 "responsive": true
             });
 
         });
     </script>
     
-    <script type="text/javascript">
-    $(document).ready(function () {
-        // Fetch founders for the dropdown
-        $.ajax({
-            url: "@apiUrlFounders",
-            method: 'GET',
-            success: function (data) {
-                var $founderSelect = $('#founderSelect');
-                $founderSelect.empty();
-                $.each(data, function (index, founder) {
-                    $founderSelect.append($('<option>', { 
-                        value: founder.id,
-                        text: founder.name 
-                    }));
-                });
-            },
-            error: function (error) {
-                console.error('Error fetching founders:', error);
-            }
-        });
-
-        // Show the modal
-        $('#customButton').click(function() {
-            $('#customModal').show();
-        });
-
-        // Close the modal
-        $('.close, #cancelButton').click(function() {
-            $('#customModal').hide();
-        });
-
-        // Close the modal when clicking outside of it
-        $(window).click(function(event) {
-            if (event.target.id === 'customModal') {
-                $('#customModal').hide();
-            }
-        });
-
-        // Send button click event
-        $('#sendButton').click(function() {
-            var selectedFounderId = $('#founderSelect').val();
-            var subject = $('#subjectInput').val();
-            var message = $('#messageTextarea').val();
-
-            var communicationData = {
-                founderId: selectedFounderId,
-                subject: subject,
-                message: message
-            };
-
-            $.ajax({
-                url: '@apiSendCommunication',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(communicationData),
-                success: function(response) {
-                    alert('Communication sent successfully!');
-                    $('#customModal').hide();
-                },
-                error: function(error) {
-                    console.error('Error sending communication:', error);
-                    alert('Failed to send communication.');
-                }
-            });
-        });
-    });
-</script>
+   
 
 }
 
@@ -560,6 +481,12 @@
     .badge-pending {
         background-color: #ffc107;
     }
+    div.dt-paging , div#communicationsTable_info.dt-info {
+text-align: center;
+}
+div.dt-length {
+text-align: right;
+}
 </style>
 
    
